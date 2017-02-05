@@ -1,0 +1,29 @@
+name: ebisu_rs
+version: 0.0.0
+homepage: https://github.com/patefacio/ebisu_rs
+description: >
+  Support for generating rust code
+environment:
+  sdk: '>=1.8.2 <2.0.0'
+
+dependencies:
+
+# custom <ebisu_rs dependencies>
+# end <ebisu_rs dependencies>
+
+dev_dependencies:
+  yaml: "any"
+  browser: "any"
+
+# custom <ebisu_rs dev dependencies>
+# end <ebisu_rs dev dependencies>
+
+dependency_overrides:
+# custom <ebisu_rs dependency overrides>
+# end <ebisu_rs dependency overrides>
+
+transformers:
+
+# custom <ebisu_rs transformers>
+# end <ebisu_rs transformers>
+
