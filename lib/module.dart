@@ -8,8 +8,6 @@ import 'package:id/id.dart';
 // end <additional imports>
 
 class Module extends RsEntity {
-  /// Id for Module
-  Id id;
   List<Module> modules = [];
 
   // custom <class Module>

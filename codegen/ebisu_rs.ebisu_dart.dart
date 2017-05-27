@@ -24,10 +24,8 @@ main(List<String> args) {
   commonFeatures(cls) {
     cls
       ..extend = 'RsEntity'
-      ..withCustomBlock((blk) => blk.snippets.add('${cls.name}(id) : super(id);'))
-      ..members.add(member('id')..doc = 'Id for ${cls.name}'..type = 'Id');
+      ..withCustomBlock((blk) => blk.snippets.add('${cls.name}(id) : super(id);'));
   }
-
 
   _topDir = dirname(dirname(here));
   final purpose = 'Support for generating rust code';
@@ -51,6 +49,7 @@ main(List<String> args) {
       ..imports = [ 'package:ebisu_rs/module.dart' ],
     ]
     ..libraries = [
+
       library('ebisu_rs')
       ..includesLogger = true
       ..imports = [
@@ -123,8 +122,10 @@ main(List<String> args) {
         ])
         
       ]
+
     ];
-  
+
+  _logger.info("BOO");
   ebisuRs.generate(generateDrudge:false);
 
   print('''

@@ -17,8 +17,6 @@ class Member extends RsEntity {
 }
 
 class Struct extends RsEntity {
-  /// Id for Struct
-  Id id;
   List<Member> members = [];
 
   // custom <class Struct>
