@@ -11,6 +11,9 @@ class Member extends RsEntity {
   String type;
 
   // custom <class Member>
+
+  toString() => '$id $type';
+  
   // end <class Member>
 
   Member(id) : super(id);
@@ -20,6 +23,12 @@ class Struct extends RsEntity {
   List<Member> members = [];
 
   // custom <class Struct>
+
+
+  toString() => brCompact([
+    id,
+    members]);
+  
   // end <class Struct>
 
   Struct(id) : super(id);
@@ -28,5 +37,6 @@ class Struct extends RsEntity {
 // custom <library struct>
 
 struct(id) => new Struct(id);
+member(id) => new Member(id);
 
 // end <library struct>

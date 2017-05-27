@@ -19,7 +19,10 @@ void main([List<String> args]) {
 // custom <main>
 
   test('struct creation', () {
-    var s = struct('bam');
+    var s = struct('bam')
+      ..members = [
+        member('foo')
+      ];
     print(s);
   });
 
