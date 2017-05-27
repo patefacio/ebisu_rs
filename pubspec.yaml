@@ -11,13 +11,11 @@ dependencies:
 # custom <ebisu_rs dependencies>
 
   test: "any"
-  ebisu: ">=0.7.3"
+  ebisu: ">=0.7.4"
 
 # end <ebisu_rs dependencies>
 
 dev_dependencies:
-  yaml: "any"
-  browser: "any"
 
 # custom <ebisu_rs dev dependencies>
 

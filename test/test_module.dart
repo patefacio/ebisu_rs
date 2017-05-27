@@ -1,16 +1,16 @@
-library ebisu_rs.test_struct;
+library ebisu_rs.test_module;
 
-import 'package:ebisu_rs/struct.dart';
+import 'package:ebisu_rs/module.dart';
 import 'package:logging/logging.dart';
 import 'package:test/test.dart';
 
 // custom <additional imports>
 // end <additional imports>
 
-final Logger _logger = new Logger('test_struct');
+final Logger _logger = new Logger('test_module');
 
-// custom <library test_struct>
-// end <library test_struct>
+// custom <library test_module>
+// end <library test_module>
 
 void main([List<String> args]) {
   Logger.root.onRecord.listen(
@@ -18,9 +18,8 @@ void main([List<String> args]) {
   Logger.root.level = Level.OFF;
 // custom <main>
 
-  test('struct creation', () {
-    var s = struct('bam');
-    print(s);
+  test('create module', () {
+    var m = module('foo');
   });
 
 // end <main>

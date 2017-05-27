@@ -13,9 +13,8 @@ abstract class RsEntity extends Object with Entity {
 
   // custom <class RsEntity>
 
-  RsEntity(id) :
-    this.id = makeId(id);
-  
+  RsEntity(id) : this.id = makeId(id);
+
   // end <class RsEntity>
 
 }

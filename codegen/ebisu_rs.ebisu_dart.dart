@@ -15,6 +15,20 @@ main(List<String> args) {
   useDartFormatter = true;
   String here = absolute(Platform.script.toFilePath());
 
+  commonIncludes() => [
+    'package:id/id.dart',
+    'package:ebisu/ebisu.dart',
+    'package:ebisu_rs/entity.dart',
+  ];
+
+  commonFeatures(cls) {
+    cls
+      ..extend = 'RsEntity'
+      ..withCustomBlock((blk) => blk.snippets.add('${cls.name}(id) : super(id);'))
+      ..members.add(member('id')..doc = 'Id for ${cls.name}'..type = 'Id');
+  }
+
+
   _topDir = dirname(dirname(here));
   final purpose = 'Support for generating rust code';
   System ebisuRs = system('ebisu_rs')
@@ -29,6 +43,12 @@ main(List<String> args) {
     ..testLibraries = [
       library('test_struct')
       ..imports = [ 'package:ebisu_rs/struct.dart' ],
+      library('test_repo')
+      ..imports = [ 'package:ebisu_rs/repo.dart' ],
+      library('test_crate')
+      ..imports = [ 'package:ebisu_rs/crate.dart' ],
+      library('test_module')
+      ..imports = [ 'package:ebisu_rs/module.dart' ],
     ]
     ..libraries = [
       library('ebisu_rs')
@@ -53,25 +73,54 @@ main(List<String> args) {
         ]
       ],
 
-      library('module'),
+      library('repo')
+      ..imports = commonIncludes()
+      ..imports.addAll([
+        'package:ebisu_rs/crate.dart',
+      ])
+      ..classes = [
+        class_('repo')
+        ..withClass(commonFeatures)
+        ..members = [
+          member('crates')..type = 'List<Crate>'..init = [],
+        ]
+      ],
+      
+      library('crate')
+      ..imports = commonIncludes()
+      ..imports.addAll([
+        'package:ebisu_rs/module.dart',
+      ])
+      ..classes = [
+        class_('crate')
+        ..withClass(commonFeatures)
+        ..members = [
+          member('root_module')..type = 'Module',
+        ],
+      ],
+
+      library('module')
+      ..imports = commonIncludes()
+      ..classes = [
+        class_('module')
+        ..withClass(commonFeatures)
+        ..members.addAll([
+          member('modules')..type = 'List<Module>'..init = [],
+        ])
+      ],
       library('struct')
-      ..imports = [
-        'package:id/id.dart',
-        'package:ebisu/ebisu.dart',
-        'package:ebisu_rs/entity.dart',
-      ]
+      ..imports = commonIncludes()
       ..classes = [
         class_('member')
+        ..withClass(commonFeatures)        
         ..members = [
-          member('id'),
           member('type'),
         ],
         class_('struct')
-        ..extend = 'RsEntity'
-        ..members = [
-          member('id'),
+        ..withClass(commonFeatures)
+        ..members.addAll([
           member('members')..type = 'List<Member>'..init = [],
-        ]
+        ])
         
       ]
     ];

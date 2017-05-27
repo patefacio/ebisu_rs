@@ -7,25 +7,24 @@ import 'package:id/id.dart';
 // custom <additional imports>
 // end <additional imports>
 
-class Member {
-  String id;
+class Member extends RsEntity {
   String type;
 
   // custom <class Member>
   // end <class Member>
 
+  Member(id) : super(id);
 }
 
 class Struct extends RsEntity {
-  String id;
+  /// Id for Struct
+  Id id;
   List<Member> members = [];
 
   // custom <class Struct>
-
-  Struct(id) : super(id);
-
   // end <class Struct>
 
+  Struct(id) : super(id);
 }
 
 // custom <library struct>
