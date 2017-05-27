@@ -15,10 +15,6 @@ main(List<String> args) {
   useDartFormatter = true;
   String here = absolute(Platform.script.toFilePath());
 
-  makeCtor(klass) => klass.withCustomBlock((blk) => blk.snippets.add('''
-${klass.name}(id) : super(id);
-'''));
-  
   _topDir = dirname(dirname(here));
   final purpose = 'Support for generating rust code';
   System ebisuRs = system('ebisu_rs')
@@ -32,7 +28,7 @@ ${klass.name}(id) : super(id);
     ]
     ..testLibraries = [
       library('test_struct')
-      ..imports = [ 'package:ebisu_rs/rs_struct.dart' ],
+      ..imports = [ 'package:ebisu_rs/struct.dart' ],
     ]
     ..libraries = [
       library('ebisu_rs')
@@ -40,11 +36,29 @@ ${klass.name}(id) : super(id);
       ..imports = [
       ],
 
-      library('rs_module'),
-      library('rs_struct')
+      library('entity')
       ..imports = [
         'package:id/id.dart',
         'package:ebisu/ebisu.dart',
+      ]
+      ..classes = [
+        class_('rs_entity')
+        ..doc = 'Rust entity'
+        ..mixins = [ 'Entity' ]
+        ..isAbstract = true
+        ..members = [
+          member('id')
+          ..doc = 'Id for the [RsEntity]'
+          ..type = 'Id',
+        ]
+      ],
+
+      library('module'),
+      library('struct')
+      ..imports = [
+        'package:id/id.dart',
+        'package:ebisu/ebisu.dart',
+        'package:ebisu_rs/entity.dart',
       ]
       ..classes = [
         class_('member')
@@ -53,9 +67,7 @@ ${klass.name}(id) : super(id);
           member('type'),
         ],
         class_('struct')
-        ..extend = 'Entity'
-        ..hasCtorSansNew = true
-        ..withClass(makeCtor)
+        ..extend = 'RsEntity'
         ..members = [
           member('id'),
           member('members')..type = 'List<Member>'..init = [],
