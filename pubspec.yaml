@@ -9,6 +9,10 @@ environment:
 dependencies:
 
 # custom <ebisu_rs dependencies>
+
+  test: "any"
+  ebisu: ">=0.7.3"
+
 # end <ebisu_rs dependencies>
 
 dev_dependencies:
@@ -16,6 +20,7 @@ dev_dependencies:
   browser: "any"
 
 # custom <ebisu_rs dev dependencies>
+
 # end <ebisu_rs dev dependencies>
 
 dependency_overrides:

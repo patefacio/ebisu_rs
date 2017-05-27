@@ -15,9 +15,12 @@ main(List<String> args) {
   useDartFormatter = true;
   String here = absolute(Platform.script.toFilePath());
 
+  makeCtor(klass) => klass.withCustomBlock((blk) => blk.snippets.add('''
+${klass.name}(id) : super(id);
+'''));
+  
   _topDir = dirname(dirname(here));
   final purpose = 'Support for generating rust code';
-  useDartFormatter = true;
   System ebisuRs = system('ebisu_rs')
     ..license = 'boost'
     ..pubSpec.homepage = 'https://github.com/patefacio/ebisu_rs'
@@ -26,6 +29,39 @@ main(List<String> args) {
     ..rootPath = _topDir
     ..doc = purpose
     ..scripts = [
+    ]
+    ..testLibraries = [
+      library('test_struct')
+      ..imports = [ 'package:ebisu_rs/rs_struct.dart' ],
+    ]
+    ..libraries = [
+      library('ebisu_rs')
+      ..includesLogger = true
+      ..imports = [
+      ],
+
+      library('rs_module'),
+      library('rs_struct')
+      ..imports = [
+        'package:id/id.dart',
+        'package:ebisu/ebisu.dart',
+      ]
+      ..classes = [
+        class_('member')
+        ..members = [
+          member('id'),
+          member('type'),
+        ],
+        class_('struct')
+        ..extend = 'Entity'
+        ..hasCtorSansNew = true
+        ..withClass(makeCtor)
+        ..members = [
+          member('id'),
+          member('members')..type = 'List<Member>'..init = [],
+        ]
+        
+      ]
     ];
   
   ebisuRs.generate(generateDrudge:false);
