@@ -8,12 +8,13 @@ import 'package:id/id.dart';
 // end <additional imports>
 
 class Member extends RsEntity {
+  /// Type of the member
   String type;
 
   // custom <class Member>
 
   toString() => '$id $type';
-  
+
   // end <class Member>
 
   Member(id) : super(id);
@@ -24,11 +25,8 @@ class Struct extends RsEntity {
 
   // custom <class Struct>
 
+  toString() => brCompact([id, members]);
 
-  toString() => brCompact([
-    id,
-    members]);
-  
   // end <class Struct>
 
   Struct(id) : super(id);

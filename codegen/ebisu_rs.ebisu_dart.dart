@@ -113,7 +113,7 @@ main(List<String> args) {
         class_('member')
         ..withClass(commonFeatures)        
         ..members = [
-          member('type'),
+          member('type')..doc = 'Type of the member',
         ],
         class_('struct')
         ..withClass(commonFeatures)
