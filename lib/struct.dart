@@ -13,6 +13,8 @@ class Member extends RsEntity {
 
   // custom <class Member>
 
+  get children => new Iterable.empty();
+
   toString() => '$id $type';
 
   // end <class Member>
@@ -24,6 +26,8 @@ class Struct extends RsEntity {
   List<Member> members = [];
 
   // custom <class Struct>
+
+  get children => []..addAll(members);
 
   toString() => brCompact([id, members]);
 

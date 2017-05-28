@@ -13,6 +13,10 @@ class Crate extends RsEntity {
 
   // custom <class Crate>
 
+  get children => [rootModule];
+
+  toString() => brCompact(['Crate($id)', indentBlock(rootModule.toString())]);
+
   // end <class Crate>
 
   Crate(id) : super(id);

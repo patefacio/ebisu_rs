@@ -12,6 +12,9 @@ class Repo extends RsEntity {
   List<Crate> crates = [];
 
   // custom <class Repo>
+
+  get children => []..addAll(crates);
+
   // end <class Repo>
 
   Repo(id) : super(id);

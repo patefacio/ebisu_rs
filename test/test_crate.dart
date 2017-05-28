@@ -5,6 +5,9 @@ import 'package:logging/logging.dart';
 import 'package:test/test.dart';
 
 // custom <additional imports>
+
+import 'package:ebisu_rs/module.dart';
+
 // end <additional imports>
 
 final Logger _logger = new Logger('test_crate');
@@ -17,5 +20,14 @@ void main([List<String> args]) {
       (LogRecord r) => print("${r.loggerName} [${r.level}]:\t${r.message}"));
   Logger.root.level = Level.OFF;
 // custom <main>
+
+  test('crate creation', () {
+    var c = crate('crate')
+      ..rootModule = (module('root_mod')
+        ..modules = [module('sub_mod_1'), module('sub_mod_2')]);
+
+    print(c);
+  });
+
 // end <main>
 }

@@ -12,6 +12,10 @@ class Module extends RsEntity {
 
   // custom <class Module>
 
+  get children => []..addAll(modules);
+
+  toString() => brCompact(['Module($id)', indentBlock(brCompact(modules))]);
+
   // end <class Module>
 
   Module(id) : super(id);
