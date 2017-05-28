@@ -1,20 +1,16 @@
-library ebisu_rs.test_repo;
+library ebisu_rs.test_ebisu_rs;
 
-import 'package:ebisu_rs/repo.dart';
+import 'package:ebisu_rs/ebisu_rs.dart';
 import 'package:logging/logging.dart';
 import 'package:test/test.dart';
 
 // custom <additional imports>
-
-import 'package:ebisu_rs/crate.dart';
-import 'package:ebisu_rs/module.dart';
-
 // end <additional imports>
 
-final Logger _logger = new Logger('test_repo');
+final Logger _logger = new Logger('test_ebisu_rs');
 
-// custom <library test_repo>
-// end <library test_repo>
+// custom <library test_ebisu_rs>
+// end <library test_ebisu_rs>
 
 void main([List<String> args]) {
   Logger.root.onRecord.listen(
@@ -22,7 +18,7 @@ void main([List<String> args]) {
   Logger.root.level = Level.OFF;
 // custom <main>
 
-  test('repo creation', () {
+  test('export test', () {
     var r = repo('repo')
       ..crates = [
         crate('crate')

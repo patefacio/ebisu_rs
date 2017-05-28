@@ -47,13 +47,18 @@ main(List<String> args) {
       ..imports = [ 'package:ebisu_rs/crate.dart' ],
       library('test_module')
       ..imports = [ 'package:ebisu_rs/module.dart' ],
+      library('test_ebisu_rs')
+      ..imports = [ 'package:ebisu_rs/ebisu_rs.dart' ],
     ]
     ..libraries = [
 
       library('ebisu_rs')
-      ..includesLogger = true
-      ..imports = [
-      ],
+      ..importAndExportAll([
+        'package:ebisu_rs/repo.dart',
+        'package:ebisu_rs/crate.dart',
+        'package:ebisu_rs/module.dart',
+        'package:ebisu_rs/struct.dart',
+      ]),
 
       library('entity')
       ..imports = [
@@ -75,13 +80,16 @@ main(List<String> args) {
       library('repo')
       ..imports = commonIncludes()
       ..imports.addAll([
+        'dart:io',
         'package:ebisu_rs/crate.dart',
+        'package:path/path.dart',
       ])
       ..classes = [
         class_('repo')
         ..withClass(commonFeatures)
         ..members = [
           member('crates')..type = 'List<Crate>'..init = [],
+          member('root_path')..access = WO,
         ]
       ],
       
