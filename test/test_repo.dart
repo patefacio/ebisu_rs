@@ -17,15 +17,17 @@ final Logger _logger = new Logger('test_repo');
 // end <library test_repo>
 
 void main([List<String> args]) {
-  Logger.root.onRecord.listen(
-      (LogRecord r) => print("${r.loggerName} [${r.level}]:\t${r.message}"));
-  Logger.root.level = Level.OFF;
+  if (args?.isEmpty ?? false) {
+    Logger.root.onRecord.listen(
+        (LogRecord r) => print("${r.loggerName} [${r.level}]:\t${r.message}"));
+    Logger.root.level = Level.OFF;
+  }
 // custom <main>
 
   test('repo creation', () {
-    var r = repo('repo')
+    var r = repo('repo_1')
       ..crates = [
-        crate('crate')
+        crate('crate_1')
           ..rootModule = (module('root_mod')
             ..modules = [module('sub_mod_1'), module('sub_mod_2')])
       ];

@@ -10,16 +10,20 @@ import 'package:test/test.dart';
 final Logger _logger = new Logger('test_ebisu_rs');
 
 // custom <library test_ebisu_rs>
+
+
 // end <library test_ebisu_rs>
 
 void main([List<String> args]) {
-  Logger.root.onRecord.listen(
-      (LogRecord r) => print("${r.loggerName} [${r.level}]:\t${r.message}"));
-  Logger.root.level = Level.OFF;
+  if (args?.isEmpty ?? false) {
+    Logger.root.onRecord.listen(
+        (LogRecord r) => print("${r.loggerName} [${r.level}]:\t${r.message}"));
+    Logger.root.level = Level.OFF;
+  }
 // custom <main>
 
   test('export test', () {
-    var r = repo('repo')
+    var r = repo('sample_repo')
       ..crates = [
         crate('crate')
           ..rootModule = (module('root_mod')
@@ -27,6 +31,7 @@ void main([List<String> args]) {
       ];
 
     print(r);
+    r.generate();
   });
 
 // end <main>

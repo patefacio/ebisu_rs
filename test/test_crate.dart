@@ -13,12 +13,15 @@ import 'package:ebisu_rs/module.dart';
 final Logger _logger = new Logger('test_crate');
 
 // custom <library test_crate>
+
 // end <library test_crate>
 
 void main([List<String> args]) {
-  Logger.root.onRecord.listen(
-      (LogRecord r) => print("${r.loggerName} [${r.level}]:\t${r.message}"));
-  Logger.root.level = Level.OFF;
+  if (args?.isEmpty ?? false) {
+    Logger.root.onRecord.listen(
+        (LogRecord r) => print("${r.loggerName} [${r.level}]:\t${r.message}"));
+    Logger.root.level = Level.OFF;
+  }
 // custom <main>
 
   test('crate creation', () {

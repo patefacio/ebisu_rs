@@ -5,10 +5,13 @@ import 'package:ebisu/ebisu.dart';
 import 'package:ebisu_rs/crate.dart';
 import 'package:ebisu_rs/entity.dart';
 import 'package:id/id.dart';
+import 'package:logging/logging.dart';
 import 'package:path/path.dart';
 
 // custom <additional imports>
 // end <additional imports>
+
+final Logger _logger = new Logger('repo');
 
 class Repo extends RsEntity {
   List<Crate> crates = [];
@@ -23,6 +26,11 @@ class Repo extends RsEntity {
 
   toString() =>
       brCompact(['Repo($id:$rootPath)', indentBlock(brCompact(crates))]);
+
+  generate() {
+    _logger.info('Generating repo $id');
+    crates.forEach((crate) => crate.generate());
+  }
 
   // end <class Repo>
 

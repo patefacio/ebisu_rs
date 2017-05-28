@@ -4,9 +4,12 @@ import 'package:ebisu/ebisu.dart';
 import 'package:ebisu_rs/entity.dart';
 import 'package:ebisu_rs/module.dart';
 import 'package:id/id.dart';
+import 'package:logging/logging.dart';
 
 // custom <additional imports>
 // end <additional imports>
+
+final Logger _logger = new Logger('crate');
 
 class Crate extends RsEntity {
   Module rootModule;
@@ -16,6 +19,11 @@ class Crate extends RsEntity {
   get children => [rootModule];
 
   toString() => brCompact(['Crate($id)', indentBlock(rootModule.toString())]);
+
+  generate() {
+    _logger.info('Generating crate $id');
+    rootModule.generate();
+  }
 
   // end <class Crate>
 

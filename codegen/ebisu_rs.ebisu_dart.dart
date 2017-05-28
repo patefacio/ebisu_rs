@@ -84,6 +84,7 @@ main(List<String> args) {
         'package:ebisu_rs/crate.dart',
         'package:path/path.dart',
       ])
+      ..includesLogger = true
       ..classes = [
         class_('repo')
         ..withClass(commonFeatures)
@@ -95,6 +96,7 @@ main(List<String> args) {
       
       library('crate')
       ..imports = commonIncludes()
+      ..includesLogger = true
       ..imports.addAll([
         'package:ebisu_rs/module.dart',
       ])
@@ -108,6 +110,7 @@ main(List<String> args) {
 
       library('module')
       ..imports = commonIncludes()
+      ..includesLogger = true
       ..classes = [
         class_('module')
         ..withClass(commonFeatures)

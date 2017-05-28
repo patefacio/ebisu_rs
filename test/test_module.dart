@@ -10,16 +10,20 @@ import 'package:test/test.dart';
 final Logger _logger = new Logger('test_module');
 
 // custom <library test_module>
+
 // end <library test_module>
 
 void main([List<String> args]) {
-  Logger.root.onRecord.listen(
-      (LogRecord r) => print("${r.loggerName} [${r.level}]:\t${r.message}"));
-  Logger.root.level = Level.OFF;
+  if (args?.isEmpty ?? false) {
+    Logger.root.onRecord.listen(
+        (LogRecord r) => print("${r.loggerName} [${r.level}]:\t${r.message}"));
+    Logger.root.level = Level.OFF;
+  }
 // custom <main>
 
   test('create module', () {
     var m = module('foo');
+    print(m);
   });
 
 // end <main>
