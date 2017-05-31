@@ -14,14 +14,22 @@ import 'package:path/path.dart';
 final Logger _logger = new Logger('crate');
 
 class Crate extends RsEntity implements HasFilePath {
+  CrateType crateType;
   Module rootModule;
   String get filePath => _filePath;
 
   // custom <class Crate>
 
+  Crate(id, [crateType = CrateType.libCrate])
+      : super(id),
+        crateType = crateType,
+        rootModule = module(id);
+
+  Module withRootModule(f(Module module)) => f(rootModule);
+  
   get children => [rootModule];
 
-  toString() => brCompact(['Crate($name)', indentBlock(rootModule.toString())]);
+  toString() => 'crate($name)';
 
   onOwnershipEstablished() {
     _filePath = join((owner as Repo).rootPath, id.snake);
@@ -37,8 +45,6 @@ class Crate extends RsEntity implements HasFilePath {
   get name => id.snake;
 
   // end <class Crate>
-
-  Crate(id) : super(id);
 
   String _filePath;
 }

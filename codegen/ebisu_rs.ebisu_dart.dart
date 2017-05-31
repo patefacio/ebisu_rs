@@ -61,10 +61,18 @@ main(List<String> args) {
       ]),
 
       library('entity')
+            ..doc = '''
+Support for rust entity *recursive entity graph*.
+
+All rust named items are *RsEntity* instances.'''
       ..imports = [
         'package:id/id.dart',
         'package:ebisu/ebisu.dart',
         'package:path/path.dart',
+      ]
+      ..enums = [
+        enum_('crate_type')
+        ..values = [ 'lib_crate', 'app_crate' ]
       ]
       ..classes = [
         class_('rs_entity')
@@ -85,6 +93,7 @@ main(List<String> args) {
       ],
 
       library('repo')
+      ..doc = 'Library supporting generation of a rust repo'
       ..imports = commonIncludes()
       ..imports.addAll([
         'dart:io',
@@ -112,9 +121,10 @@ main(List<String> args) {
       ])
       ..classes = [
         class_('crate')
+        ..extend = 'RsEntity'
         ..implement = [ 'HasFilePath' ]
-        ..withClass(commonFeatures)
         ..members = [
+          member('crate_type')..type = 'CrateType',
           member('root_module')..type = 'Module',
           member('file_path')..access = RO,
         ],
@@ -125,6 +135,7 @@ main(List<String> args) {
       ..imports.addAll([
         'package:path/path.dart',
         'package:ebisu_rs/struct.dart',
+        'package:ebisu_rs/crate.dart',
       ])
       ..includesLogger = true
       ..classes = [

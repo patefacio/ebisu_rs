@@ -28,9 +28,10 @@ void main([List<String> args]) {
   test('export test', () {
     var r = repo('sample_repo')
       ..crates = [
+        ///// Crate 1
         crate('crate_1')
           ..doc = 'This is the first crate'
-          ..rootModule = (module('c1_root_mod')
+          ..withRootModule((rootModule) => rootModule
             ..doc = 'The root module'
             ..structs = [
               struct('rm_s1')
@@ -40,16 +41,25 @@ First struct in root module.
 # The first struct is most important
 ## All the rest are secondary
 '''
-                ..members = [member('rm_s1_m1')],
+                ..members = [
+                  member('rm_s1_m1')
+                    ..doc = 'First member'
+                    ..type = 'i32'
+                ],
               struct('rm_s2')
                 ..doc = 'Second struct in root module'
                 ..members = [member('rm_s2_m1'), member('rm_s2_m2')],
             ]
             ..modules = [module('sub_mod_1'), module('sub_mod_2')]),
+
+        //// Crate 2
         crate('crate_2')
           ..doc = 'This is the second crate'
-          ..rootModule = (module('c2_root_mod')
-            ..modules = [module('sub_mod1'), module('sub_mod2')])
+          ..withRootModule((rootModule) => rootModule
+            ..modules = [
+              module('sub_mod1')..isInline = true,
+              module('sub_mod2')
+            ])
       ];
 
     r.rootPath = join(r.rootPath, 'sample_repo');

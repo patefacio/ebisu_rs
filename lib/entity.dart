@@ -1,3 +1,6 @@
+/// Support for rust entity *recursive entity graph*.
+///
+/// All rust named items are *RsEntity* instances.
 library ebisu_rs.entity;
 
 import 'package:ebisu/ebisu.dart';
@@ -6,6 +9,8 @@ import 'package:path/path.dart';
 
 // custom <additional imports>
 // end <additional imports>
+
+enum CrateType { libCrate, appCrate }
 
 /// Rust entity
 abstract class RsEntity extends Object with Entity {

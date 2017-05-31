@@ -1,6 +1,7 @@
 library ebisu_rs.module;
 
 import 'package:ebisu/ebisu.dart';
+import 'package:ebisu_rs/crate.dart';
 import 'package:ebisu_rs/entity.dart';
 import 'package:ebisu_rs/struct.dart';
 import 'package:id/id.dart';
@@ -22,28 +23,37 @@ class Module extends RsEntity implements HasFilePath, HasCode {
 
   get children => []..addAll(modules);
 
-  toString() => brCompact([
-        'Module($name:${isInline?"inline":"outline"})',
-        indentBlock(brCompact(modules))
-      ]);
+  toString() => 'mod($name:${isInline?"inline":"outline"})';
 
   onOwnershipEstablished() {
-    _filePath = join((owner as HasFilePath).filePath, id.snake);
+    bool ownerIsCrate = owner is Crate;
+    final ownerPath = (owner as HasFilePath).filePath;
+
+    _filePath = ownerIsCrate ? ownerPath : join(ownerPath, id.snake);
     _logger.info("Ownership of module($id) established in $filePath");
   }
 
   generate() {
     _logger.info('Generating module $id:$filePath:$detailedPath');
-    var code = brCompact(structs.map((s) => s.code));
+
     if (code.isNotEmpty) {
-      print('Mod code\n$code');
+      print(code);
     }
+
+    progeny.where((child) => (child as Module).isInline).forEach((module) {
+      _logger.info('Found inline module ${module.entityPath}');
+    });
+
     modules.forEach((module) => module.generate());
   }
 
   get name => id.snake;
 
-  get code => toString();
+  get code => brCompact([
+        isInline ? 'mod $name {' : null,
+        indentBlock(br(structs.map((s) => s.code))),
+        isInline ? '}' : null,
+      ]);
 
   // end <class Module>
 

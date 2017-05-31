@@ -1,3 +1,4 @@
+/// Library supporting generation of a rust repo
 library ebisu_rs.repo;
 
 import 'dart:io';

@@ -15,13 +15,14 @@ class Member extends RsEntity implements HasCode {
 
   get children => new Iterable.empty();
 
-  toString() => '$name $type';
+  toString() => 'member($name:$type)';
 
   get name => id.snake;
 
-  get code => '''
-$name: $type;
-''';
+  get code => brCompact([
+        tripleSlashComment(doc ?? 'TODO: comment'),
+        '$name: $type,',
+      ]);
 
   // end <class Member>
 
@@ -35,14 +36,14 @@ class Struct extends RsEntity implements HasCode {
 
   get children => []..addAll(members);
 
-  toString() => brCompact(['Struct($name)', indentBlock(brCompact(members))]);
+  toString() => 'struct($name)';
 
   get name => id.capCamel;
 
   get code => brCompact([
         tripleSlashComment(doc),
         'struct $name {',
-        indentBlock(brCompact(members.map((m) => m.code))),
+        indentBlock(br(members.map((m) => m.code))),
         '}'
       ]);
 
