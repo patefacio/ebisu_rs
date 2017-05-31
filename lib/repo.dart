@@ -13,6 +13,7 @@ import 'package:path/path.dart';
 
 final Logger _logger = new Logger('repo');
 
+/// A rust repo consisting of one or more crates.
 class Repo extends RsEntity {
   List<Crate> crates = [];
   set rootPath(String rootPath) => _rootPath = rootPath;
@@ -28,7 +29,9 @@ class Repo extends RsEntity {
       brCompact(['Repo($id:$rootPath)', indentBlock(brCompact(crates))]);
 
   generate() {
-    _logger.info('Generating repo $id');
+    owner = null;
+    new Directory(_rootPath)..createSync(recursive: true);
+    _logger.info('Generating repo $id:$_rootPath');
     crates.forEach((crate) => crate.generate());
   }
 

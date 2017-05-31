@@ -5,12 +5,14 @@ import 'package:logging/logging.dart';
 import 'package:test/test.dart';
 
 // custom <additional imports>
+
+import 'package:path/path.dart';
+
 // end <additional imports>
 
 final Logger _logger = new Logger('test_ebisu_rs');
 
 // custom <library test_ebisu_rs>
-
 
 // end <library test_ebisu_rs>
 
@@ -22,14 +24,35 @@ void main([List<String> args]) {
   }
 // custom <main>
 
+  Logger.root.level = Level.INFO;
   test('export test', () {
     var r = repo('sample_repo')
       ..crates = [
-        crate('crate')
-          ..rootModule = (module('root_mod')
-            ..modules = [module('sub_mod_1'), module('sub_mod_2')])
+        crate('crate_1')
+          ..doc = 'This is the first crate'
+          ..rootModule = (module('c1_root_mod')
+            ..doc = 'The root module'
+            ..structs = [
+              struct('rm_s1')
+                ..doc = '''
+First struct in root module.
+
+# The first struct is most important
+## All the rest are secondary
+'''
+                ..members = [member('rm_s1_m1')],
+              struct('rm_s2')
+                ..doc = 'Second struct in root module'
+                ..members = [member('rm_s2_m1'), member('rm_s2_m2')],
+            ]
+            ..modules = [module('sub_mod_1'), module('sub_mod_2')]),
+        crate('crate_2')
+          ..doc = 'This is the second crate'
+          ..rootModule = (module('c2_root_mod')
+            ..modules = [module('sub_mod1'), module('sub_mod2')])
       ];
 
+    r.rootPath = join(r.rootPath, 'sample_repo');
     print(r);
     r.generate();
   });

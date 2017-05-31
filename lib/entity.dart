@@ -2,6 +2,7 @@ library ebisu_rs.entity;
 
 import 'package:ebisu/ebisu.dart';
 import 'package:id/id.dart';
+import 'package:path/path.dart';
 
 // custom <additional imports>
 // end <additional imports>
@@ -16,6 +17,24 @@ abstract class RsEntity extends Object with Entity {
   RsEntity(id) : this.id = makeId(id);
 
   // end <class RsEntity>
+
+}
+
+abstract class HasFilePath {
+  // custom <class HasFilePath>
+
+  String get filePath;
+
+  // end <class HasFilePath>
+
+}
+
+abstract class HasCode {
+  // custom <class HasCode>
+
+  String get code;
+
+  // end <class HasCode>
 
 }
 

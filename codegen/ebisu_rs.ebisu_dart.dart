@@ -64,6 +64,7 @@ main(List<String> args) {
       ..imports = [
         'package:id/id.dart',
         'package:ebisu/ebisu.dart',
+        'package:path/path.dart',
       ]
       ..classes = [
         class_('rs_entity')
@@ -74,7 +75,13 @@ main(List<String> args) {
           member('id')
           ..doc = 'Id for the [RsEntity]'
           ..type = 'Id',
-        ]
+        ],
+
+        class_('has_file_path')
+        ..isAbstract = true,
+
+        class_('has_code')
+        ..isAbstract = true,
       ],
 
       library('repo')
@@ -87,6 +94,7 @@ main(List<String> args) {
       ..includesLogger = true
       ..classes = [
         class_('repo')
+        ..doc = 'A rust repo consisting of one or more crates.'
         ..withClass(commonFeatures)
         ..members = [
           member('crates')..type = 'List<Crate>'..init = [],
@@ -99,34 +107,48 @@ main(List<String> args) {
       ..includesLogger = true
       ..imports.addAll([
         'package:ebisu_rs/module.dart',
+        'package:ebisu_rs/repo.dart',
+        'package:path/path.dart',
       ])
       ..classes = [
         class_('crate')
+        ..implement = [ 'HasFilePath' ]
         ..withClass(commonFeatures)
         ..members = [
           member('root_module')..type = 'Module',
+          member('file_path')..access = RO,
         ],
       ],
 
       library('module')
       ..imports = commonIncludes()
+      ..imports.addAll([
+        'package:path/path.dart',
+        'package:ebisu_rs/struct.dart',
+      ])
       ..includesLogger = true
       ..classes = [
         class_('module')
+        ..implement = [ 'HasFilePath', 'HasCode' ]
         ..withClass(commonFeatures)
         ..members.addAll([
+          member('file_path')..access = RO,
           member('modules')..type = 'List<Module>'..init = [],
+          member('structs')..type = 'List<Struct>'..init = [],
+          member('is_inline')..init = false,
         ])
       ],
       library('struct')
       ..imports = commonIncludes()
       ..classes = [
         class_('member')
+        ..implement = [ 'HasCode' ]
         ..withClass(commonFeatures)        
         ..members = [
-          member('type')..doc = 'Type of the member',
+          member('type')..doc = 'Type of the member'..init = 'String',
         ],
         class_('struct')
+        ..implement = [ 'HasCode' ]
         ..withClass(commonFeatures)
         ..members.addAll([
           member('members')..type = 'List<Member>'..init = [],
@@ -136,8 +158,8 @@ main(List<String> args) {
 
     ];
 
-  _logger.info("BOO");
-  ebisuRs.generate(generateDrudge:false);
+  _logger.info("BOOd");
+  ebisuRs.generate(generateDrudge:true);
 
   print('''
 **** NON GENERATED FILES ****

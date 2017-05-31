@@ -6,7 +6,7 @@ import 'test_module.dart' as test_module;
 import 'test_ebisu_rs.dart' as test_ebisu_rs;
 
 void main() {
-  Logger.root.level = Level.INFO;
+  Logger.root.level = Level.OFF;
   Logger.root.onRecord.listen((LogRecord rec) {
     print('${rec.level.name}: ${rec.time}: ${rec.message}');
   });
