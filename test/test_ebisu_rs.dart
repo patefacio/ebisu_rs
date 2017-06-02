@@ -56,10 +56,7 @@ First struct in root module.
         crate('crate_2')
           ..doc = 'This is the second crate'
           ..withRootModule((rootModule) => rootModule
-            ..modules = [
-              module('sub_mod1')..isInline = true,
-              module('sub_mod2')
-            ])
+            ..modules = [module('sub_mod1', inlineModule), module('sub_mod2')])
       ];
 
     r.rootPath = join(r.rootPath, 'sample_repo');

@@ -12,6 +12,32 @@ import 'package:path/path.dart';
 
 enum CrateType { libCrate, appCrate }
 
+/// Convenient access to CrateType.libCrate with *libCrate* see [CrateType].
+///
+const CrateType libCrate = CrateType.libCrate;
+
+/// Convenient access to CrateType.appCrate with *appCrate* see [CrateType].
+///
+const CrateType appCrate = CrateType.appCrate;
+
+enum ModuleType { rootModule, inlineModule, fileModule, directoryModule }
+
+/// Convenient access to ModuleType.rootModule with *rootModule* see [ModuleType].
+///
+const ModuleType rootModule = ModuleType.rootModule;
+
+/// Convenient access to ModuleType.inlineModule with *inlineModule* see [ModuleType].
+///
+const ModuleType inlineModule = ModuleType.inlineModule;
+
+/// Convenient access to ModuleType.fileModule with *fileModule* see [ModuleType].
+///
+const ModuleType fileModule = ModuleType.fileModule;
+
+/// Convenient access to ModuleType.directoryModule with *directoryModule* see [ModuleType].
+///
+const ModuleType directoryModule = ModuleType.directoryModule;
+
 /// Rust entity
 abstract class RsEntity extends Object with Entity {
   /// Id for the [RsEntity]

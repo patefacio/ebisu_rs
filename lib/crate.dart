@@ -20,13 +20,13 @@ class Crate extends RsEntity implements HasFilePath {
 
   // custom <class Crate>
 
-  Crate(id, [crateType = CrateType.libCrate])
+  Crate(id, [crateType = libCrate])
       : super(id),
         crateType = crateType,
-        rootModule = module(id);
+        rootModule = new Module(id, ModuleType.rootModule);
 
   Module withRootModule(f(Module module)) => f(rootModule);
-  
+
   get children => [rootModule];
 
   toString() => 'crate($name)';
@@ -37,10 +37,13 @@ class Crate extends RsEntity implements HasFilePath {
   }
 
   generate() {
-    var cratePath = join((root as Repo).rootPath, id.snake);
-    _logger.info('Generating crate $id into $cratePath');
+    _logger.info('Generating crate $id into $filePath');
     rootModule.generate();
   }
+
+  get isLib => crateType == libCrate;
+
+  get isApp => crateType == appCrate;
 
   get name => id.snake;
 

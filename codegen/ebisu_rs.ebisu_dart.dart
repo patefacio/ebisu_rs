@@ -58,6 +58,7 @@ main(List<String> args) {
         'package:ebisu_rs/crate.dart',
         'package:ebisu_rs/module.dart',
         'package:ebisu_rs/struct.dart',
+        'package:ebisu_rs/entity.dart',
       ]),
 
       library('entity')
@@ -72,7 +73,11 @@ All rust named items are *RsEntity* instances.'''
       ]
       ..enums = [
         enum_('crate_type')
-        ..values = [ 'lib_crate', 'app_crate' ]
+        ..hasLibraryScopedValues = true
+        ..values = [ 'lib_crate', 'app_crate' ],
+        enum_('module_type')
+        ..hasLibraryScopedValues = true
+        ..values = [ 'root_module', 'inline_module', 'file_module', 'directory_module' ]
       ]
       ..classes = [
         class_('rs_entity')
@@ -140,13 +145,13 @@ All rust named items are *RsEntity* instances.'''
       ..includesLogger = true
       ..classes = [
         class_('module')
+        ..extend = 'RsEntity'
         ..implement = [ 'HasFilePath', 'HasCode' ]
-        ..withClass(commonFeatures)
         ..members.addAll([
           member('file_path')..access = RO,
+          member('module_type')..type = 'ModuleType'..access = RO,
           member('modules')..type = 'List<Module>'..init = [],
           member('structs')..type = 'List<Struct>'..init = [],
-          member('is_inline')..init = false,
         ])
       ],
       library('struct')
