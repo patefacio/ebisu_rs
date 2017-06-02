@@ -95,6 +95,11 @@ All rust named items are *RsEntity* instances.'''
 
         class_('has_code')
         ..isAbstract = true,
+
+        class_('is_pub')
+        ..members = [
+          member('is_pub')..init = false,
+        ]
       ],
 
       library('repo')
@@ -147,6 +152,7 @@ All rust named items are *RsEntity* instances.'''
         class_('module')
         ..extend = 'RsEntity'
         ..implement = [ 'HasFilePath', 'HasCode' ]
+        ..mixins = [ 'IsPub' ]
         ..members.addAll([
           member('file_path')..access = RO,
           member('module_type')..type = 'ModuleType'..access = RO,
@@ -159,12 +165,14 @@ All rust named items are *RsEntity* instances.'''
       ..classes = [
         class_('member')
         ..implement = [ 'HasCode' ]
+        ..mixins = [ 'IsPub' ]
         ..withClass(commonFeatures)        
         ..members = [
           member('type')..doc = 'Type of the member'..init = 'String',
         ],
         class_('struct')
         ..implement = [ 'HasCode' ]
+        ..mixins = [ 'IsPub' ]
         ..withClass(commonFeatures)
         ..members.addAll([
           member('members')..type = 'List<Member>'..init = [],

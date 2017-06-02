@@ -13,7 +13,7 @@ import 'package:path/path.dart';
 
 final Logger _logger = new Logger('module');
 
-class Module extends RsEntity implements HasFilePath, HasCode {
+class Module extends RsEntity with IsPub implements HasFilePath, HasCode {
   String get filePath => _filePath;
   ModuleType get moduleType => _moduleType;
   List<Module> modules = [];
@@ -27,7 +27,7 @@ class Module extends RsEntity implements HasFilePath, HasCode {
 
   List<Module> get children => []..addAll(modules);
 
-  toString() => 'mod($name:${isInline?"inline":"outline"})';
+  toString() => 'mod($name:$moduleType)';
 
   onOwnershipEstablished() {
     final ownerPath = (owner as HasFilePath).filePath;
@@ -38,19 +38,12 @@ class Module extends RsEntity implements HasFilePath, HasCode {
   }
 
   generate() {
-    _logger.info('Generating module $id:$filePath:$detailedPath');
+    _logger
+        .info('Generating module $pubDecl$id:$filePath:${chomp(detailedPath)}');
 
-    String targetPath = codePath;
-
-    if (targetPath != null) mergeWithFile(code, targetPath);
-
-    if (code.isNotEmpty) {
-      print(code);
+    if (isDeclaredMod) {
+      mergeWithFile(code, codePath);
     }
-
-    progeny.where((child) => (child as Module).isInline).forEach((module) {
-      _logger.info('Found inline module ${module.entityPath}');
-    });
 
     modules.forEach((module) => module.generate());
   }
@@ -62,28 +55,49 @@ class Module extends RsEntity implements HasFilePath, HasCode {
       return join((owner as Module).filePath, name, 'mod.rs');
     } else if (isRootModule) {
       var crate = owner as Crate;
-      return join(crate.filePath, crate.isLib ? 'lib.rs' : 'app.rs');
+      return join(crate.filePath, crate.isLib ? 'lib.rs' : 'main.rs');
     }
     return null;
+  }
+
+  get _inlineCode {
+    addInlineCode(Iterable<Module> modules, List<String> guts) {
+      for (Module module in modules) {
+        _logger.info('!!!Examining ${module}');
+        if (module.isInline) {
+          guts.add('${module.pubDecl}mod ${module.name} {');
+          guts.add(module.code);
+          addInlineCode(module.modules, guts);
+          guts.add('}');
+        }
+      }
+    }
+
+    List<String> guts = [];
+    addInlineCode(modules, guts);
+    _logger.info('Done with guts:\n${indentBlock(brCompact(guts))}');
+    return brCompact(guts);
   }
 
   get isFileModule => moduleType == fileModule;
   get isDirectoryModule => moduleType == directoryModule;
   get isRootModule => moduleType == rootModule;
-
   get isInline => moduleType == inlineModule;
+  get isDeclaredMod => moduleType != inlineModule;
 
   get inlineMods => children.where((module) => module.isInline);
 
-  get declaredMods => children.where((module) => !module.isInline);
+  get declaredMods => children.where((module) => module.isDeclaredMod);
 
   get name => id.snake;
 
+  get _structDecls => br(structs.map((s) => s.code));
+
   get code => brCompact([
-        isInline ? 'mod $name {' : null,
-        indentBlock(brCompact(declaredMods.map((module) => 'mod ${module.name};'))),
-        indentBlock(br(structs.map((s) => s.code))),
-        isInline ? '}' : null,
+        brCompact(declaredMods
+            .map((module) => '${module.pubDecl}mod ${module.name};')),
+        isDeclaredMod ? _structDecls : indentBlock(_structDecls),
+        _inlineCode,
       ]);
 
   // end <class Module>

@@ -48,15 +48,37 @@ First struct in root module.
                 ],
               struct('rm_s2')
                 ..doc = 'Second struct in root module'
-                ..members = [member('rm_s2_m1'), member('rm_s2_m2')],
+                ..members = [
+                  member('rm_s2_m1'),
+                  member('rm_s2_m2')..isPub = true
+                ],
             ]
             ..modules = [module('sub_mod_1'), module('sub_mod_2')]),
 
         //// Crate 2
-        crate('crate_2')
+        crate('crate_2', appCrate)
           ..doc = 'This is the second crate'
           ..withRootModule((rootModule) => rootModule
-            ..modules = [module('sub_mod1', inlineModule), module('sub_mod2')])
+            ..modules = [
+              // sub_mod1
+              module('sub_mod1', inlineModule)
+                ..isPub = true
+                ..structs = [struct('sm1_1'), struct('sm1_2')],
+              // sub_mod2
+              module('sub_mod2', fileModule)
+                ..structs = [struct('sm2_1')..isPub = true, struct('sm2_2')],
+              // sub_mod3
+              module('sub_mod3', directoryModule)
+                ..isPub = true
+                ..structs = [struct('sm3_1'), struct('sm3_2')]
+                ..modules = [
+                  module('sub_module_3_dot_1', inlineModule)
+                    ..isPub = true
+                    ..modules = [
+                      module('sub_module_3_dot_1_dot_1', inlineModule)
+                    ]
+                ],
+            ]),
       ];
 
     r.rootPath = join(r.rootPath, 'sample_repo');

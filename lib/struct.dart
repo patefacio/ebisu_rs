@@ -7,7 +7,7 @@ import 'package:id/id.dart';
 // custom <additional imports>
 // end <additional imports>
 
-class Member extends RsEntity implements HasCode {
+class Member extends RsEntity with IsPub implements HasCode {
   /// Type of the member
   String type = 'String';
 
@@ -20,8 +20,8 @@ class Member extends RsEntity implements HasCode {
   get name => id.snake;
 
   get code => brCompact([
-        tripleSlashComment(doc ?? 'TODO: comment'),
-        '$name: $type,',
+        tripleSlashComment(doc ?? 'TODO: comment member'),
+        '$pubDecl$name: $type,',
       ]);
 
   // end <class Member>
@@ -29,7 +29,7 @@ class Member extends RsEntity implements HasCode {
   Member(id) : super(id);
 }
 
-class Struct extends RsEntity implements HasCode {
+class Struct extends RsEntity with IsPub implements HasCode {
   List<Member> members = [];
 
   // custom <class Struct>
@@ -41,8 +41,8 @@ class Struct extends RsEntity implements HasCode {
   get name => id.capCamel;
 
   get code => brCompact([
-        tripleSlashComment(doc),
-        'struct $name {',
+        tripleSlashComment(doc ?? 'TODO: comment struct'),
+        '${pubDecl}struct $name {',
         indentBlock(br(members.map((m) => m.code))),
         '}'
       ]);

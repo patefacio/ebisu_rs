@@ -69,5 +69,16 @@ abstract class HasCode {
 
 }
 
+class IsPub {
+  bool isPub = false;
+
+  // custom <class IsPub>
+
+  get pubDecl => isPub ? 'pub ' : '';
+
+  // end <class IsPub>
+
+}
+
 // custom <library entity>
 // end <library entity>

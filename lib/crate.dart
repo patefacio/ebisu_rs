@@ -54,6 +54,6 @@ class Crate extends RsEntity implements HasFilePath {
 
 // custom <library crate>
 
-crate(id) => new Crate(id);
+crate(id, [CrateType crateType = libCrate]) => new Crate(id, crateType);
 
 // end <library crate>
