@@ -13,6 +13,32 @@ import 'package:path/path.dart';
 
 final Logger _logger = new Logger('crate');
 
+class Dependency {
+  Dependency(this.crate, this.version);
+
+  String crate;
+  String version;
+  bool isBuildDependency = false;
+
+  // custom <class Dependency>
+  // end <class Dependency>
+
+}
+
+class CrateToml {
+  List<Dependency> deps = [];
+  List<String> authors = [];
+  String license = 'MIT';
+  String description;
+  String repository;
+  String documentation;
+  List<String> categories = [];
+
+  // custom <class CrateToml>
+  // end <class CrateToml>
+
+}
+
 class Crate extends RsEntity implements HasFilePath {
   CrateType crateType;
   Module rootModule;
@@ -27,7 +53,7 @@ class Crate extends RsEntity implements HasFilePath {
 
   Module withRootModule(f(Module module)) => f(rootModule);
 
-  get children => [rootModule];
+  get children => new List<Module>.filled(1, rootModule, growable: false);
 
   toString() => 'crate($name)';
 

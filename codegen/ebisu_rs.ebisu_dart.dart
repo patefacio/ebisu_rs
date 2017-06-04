@@ -16,15 +16,16 @@ main(List<String> args) {
   String here = absolute(Platform.script.toFilePath());
 
   commonIncludes() => [
-    'package:id/id.dart',
-    'package:ebisu/ebisu.dart',
-    'package:ebisu_rs/entity.dart',
-  ];
+        'package:id/id.dart',
+        'package:ebisu/ebisu.dart',
+        'package:ebisu_rs/entity.dart',
+      ];
 
   commonFeatures(cls) {
     cls
       ..extend = 'RsEntity'
-      ..withCustomBlock((blk) => blk.snippets.add('${cls.name}(id) : super(id);'));
+      ..withCustomBlock(
+          (blk) => blk.snippets.add('${cls.name}(id) : super(id);'));
   }
 
   _topDir = dirname(dirname(here));
@@ -36,154 +37,217 @@ main(List<String> args) {
     ..pubSpec.doc = purpose
     ..rootPath = _topDir
     ..doc = purpose
-    ..scripts = [
-    ]
+    ..scripts = []
     ..testLibraries = [
-      library('test_struct')
-      ..imports = [ 'package:ebisu_rs/struct.dart' ],
-      library('test_repo')
-      ..imports = [ 'package:ebisu_rs/repo.dart' ],
-      library('test_crate')
-      ..imports = [ 'package:ebisu_rs/crate.dart' ],
-      library('test_module')
-      ..imports = [ 'package:ebisu_rs/module.dart' ],
-      library('test_ebisu_rs')
-      ..imports = [ 'package:ebisu_rs/ebisu_rs.dart' ],
+      library('test_struct')..imports = ['package:ebisu_rs/struct.dart'],
+      library('test_repo')..imports = ['package:ebisu_rs/repo.dart'],
+      library('test_crate')..imports = ['package:ebisu_rs/crate.dart'],
+      library('test_module')..imports = ['package:ebisu_rs/module.dart'],
+      library('test_ebisu_rs')..imports = ['package:ebisu_rs/ebisu_rs.dart'],
     ]
     ..libraries = [
-
       library('ebisu_rs')
-      ..importAndExportAll([
-        'package:ebisu_rs/repo.dart',
-        'package:ebisu_rs/crate.dart',
-        'package:ebisu_rs/module.dart',
-        'package:ebisu_rs/struct.dart',
-        'package:ebisu_rs/entity.dart',
-      ]),
-
+        ..importAndExportAll([
+          'package:ebisu_rs/repo.dart',
+          'package:ebisu_rs/crate.dart',
+          'package:ebisu_rs/module.dart',
+          'package:ebisu_rs/struct.dart',
+          'package:ebisu_rs/entity.dart',
+          'package:ebisu_rs/trait.dart',
+        ]),
       library('entity')
-            ..doc = '''
+        ..doc = '''
 Support for rust entity *recursive entity graph*.
 
 All rust named items are *RsEntity* instances.'''
-      ..imports = [
-        'package:id/id.dart',
-        'package:ebisu/ebisu.dart',
-        'package:path/path.dart',
-      ]
-      ..enums = [
-        enum_('crate_type')
-        ..hasLibraryScopedValues = true
-        ..values = [ 'lib_crate', 'app_crate' ],
-        enum_('module_type')
-        ..hasLibraryScopedValues = true
-        ..values = [ 'root_module', 'inline_module', 'file_module', 'directory_module' ]
-      ]
-      ..classes = [
-        class_('rs_entity')
-        ..doc = 'Rust entity'
-        ..mixins = [ 'Entity' ]
-        ..isAbstract = true
-        ..members = [
-          member('id')
-          ..doc = 'Id for the [RsEntity]'
-          ..type = 'Id',
-        ],
-
-        class_('has_file_path')
-        ..isAbstract = true,
-
-        class_('has_code')
-        ..isAbstract = true,
-
-        class_('is_pub')
-        ..members = [
-          member('is_pub')..init = false,
+        ..imports = [
+          'package:id/id.dart',
+          'package:ebisu/ebisu.dart',
+          'package:path/path.dart',
         ]
-      ],
-
+        ..enums = [
+          enum_('crate_type')
+            ..hasLibraryScopedValues = true
+            ..values = ['lib_crate', 'app_crate'],
+          enum_('module_type')
+            ..hasLibraryScopedValues = true
+            ..values = [
+              'root_module',
+              'inline_module',
+              'file_module',
+              'directory_module'
+            ]
+        ]
+        ..classes = [
+          class_('rs_entity')
+            ..doc = 'Rust entity'
+            ..mixins = ['Entity']
+            ..isAbstract = true
+            ..members = [
+              member('id')
+                ..doc = 'Id for the [RsEntity]'
+                ..type = 'Id',
+            ],
+          class_('has_file_path')..isAbstract = true,
+          class_('has_code')..isAbstract = true,
+          class_('is_pub')
+            ..members = [
+              member('is_pub')..init = false,
+            ]
+        ],
       library('repo')
-      ..doc = 'Library supporting generation of a rust repo'
-      ..imports = commonIncludes()
-      ..imports.addAll([
-        'dart:io',
-        'package:ebisu_rs/crate.dart',
-        'package:path/path.dart',
-      ])
-      ..includesLogger = true
-      ..classes = [
-        class_('repo')
-        ..doc = 'A rust repo consisting of one or more crates.'
-        ..withClass(commonFeatures)
-        ..members = [
-          member('crates')..type = 'List<Crate>'..init = [],
-          member('root_path')..access = WO,
-        ]
-      ],
-      
+        ..doc = 'Library supporting generation of a rust repo'
+        ..imports = commonIncludes()
+        ..imports.addAll([
+          'dart:io',
+          'package:ebisu_rs/crate.dart',
+          'package:path/path.dart',
+        ])
+        ..includesLogger = true
+        ..classes = [
+          class_('repo')
+            ..doc = 'A rust repo consisting of one or more crates.'
+            ..withClass(commonFeatures)
+            ..members = [
+              member('crates')
+                ..type = 'List<Crate>'
+                ..init = [],
+              member('root_path')..access = WO,
+            ]
+        ],
       library('crate')
-      ..imports = commonIncludes()
-      ..includesLogger = true
-      ..imports.addAll([
-        'package:ebisu_rs/module.dart',
-        'package:ebisu_rs/repo.dart',
-        'package:path/path.dart',
-      ])
-      ..classes = [
-        class_('crate')
-        ..extend = 'RsEntity'
-        ..implement = [ 'HasFilePath' ]
-        ..members = [
-          member('crate_type')..type = 'CrateType',
-          member('root_module')..type = 'Module',
-          member('file_path')..access = RO,
-        ],
-      ],
+        ..imports = commonIncludes()
+        ..includesLogger = true
+        ..imports.addAll([
+          'package:ebisu_rs/module.dart',
+          'package:ebisu_rs/repo.dart',
+          'package:path/path.dart',
+        ])
+        ..classes = [
 
+          class_('dependency')
+          ..members = [
+              member('crate')..ctors = [''],
+              member('version')..ctors = [''],
+              member('is_build_dependency')..init = false,
+          ],
+
+          class_('crate_toml')
+          ..members = [
+            member('deps')..type = 'List<Dependency>'..init = [],
+            member('authors')..type = 'List<String>'..init = [],
+            member('license')..init = 'MIT',
+            member('description'),
+            member('repository'),
+            member('documentation'),
+            member('categories')..type = 'List<String>'..init = [],
+          ],
+
+          class_('crate')
+            ..extend = 'RsEntity'
+            ..implement = ['HasFilePath']
+            ..members = [
+              member('crate_type')..type = 'CrateType',
+              member('root_module')..type = 'Module',
+              member('file_path')..access = RO,
+            ],
+        ],
       library('module')
-      ..imports = commonIncludes()
-      ..imports.addAll([
-        'package:path/path.dart',
-        'package:ebisu_rs/struct.dart',
-        'package:ebisu_rs/crate.dart',
-      ])
-      ..includesLogger = true
-      ..classes = [
-        class_('module')
-        ..extend = 'RsEntity'
-        ..implement = [ 'HasFilePath', 'HasCode' ]
-        ..mixins = [ 'IsPub' ]
-        ..members.addAll([
-          member('file_path')..access = RO,
-          member('module_type')..type = 'ModuleType'..access = RO,
-          member('modules')..type = 'List<Module>'..init = [],
-          member('structs')..type = 'List<Struct>'..init = [],
+        ..imports = commonIncludes()
+        ..imports.addAll([
+          'package:path/path.dart',
+          'package:ebisu_rs/struct.dart',
+          'package:ebisu_rs/crate.dart',
         ])
-      ],
-      library('struct')
-      ..imports = commonIncludes()
-      ..classes = [
-        class_('member')
-        ..implement = [ 'HasCode' ]
-        ..mixins = [ 'IsPub' ]
-        ..withClass(commonFeatures)        
-        ..members = [
-          member('type')..doc = 'Type of the member'..init = 'String',
+        ..includesLogger = true
+        ..classes = [
+          class_('module')
+            ..extend = 'RsEntity'
+            ..implement = ['HasFilePath', 'HasCode']
+            ..mixins = ['IsPub']
+            ..members.addAll([
+              member('file_path')..access = RO,
+              member('module_type')
+                ..type = 'ModuleType'
+                ..access = RO,
+              member('modules')
+                ..type = 'List<Module>'
+                ..init = [],
+              member('structs')
+                ..type = 'List<Struct>'
+                ..init = [],
+            ])
         ],
-        class_('struct')
-        ..implement = [ 'HasCode' ]
-        ..mixins = [ 'IsPub' ]
-        ..withClass(commonFeatures)
-        ..members.addAll([
-          member('members')..type = 'List<Member>'..init = [],
-        ])
-        
-      ]
-
+      library('trait')
+        ..imports = commonIncludes()
+        ..classes = [
+          class_('type')
+            ..implement = ['HasCode']
+            ..members.addAll([member('type')]),
+          class_('parm')
+            ..implement = ['HasCode']
+            ..withClass(commonFeatures)
+            ..members.addAll([
+              member('type')..type = 'Type',
+            ]),
+          class_('fn')
+            ..implement = ['HasCode']
+            ..mixins = ['IsPub']
+            ..withClass(commonFeatures)
+            ..members.addAll([
+              member('parms')
+                ..type = 'List<Parm>'
+                ..init = [],
+              member('return_type')..type = 'Type',
+            ]),
+          class_('trait')
+            ..implement = ['HasCode']
+            ..mixins = ['IsPub']
+            ..withClass(commonFeatures)
+            ..members.addAll([
+              member('functions')
+                ..type = 'List<Fn>'
+                ..init = [],
+            ])
+        ],
+      library('struct')
+        ..imports = commonIncludes()
+        ..classes = [
+          class_('member')
+            ..implement = ['HasCode']
+            ..mixins = ['IsPub']
+            ..withClass(commonFeatures)
+            ..members = [
+              member('type')
+                ..doc = 'Type of the member'
+                ..init = 'String',
+            ],
+          class_('struct')
+            ..implement = ['HasCode']
+            ..mixins = ['IsPub']
+            ..withClass(commonFeatures)
+            ..members.addAll([
+              member('members')
+                ..type = 'List<Member>'
+                ..init = [],
+            ]),
+          class_('tuple_struct')
+            ..doc = 'Tuple struct'
+            ..implement = ['HasCode']
+            ..mixins = ['IsPub']
+            ..withClass(commonFeatures)
+            ..members.addAll([]),
+          class_('unit_struct')
+            ..doc = 'Unit struct'
+            ..implement = ['HasCode']
+            ..mixins = ['IsPub']
+            ..withClass(commonFeatures)
+            ..members.addAll([]),
+        ]
     ];
 
   _logger.info("BOOd");
-  ebisuRs.generate(generateDrudge:true);
+  ebisuRs.generate(generateDrudge: true);
 
   print('''
 **** NON GENERATED FILES ****

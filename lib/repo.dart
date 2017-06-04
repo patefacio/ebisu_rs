@@ -21,7 +21,7 @@ class Repo extends RsEntity {
 
   // custom <class Repo>
 
-  get children => []..addAll(crates);
+  get children => new List<Crate>.from(crates, growable: false);
 
   get rootPath =>
       _rootPath ??= dirname(dirname(absolute(Platform.script.toFilePath())));

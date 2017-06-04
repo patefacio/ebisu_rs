@@ -7,6 +7,7 @@ import 'package:test/test.dart';
 // custom <additional imports>
 
 import 'package:path/path.dart';
+import 'package:ebisu/ebisu.dart';
 
 // end <additional imports>
 
@@ -76,14 +77,26 @@ First struct in root module.
                     ..isPub = true
                     ..modules = [
                       module('sub_module_3_dot_1_dot_1', inlineModule)
+                        ..modules = [
+                          module('nested'),
+                        ]
                     ]
                 ],
+            ]),
+
+        crate('crate_3')
+          ..withRootModule((rootModule) => rootModule
+            ..modules = [
+              module('module_1')..modules = [module('module_1_1')],
+              module('module_2')
             ]),
       ];
 
     r.rootPath = join(r.rootPath, 'sample_repo');
     print(r);
     r.generate();
+    print(indentBlock(
+        br(r.crates.last.rootModule.progeny.map((e) => e.detailedPath))));
   });
 
 // end <main>

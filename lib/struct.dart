@@ -34,7 +34,7 @@ class Struct extends RsEntity with IsPub implements HasCode {
 
   // custom <class Struct>
 
-  get children => []..addAll(members);
+  get children => new List<Member>.from(members, growable: false);
 
   toString() => 'struct($name)';
 
@@ -50,6 +50,40 @@ class Struct extends RsEntity with IsPub implements HasCode {
   // end <class Struct>
 
   Struct(id) : super(id);
+}
+
+/// Tuple struct
+class TupleStruct extends RsEntity with IsPub implements HasCode {
+  // custom <class TupleStruct>
+
+  get children => new Iterable.empty();
+
+  get code => brCompact([
+        tripleSlashComment(doc),
+        'struct $name {',
+        '}',
+      ]);
+
+  get name => id.capCamel;
+
+  // end <class TupleStruct>
+
+  TupleStruct(id) : super(id);
+}
+
+/// Unit struct
+class UnitStruct extends RsEntity with IsPub implements HasCode {
+  // custom <class UnitStruct>
+
+  get children => new Iterable.empty();
+
+  get code => brCompact([tripleSlashComment(doc), 'struct $name;']);
+
+  get name => id.capCamel;
+
+  // end <class UnitStruct>
+
+  UnitStruct(id) : super(id);
 }
 
 // custom <library struct>

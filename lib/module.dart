@@ -25,7 +25,7 @@ class Module extends RsEntity with IsPub implements HasFilePath, HasCode {
       : super(id),
         _moduleType = moduleType;
 
-  List<Module> get children => []..addAll(modules);
+  List<Module> get children => new List<Module>.from(modules, growable: false);
 
   toString() => 'mod($name:$moduleType)';
 
@@ -41,7 +41,7 @@ class Module extends RsEntity with IsPub implements HasFilePath, HasCode {
     _logger
         .info('Generating module $pubDecl$id:$filePath:${chomp(detailedPath)}');
 
-    if (isDeclaredMod) {
+    if (isDeclaredModule) {
       mergeWithFile(code, codePath);
     }
 
@@ -61,33 +61,35 @@ class Module extends RsEntity with IsPub implements HasFilePath, HasCode {
   }
 
   get _inlineCode {
-    addInlineCode(Iterable<Module> modules, List<String> guts) {
-      for (Module module in modules) {
-        _logger.info('!!!Examining ${module}');
-        if (module.isInline) {
-          guts.add('${module.pubDecl}mod ${module.name} {');
-          guts.add(module.code);
-          addInlineCode(module.modules, guts);
-          guts.add('}');
+    if (isDeclaredModule) {
+      addInlineCode(Iterable<Module> modules, List<String> guts) {
+        for (Module module in modules) {
+          _logger.info('!!!Examining ${module}');
+          if (module.isInlineModule) {
+            guts.add('${module.pubDecl}mod ${module.name} {');
+            guts.add(module.code);
+            addInlineCode(module.modules, guts);
+            guts.add('}');
+          }
         }
       }
-    }
 
-    List<String> guts = [];
-    addInlineCode(modules, guts);
-    _logger.info('Done with guts:\n${indentBlock(brCompact(guts))}');
-    return brCompact(guts);
+      List<String> guts = [];
+      addInlineCode(modules, guts);
+      _logger.info('Done with guts:\n${indentBlock(brCompact(guts))}');
+      return brCompact(guts);
+    }
   }
 
   get isFileModule => moduleType == fileModule;
   get isDirectoryModule => moduleType == directoryModule;
   get isRootModule => moduleType == rootModule;
-  get isInline => moduleType == inlineModule;
-  get isDeclaredMod => moduleType != inlineModule;
+  get isInlineModule => moduleType == inlineModule;
+  get isDeclaredModule => moduleType != inlineModule;
 
-  get inlineMods => children.where((module) => module.isInline);
+  get inlineMods => children.where((module) => module.isInlineModule);
 
-  get declaredMods => children.where((module) => module.isDeclaredMod);
+  get declaredMods => children.where((module) => module.isDeclaredModule);
 
   get name => id.snake;
 
@@ -96,7 +98,7 @@ class Module extends RsEntity with IsPub implements HasFilePath, HasCode {
   get code => brCompact([
         brCompact(declaredMods
             .map((module) => '${module.pubDecl}mod ${module.name};')),
-        isDeclaredMod ? _structDecls : indentBlock(_structDecls),
+        isDeclaredModule ? _structDecls : indentBlock(_structDecls),
         _inlineCode,
       ]);
 
