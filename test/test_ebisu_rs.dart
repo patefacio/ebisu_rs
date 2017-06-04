@@ -32,6 +32,14 @@ void main([List<String> args]) {
         ///// Crate 1
         crate('crate_1')
           ..doc = 'This is the first crate'
+          ..withCrateToml((crateToml) => crateToml
+            ..deps = [
+              // sample dep
+              dependency('grep', '0.1.6')
+            ]
+            ..buildDeps = [
+              dependency('log', '0.3')
+            ])
           ..withRootModule((rootModule) => rootModule
             ..doc = 'The root module'
             ..structs = [

@@ -30,7 +30,11 @@ class Module extends RsEntity with IsPub implements HasFilePath, HasCode {
   toString() => 'mod($name:$moduleType)';
 
   onOwnershipEstablished() {
-    final ownerPath = (owner as HasFilePath).filePath;
+    var ownerPath = (owner as HasFilePath).filePath;
+
+    if (owner is Crate) {
+      ownerPath = join(ownerPath, 'src');
+    }
 
     _filePath = isDirectoryModule ? join(ownerPath, id.snake) : ownerPath;
 
@@ -50,12 +54,12 @@ class Module extends RsEntity with IsPub implements HasFilePath, HasCode {
 
   get codePath {
     if (isFileModule) {
-      return join((owner as Module).filePath, '$name.rs');
+      return join(filePath, '$name.rs');
     } else if (isDirectoryModule) {
-      return join((owner as Module).filePath, name, 'mod.rs');
+      return join(filePath, name, 'mod.rs');
     } else if (isRootModule) {
       var crate = owner as Crate;
-      return join(crate.filePath, crate.isLib ? 'lib.rs' : 'main.rs');
+      return join(filePath, crate.isLib ? 'lib.rs' : 'main.rs');
     }
     return null;
   }

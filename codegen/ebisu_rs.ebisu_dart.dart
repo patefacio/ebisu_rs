@@ -124,25 +124,40 @@ All rust named items are *RsEntity* instances.'''
           'package:path/path.dart',
         ])
         ..classes = [
-
           class_('dependency')
-          ..members = [
+            ..hasCtorSansNew = true
+            ..members = [
               member('crate')..ctors = [''],
               member('version')..ctors = [''],
               member('is_build_dependency')..init = false,
-          ],
-
+              member('path'),
+            ],
           class_('crate_toml')
-          ..members = [
-            member('deps')..type = 'List<Dependency>'..init = [],
-            member('authors')..type = 'List<String>'..init = [],
-            member('license')..init = 'MIT',
-            member('description'),
-            member('repository'),
-            member('documentation'),
-            member('categories')..type = 'List<String>'..init = [],
-          ],
-
+            ..members = [
+              member('crate')..type = 'Crate',
+              member('deps')
+                ..type = 'List<Dependency>'
+                ..init = [],
+              member('build_deps')
+                ..type = 'List<Dependency>'
+                ..init = [],
+              member('authors')
+                ..type = 'List<String>'
+                ..init = [],
+              member('version')..init = '0.0.1',
+              member('license')..init = 'MIT',
+              member('homepage'),
+              member('description'),
+              member('repository'),
+              member('documentation'),
+              member('keywords')
+                ..type = 'List<String>'
+                ..init = [],
+              member('readme'),
+              member('categories')
+                ..type = 'List<String>'
+                ..init = [],
+            ],
           class_('crate')
             ..extend = 'RsEntity'
             ..implement = ['HasFilePath']
@@ -150,6 +165,9 @@ All rust named items are *RsEntity* instances.'''
               member('crate_type')..type = 'CrateType',
               member('root_module')..type = 'Module',
               member('file_path')..access = RO,
+              member('crate_toml')
+                ..type = 'CrateToml'
+                ..access = IA,
             ],
         ],
       library('module')
