@@ -14,6 +14,8 @@ build/
 *.js.map
 # custom <additional>
 
+pubspec.lock
+launch.json
 sample_repo/
 
 # end <additional>
