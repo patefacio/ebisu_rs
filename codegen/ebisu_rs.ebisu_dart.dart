@@ -123,7 +123,37 @@ All rust named items are *RsEntity* instances.'''
           'package:ebisu_rs/repo.dart',
           'package:path/path.dart',
         ])
+        ..enums = [
+          enum_('arg_type')
+          ..hasLibraryScopedValues = true
+          ..values = [
+            'arg_string', 'arg_double', 'arg_int32', 'arg_int64',
+          ]
+        ]
         ..classes = [
+
+          class_('arg')
+          ..doc = '*clap* arg'
+          ..members = [
+            member('id')..type = 'Id'..access = RO,
+            member('short')..doc = 'Short version of argument',
+            member('help'),
+            member('is_required')..init = false,
+            member('is_multiple')..init = false,
+            member('default_value'),
+            member('arg_type')..type = 'ArgType'..init = 'argString',
+          ],
+
+          class_('clap')
+          ..doc = 'Models command line args per *clap* crate'
+          ..members = [
+            member('crate')..type = 'Crate'..ctors = [''],
+            member('version'),
+            member('author'),
+            member('about'),
+            member('args')..type = 'List<Arg>'..init = [],
+          ],
+
           class_('dependency')
             ..hasCtorSansNew = true
             ..members = [
@@ -168,6 +198,10 @@ All rust named items are *RsEntity* instances.'''
               member('crate_toml')
                 ..type = 'CrateToml'
                 ..access = IA,
+                member('clap')
+                ..doc = 'For app crates a command line argument processor'
+                ..type = 'Clap'
+                ..access = RO
             ],
         ],
       library('module')
@@ -194,6 +228,7 @@ All rust named items are *RsEntity* instances.'''
               member('structs')
                 ..type = 'List<Struct>'
                 ..init = [],
+              member('code_block')..type = 'CodeBlock'..access = IA
             ])
         ],
       library('trait')

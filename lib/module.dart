@@ -29,6 +29,9 @@ class Module extends RsEntity with IsPub implements HasFilePath, HasCode {
 
   toString() => 'mod($name:$moduleType)';
 
+  CodeBlock withCodeBlock(f(CodeBlock codeBlock)) =>
+      f(_codeBlock ?? (_codeBlock = new CodeBlock('module $name')));
+
   onOwnershipEstablished() {
     var ownerPath = (owner as HasFilePath).filePath;
 
@@ -36,7 +39,9 @@ class Module extends RsEntity with IsPub implements HasFilePath, HasCode {
       ownerPath = join(ownerPath, 'src');
     }
 
-    _filePath = isDirectoryModule ? join(ownerPath, id.snake) : ownerPath;
+    _filePath = isDirectoryModule || isInlineModule
+        ? join(ownerPath, id.snake)
+        : ownerPath;
 
     _logger.info("Ownership of module($id) established in $filePath");
   }
@@ -56,12 +61,13 @@ class Module extends RsEntity with IsPub implements HasFilePath, HasCode {
     if (isFileModule) {
       return join(filePath, '$name.rs');
     } else if (isDirectoryModule) {
-      return join(filePath, name, 'mod.rs');
+      return join(filePath, 'mod.rs');
     } else if (isRootModule) {
       var crate = owner as Crate;
       return join(filePath, crate.isLib ? 'lib.rs' : 'main.rs');
+    } else {
+      return join(filePath, name);
     }
-    return null;
   }
 
   get _inlineCode {
@@ -81,6 +87,10 @@ class Module extends RsEntity with IsPub implements HasFilePath, HasCode {
       List<String> guts = [];
       addInlineCode(modules, guts);
       _logger.info('Done with guts:\n${indentBlock(brCompact(guts))}');
+      if (_codeBlock != null) {
+        print('Codeblock contents ${_codeBlock.toString()}');
+        guts.add(_codeBlock.toString());
+      }
       return brCompact(guts);
     }
   }
@@ -110,6 +120,7 @@ class Module extends RsEntity with IsPub implements HasFilePath, HasCode {
 
   String _filePath;
   ModuleType _moduleType;
+  CodeBlock _codeBlock;
 }
 
 // custom <library module>

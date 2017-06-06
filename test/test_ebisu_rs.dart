@@ -37,9 +37,7 @@ void main([List<String> args]) {
               // sample dep
               dependency('grep', '0.1.6')
             ]
-            ..buildDeps = [
-              dependency('log', '0.3')
-            ])
+            ..buildDeps = [dependency('log', '0.3')])
           ..withRootModule((rootModule) => rootModule
             ..doc = 'The root module'
             ..structs = [
@@ -67,7 +65,17 @@ First struct in root module.
         //// Crate 2
         crate('crate_2', appCrate)
           ..doc = 'This is the second crate'
-          ..withRootModule((rootModule) => rootModule
+          ..withClap((Clap clap) => clap
+            ..args = [
+              //
+              arg('foo')
+              ..short = 'f'
+              ..isRequired = true,
+
+              //
+              arg('goo')
+            ])
+          ..withRootModule((Module rootModule) => rootModule
             ..modules = [
               // sub_mod1
               module('sub_mod1', inlineModule)
