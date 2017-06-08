@@ -65,15 +65,25 @@ First struct in root module.
         //// Crate 2
         crate('crate_2', appCrate)
           ..doc = 'This is the second crate'
+          ..withCrateToml((crateToml) => crateToml
+            ..deps = [
+              // sample dep
+              dependency('clap', '^2.4.2')
+            ])
           ..withClap((Clap clap) => clap
+            //..doc = 'Bam - dont get the clap'
             ..args = [
               //
-              arg('foo')
-              ..short = 'f'
-              ..isRequired = true,
-
+              arg('foo_bar')
+                ..short = 'f'
+                ..doc = 'Must be fubared'
+                ..isRequired = true,
               //
-              arg('goo')
+              arg('goo_bardy')..defaultValue = 'goober',
+              arg('temp')
+                ..argType = argDouble
+                ..isMultiple = true
+                ..defaultValue = '3.14',
             ])
           ..withRootModule((Module rootModule) => rootModule
             ..modules = [

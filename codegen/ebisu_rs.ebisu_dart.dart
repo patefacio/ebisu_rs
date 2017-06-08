@@ -121,6 +121,7 @@ All rust named items are *RsEntity* instances.'''
         ..imports.addAll([
           'package:ebisu_rs/module.dart',
           'package:ebisu_rs/repo.dart',
+          'package:ebisu_rs/struct.dart',
           'package:path/path.dart',
         ])
         ..enums = [
@@ -136,11 +137,13 @@ All rust named items are *RsEntity* instances.'''
           ..doc = '*clap* arg'
           ..members = [
             member('id')..type = 'Id'..access = RO,
+            member('doc')..doc = 'Documentation for arg',
             member('short')..doc = 'Short version of argument',
             member('help'),
             member('is_required')..init = false,
             member('is_multiple')..init = false,
-            member('default_value'),
+            member('takes_value')..type = 'bool'..access = WO,
+            member('default_value')..doc = 'Sets default value for arg',
             member('arg_type')..type = 'ArgType'..init = 'argString',
           ],
 
@@ -151,6 +154,10 @@ All rust named items are *RsEntity* instances.'''
             member('version'),
             member('author'),
             member('about'),
+            member('pull_args')
+            ..doc = 'Create struct to store args and pull from matches'
+            ..init = true,
+            member('doc')..doc = 'Documentation for app to override default generated',
             member('args')..type = 'List<Arg>'..init = [],
           ],
 
