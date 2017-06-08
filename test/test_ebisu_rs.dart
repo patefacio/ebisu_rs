@@ -81,7 +81,7 @@ First struct in root module.
               //
               arg('goo_bardy')..defaultValue = 'goober',
               arg('temp')
-                ..argType = argDouble
+                ..argType = argF32
                 ..isMultiple = true
                 ..defaultValue = '3.14',
             ])

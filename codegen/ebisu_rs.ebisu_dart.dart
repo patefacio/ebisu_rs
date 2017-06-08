@@ -126,41 +126,61 @@ All rust named items are *RsEntity* instances.'''
         ])
         ..enums = [
           enum_('arg_type')
-          ..hasLibraryScopedValues = true
-          ..values = [
-            'arg_string', 'arg_double', 'arg_int32', 'arg_int64',
-          ]
+            ..hasLibraryScopedValues = true
+            ..values = [
+              'string',
+              'i8',
+              'i16',
+              'i32',
+              'i64',
+              'u8',
+              'u16',
+              'u32',
+              'u64',
+              'isize',
+              'usize',
+              'f32',
+              'f64'
+            ].map((primitive) => 'arg_$primitive')
         ]
         ..classes = [
-
           class_('arg')
-          ..doc = '*clap* arg'
-          ..members = [
-            member('id')..type = 'Id'..access = RO,
-            member('doc')..doc = 'Documentation for arg',
-            member('short')..doc = 'Short version of argument',
-            member('help'),
-            member('is_required')..init = false,
-            member('is_multiple')..init = false,
-            member('takes_value')..type = 'bool'..access = WO,
-            member('default_value')..doc = 'Sets default value for arg',
-            member('arg_type')..type = 'ArgType'..init = 'argString',
-          ],
-
+            ..doc = '*clap* arg'
+            ..members = [
+              member('id')
+                ..type = 'Id'
+                ..access = RO,
+              member('doc')..doc = 'Documentation for arg',
+              member('short')..doc = 'Short version of argument',
+              member('help'),
+              member('is_required')..init = false,
+              member('is_multiple')..init = false,
+              member('takes_value')
+                ..type = 'bool'
+                ..access = WO,
+              member('default_value')..doc = 'Sets default value for arg',
+              member('arg_type')
+                ..type = 'ArgType'
+                ..init = 'argString',
+            ],
           class_('clap')
-          ..doc = 'Models command line args per *clap* crate'
-          ..members = [
-            member('crate')..type = 'Crate'..ctors = [''],
-            member('version'),
-            member('author'),
-            member('about'),
-            member('pull_args')
-            ..doc = 'Create struct to store args and pull from matches'
-            ..init = true,
-            member('doc')..doc = 'Documentation for app to override default generated',
-            member('args')..type = 'List<Arg>'..init = [],
-          ],
-
+            ..doc = 'Models command line args per *clap* crate'
+            ..members = [
+              member('crate')
+                ..type = 'Crate'
+                ..ctors = [''],
+              member('version'),
+              member('author'),
+              member('about'),
+              member('pull_args')
+                ..doc = 'Create struct to store args and pull from matches'
+                ..init = true,
+              member('doc')
+                ..doc = 'Documentation for app to override default generated',
+              member('args')
+                ..type = 'List<Arg>'
+                ..init = [],
+            ],
           class_('dependency')
             ..hasCtorSansNew = true
             ..members = [
@@ -205,7 +225,7 @@ All rust named items are *RsEntity* instances.'''
               member('crate_toml')
                 ..type = 'CrateToml'
                 ..access = IA,
-                member('clap')
+              member('clap')
                 ..doc = 'For app crates a command line argument processor'
                 ..type = 'Clap'
                 ..access = RO
@@ -235,7 +255,9 @@ All rust named items are *RsEntity* instances.'''
               member('structs')
                 ..type = 'List<Struct>'
                 ..init = [],
-              member('code_block')..type = 'CodeBlock'..access = IA
+              member('code_block')
+                ..type = 'CodeBlock'
+                ..access = IA
             ])
         ],
       library('trait')

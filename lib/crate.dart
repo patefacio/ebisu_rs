@@ -14,23 +14,73 @@ import 'package:path/path.dart';
 
 final Logger _logger = new Logger('crate');
 
-enum ArgType { argString, argDouble, argInt32, argInt64 }
+enum ArgType {
+  argString,
+  argI8,
+  argI16,
+  argI32,
+  argI64,
+  argU8,
+  argU16,
+  argU32,
+  argU64,
+  argIsize,
+  argUsize,
+  argF32,
+  argF64
+}
 
 /// Convenient access to ArgType.argString with *argString* see [ArgType].
 ///
 const ArgType argString = ArgType.argString;
 
-/// Convenient access to ArgType.argDouble with *argDouble* see [ArgType].
+/// Convenient access to ArgType.argI8 with *argI8* see [ArgType].
 ///
-const ArgType argDouble = ArgType.argDouble;
+const ArgType argI8 = ArgType.argI8;
 
-/// Convenient access to ArgType.argInt32 with *argInt32* see [ArgType].
+/// Convenient access to ArgType.argI16 with *argI16* see [ArgType].
 ///
-const ArgType argInt32 = ArgType.argInt32;
+const ArgType argI16 = ArgType.argI16;
 
-/// Convenient access to ArgType.argInt64 with *argInt64* see [ArgType].
+/// Convenient access to ArgType.argI32 with *argI32* see [ArgType].
 ///
-const ArgType argInt64 = ArgType.argInt64;
+const ArgType argI32 = ArgType.argI32;
+
+/// Convenient access to ArgType.argI64 with *argI64* see [ArgType].
+///
+const ArgType argI64 = ArgType.argI64;
+
+/// Convenient access to ArgType.argU8 with *argU8* see [ArgType].
+///
+const ArgType argU8 = ArgType.argU8;
+
+/// Convenient access to ArgType.argU16 with *argU16* see [ArgType].
+///
+const ArgType argU16 = ArgType.argU16;
+
+/// Convenient access to ArgType.argU32 with *argU32* see [ArgType].
+///
+const ArgType argU32 = ArgType.argU32;
+
+/// Convenient access to ArgType.argU64 with *argU64* see [ArgType].
+///
+const ArgType argU64 = ArgType.argU64;
+
+/// Convenient access to ArgType.argIsize with *argIsize* see [ArgType].
+///
+const ArgType argIsize = ArgType.argIsize;
+
+/// Convenient access to ArgType.argUsize with *argUsize* see [ArgType].
+///
+const ArgType argUsize = ArgType.argUsize;
+
+/// Convenient access to ArgType.argF32 with *argF32* see [ArgType].
+///
+const ArgType argF32 = ArgType.argF32;
+
+/// Convenient access to ArgType.argF64 with *argF64* see [ArgType].
+///
+const ArgType argF64 = ArgType.argF64;
 
 /// *clap* arg
 class Arg {
@@ -69,13 +119,24 @@ class Arg {
 
   get takesValue => defaultValue != null || (_takesValue ?? false);
 
-  get type => isMultiple? 'Vec<$_baseType>' : _baseType;
-  
-  get _baseType => argType == argDouble? 'f64' :
-  argType == argInt32? 'i32' :
-  argType == argInt64? 'i64' :
-  'String';
-  
+  get type => isMultiple ? 'Vec<$_baseType>' : _baseType;
+
+  static const Map<ArgType, String> _baseTypes = const {
+    argString: 'String',
+    argI8: 'i8',
+    argI16: 'i16',
+    argI32: 'i32',
+    argI64: 'i64',
+    argU8: 'u8',
+    argU16: 'u16',
+    argU32: 'u32',
+    argU64: 'u64',
+    argIsize: 'isize',
+    argUsize: 'usize',
+    argF32: 'f32',
+    argF64: 'f64'
+  };
+  get _baseType => _baseTypes[argType] ?? 'String';
 
   // end <class Arg>
 
@@ -116,7 +177,8 @@ pull_args(matches);
         '''
       ]);
 
-  get defineStructs => pullArgs? _defineStruct('${crate.name}_options', args) : null;
+  get defineStructs =>
+      pullArgs ? _defineStruct('${crate.name}_options', args) : null;
 
   get _pullArgMatches => brCompact([
         'fn pull_matches(matches: clap::ArgMatches) {',
@@ -126,8 +188,10 @@ pull_args(matches);
 
   _defineStruct(id, List<Arg> args) => brCompact([
         (struct(id)
-        ..members.addAll(args.map((arg) => member(arg.id)..type = arg.type)))
-        .code,
+              ..members.addAll(args.map((arg) => member(arg.id)
+                ..doc = arg.doc
+                ..type = arg.type)))
+            .code,
       ]);
 
   _pullArgs(List<Arg> args) => brCompact([]);
@@ -258,13 +322,14 @@ class Crate extends RsEntity implements HasFilePath {
 
     if (_clap != null) {
       rootModule.withCodeBlock((CodeBlock cb) => cb.snippets.add(brCompact([
-        _clap.defineStructs,
-        '''
+            _clap.defineStructs,
+            '''
 fn main() {  
 ${indentBlock(_clap.code)}
 ${customBlock('module main ${rootModule.name}')}
 } 
-'''])));
+'''
+          ])));
     }
 
     rootModule..generate();
