@@ -144,14 +144,31 @@ class Arg {
   bool _takesValue;
 }
 
-/// Models command line args per *clap* crate
-class Clap {
-  Clap(this.crate);
+/// Collection of arguments and common features to satisfy *main* and subcommands
+class Command {
+  Id get id => _id;
 
-  Crate crate;
+  /// Documentation for app to override default generated
+  String doc;
   String version;
   String author;
   String about;
+  List<Arg> args = [];
+
+  // custom <class Command>
+
+  Command(id) : _id = makeId(id);
+
+  // end <class Command>
+
+  Id _id;
+}
+
+command() => new Command();
+
+/// Models command line args per *clap* crate
+class Clap {
+  Crate crate;
 
   /// Create struct to store args and pull from matches
   bool pullArgs = true;
@@ -159,8 +176,16 @@ class Clap {
   /// Documentation for app to override default generated
   String doc;
   List<Arg> args = [];
+  Command get command => _command;
+  List<Command> subCommands = [];
 
   // custom <class Clap>
+
+  Clap(this.crate) : _command = new Command(crate.id);
+
+  set version(String version) => command.version = version;
+  set author(String author) => command.author = author;
+  set about(String about) => command.about = about;
 
   get code => brCompact([
         'extern crate clap;',
@@ -182,22 +207,45 @@ pull_args(matches);
 
   get _pullArgMatches => brCompact([
         'fn pull_matches(matches: clap::ArgMatches) {',
-        indentBlock(_pullArgs(args)),
+        indentBlock(brCompact(args.map(_pullArg))),
         '}',
       ]);
 
-  _defineStruct(id, List<Arg> args) => brCompact([
-        (struct(id)
+  _defineStruct(id, List<Arg> args) {
+
+    var structDecl = struct(id)
               ..members.addAll(args.map((arg) => member(arg.id)
                 ..doc = arg.doc
-                ..type = arg.type)))
-            .code,
-      ]);
+                ..type = arg.type));
 
-  _pullArgs(List<Arg> args) => brCompact([]);
+    var literal = brCompact([
+      '${structDecl.name} {',
+      indentBlock(brCompact(args.map(_pullArg))),
+      '}',
+    ]);
+
+    var ctor = brCompact([
+      'fn from_matches(matches: clap::ArgMatches) -> ${structDecl.name} {',
+      indentBlock(literal),
+      '}',
+    ]);
+
+    return brCompact([
+            structDecl.code,
+            'impl ${structDecl.name} {',
+            indentBlock(ctor),
+            '}'
+      ]);
+  }
+
+  _pullArg(Arg arg) => brCompact([
+    '${arg.id.snake}: matches.value_of("${arg.id}"),'
+  
+  ]);
 
   // end <class Clap>
 
+  Command _command;
 }
 
 class Dependency {

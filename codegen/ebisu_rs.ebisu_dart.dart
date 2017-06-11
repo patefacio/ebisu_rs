@@ -163,15 +163,27 @@ All rust named items are *RsEntity* instances.'''
                 ..type = 'ArgType'
                 ..init = 'argString',
             ],
-          class_('clap')
-            ..doc = 'Models command line args per *clap* crate'
+          class_('command')
+            ..doc =
+                'Collection of arguments and common features to satisfy *main* and subcommands'
+            ..hasCtorSansNew = true
             ..members = [
-              member('crate')
-                ..type = 'Crate'
-                ..ctors = [''],
+              member('id')
+                ..type = 'Id'
+                ..access = RO,
+              member('doc')
+                ..doc = 'Documentation for app to override default generated',
               member('version'),
               member('author'),
               member('about'),
+              member('args')
+                ..type = 'List<Arg>'
+                ..init = [],
+            ],
+          class_('clap')
+            ..doc = 'Models command line args per *clap* crate'
+            ..members = [
+              member('crate')..type = 'Crate',
               member('pull_args')
                 ..doc = 'Create struct to store args and pull from matches'
                 ..init = true,
@@ -179,6 +191,10 @@ All rust named items are *RsEntity* instances.'''
                 ..doc = 'Documentation for app to override default generated',
               member('args')
                 ..type = 'List<Arg>'
+                ..init = [],
+              member('command')..type = 'Command'..access = RO,
+              member('sub_commands')
+                ..type = 'List<Command>'
                 ..init = [],
             ],
           class_('dependency')
