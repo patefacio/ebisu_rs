@@ -86,7 +86,7 @@ class Module extends RsEntity with IsPub implements HasFilePath, HasCode {
 
       List<String> guts = [];
       addInlineCode(modules, guts);
-      _logger.info('Done with guts:\n${indentBlock(brCompact(guts))}');
+      _logger.info('Done with guts:\n${indent(brCompact(guts))}');
       if (_codeBlock != null) {
         print('Codeblock contents ${_codeBlock.toString()}');
         guts.add(_codeBlock.toString());
@@ -112,7 +112,7 @@ class Module extends RsEntity with IsPub implements HasFilePath, HasCode {
   get code => brCompact([
         brCompact(declaredMods
             .map((module) => '${module.pubDecl}mod ${module.name};')),
-        isDeclaredModule ? _structDecls : indentBlock(_structDecls),
+        isDeclaredModule ? _structDecls : indent(_structDecls),
         _inlineCode,
       ]);
 

@@ -106,11 +106,12 @@ class Arg {
 
   get code => brCompact([
         '.arg(Arg::with_name("${id.snake}")',
-        indentBlock(brCompact([
+        indent(brCompact([
           doc != null ? '.help("${doc}")' : null,
           '.long("${id.emacs}")',
           short != null ? '.short("${short}")' : null,
           isRequired ? '.required(true)' : null,
+          isMultiple ? '.multiple(true)' : null,
           defaultValue != null ? '.default_value("$defaultValue")' : null,
           (defaultValue == null) && takesValue ? '.takes_value(true)' : null,
         ])),
@@ -122,7 +123,7 @@ class Arg {
   get type => isMultiple ? 'Vec<$_baseType>' : _baseType;
 
   static const Map<ArgType, String> _baseTypes = const {
-    argString: 'String',
+    argString: '&\'a str',
     argI8: 'i8',
     argI16: 'i16',
     argI32: 'i32',
@@ -164,8 +165,6 @@ class Command {
   Id _id;
 }
 
-command() => new Command();
-
 /// Models command line args per *clap* crate
 class Clap {
   Crate crate;
@@ -191,57 +190,45 @@ class Clap {
         'extern crate clap;',
         'use clap::{App, Arg};',
         'let matches = App::new("${crate.name}")',
-        indentBlock(brCompact([
+        indent(brCompact([
           doc != null ? '.help("$doc")' : null,
           '${args.map((Arg arg) => arg.code).join("").trim()}',
         ])),
         '.get_matches();',
-        pullArgs ? _pullArgMatches : null,
-        '''
-pull_args(matches);
-        '''
       ]);
 
   get defineStructs =>
       pullArgs ? _defineStruct('${crate.name}_options', args) : null;
 
-  get _pullArgMatches => brCompact([
-        'fn pull_matches(matches: clap::ArgMatches) {',
-        indentBlock(brCompact(args.map(_pullArg))),
-        '}',
-      ]);
-
   _defineStruct(id, List<Arg> args) {
-
     var structDecl = struct(id)
-              ..members.addAll(args.map((arg) => member(arg.id)
-                ..doc = arg.doc
-                ..type = arg.type));
+      ..members.addAll(args.map((arg) => member(arg.id)
+        ..doc = arg.doc
+        ..type = arg.type));
 
     var literal = brCompact([
       '${structDecl.name} {',
-      indentBlock(brCompact(args.map(_pullArg))),
+      indent(brCompact(args.map(_pullArg))),
       '}',
     ]);
 
     var ctor = brCompact([
-      'fn from_matches(matches: clap::ArgMatches) -> ${structDecl.name} {',
-      indentBlock(literal),
+      'fn from_matches(matches: &\'a clap::ArgMatches) -> ${structDecl.name}<\'a> {',
+      indent(literal),
       '}',
     ]);
 
     return brCompact([
-            structDecl.code,
-            'impl ${structDecl.name} {',
-            indentBlock(ctor),
-            '}'
-      ]);
+      structDecl.code,
+      'impl<\'a> ${structDecl.name}<\'a> {',
+      indent(ctor),
+      '}'
+    ]);
   }
 
   _pullArg(Arg arg) => brCompact([
-    '${arg.id.snake}: matches.value_of("${arg.id}"),'
-  
-  ]);
+        '${arg.id.snake}: matches.${arg.isMultiple? "values_of" : "value_of"}("${arg.id}").unwrap()${arg.isMultiple? ".collect()":""},'
+      ]);
 
   // end <class Clap>
 
@@ -373,7 +360,7 @@ class Crate extends RsEntity implements HasFilePath {
             _clap.defineStructs,
             '''
 fn main() {  
-${indentBlock(_clap.code)}
+${indent(_clap.code)}
 ${customBlock('module main ${rootModule.name}')}
 } 
 '''

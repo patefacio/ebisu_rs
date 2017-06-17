@@ -81,4 +81,6 @@ class IsPub {
 }
 
 // custom <library entity>
+
+indent(s) => indentBlock(s, '    ');
 // end <library entity>

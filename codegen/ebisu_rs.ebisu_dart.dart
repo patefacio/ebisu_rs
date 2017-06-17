@@ -166,7 +166,6 @@ All rust named items are *RsEntity* instances.'''
           class_('command')
             ..doc =
                 'Collection of arguments and common features to satisfy *main* and subcommands'
-            ..hasCtorSansNew = true
             ..members = [
               member('id')
                 ..type = 'Id'
