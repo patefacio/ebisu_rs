@@ -62,20 +62,20 @@ class Struct extends RsEntity with IsPub implements HasCode {
   }
 
   get lifetimes =>
-    new Set.from(concat(members.map((m) => m.lifetimes.map((lt) => "'$lt"))))
-    .toList()
-    ..sort();
+      new Set.from(concat(members.map((m) => m.lifetimes.map((lt) => "'$lt"))))
+          .toList()
+            ..sort();
 
   get template {
     var contents = chomp(brCompact([
       lifetimes.join(', '),
     ]));
-    return contents.isNotEmpty ? '< $contents >' : '';
+    return contents.isNotEmpty ? '<$contents>' : '';
   }
 
   get code => brCompact([
         tripleSlashComment(doc ?? 'TODO: comment struct'),
-        '${pubDecl}struct${template} $name {',
+        '${pubDecl}struct $name${template} {',
         indentBlock(br(members.map((m) => m.code))),
         '}'
       ]);

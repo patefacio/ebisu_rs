@@ -16,6 +16,7 @@ import 'package:path/path.dart';
 final Logger _logger = new Logger('crate');
 
 enum ArgType {
+  argBool,
   argString,
   argI8,
   argI16,
@@ -30,6 +31,10 @@ enum ArgType {
   argF32,
   argF64
 }
+
+/// Convenient access to ArgType.argBool with *argBool* see [ArgType].
+///
+const ArgType argBool = ArgType.argBool;
 
 /// Convenient access to ArgType.argString with *argString* see [ArgType].
 ///
@@ -95,7 +100,6 @@ class Arg {
   String help;
   bool isRequired = false;
   bool isMultiple = false;
-  set takesValue(bool takesValue) => _takesValue = takesValue;
 
   /// Sets default value for arg
   String defaultValue;
@@ -119,12 +123,13 @@ class Arg {
         ')'
       ]);
 
-  get takesValue => defaultValue != null || (_takesValue ?? false);
+  get takesValue =>
+      defaultValue != null || argType != argBool;
 
-  get type => isMultiple ? 'Vec<$_baseType>' : _baseType;
+  get type => isMultiple ? 'Vec<${_baseType.scopedDecl}>' : _baseType;
 
   static final Map<ArgType, RsType> _baseTypes = {
-    argString: mref(ref(str, 'a'), 'b'),
+    argString: ref(str, 'a'),
     argI8: i8,
     argI16: i16,
     argI32: i32,
@@ -143,7 +148,6 @@ class Arg {
   // end <class Arg>
 
   Id _id;
-  bool _takesValue;
 }
 
 /// Collection of arguments and common features to satisfy *main* and subcommands
@@ -227,9 +231,27 @@ class Clap {
     ]);
   }
 
-  _pullArg(Arg arg) => brCompact([
-        '${arg.id.snake}: matches.${arg.isMultiple? "values_of" : "value_of"}("${arg.id}").unwrap()${arg.isMultiple? ".collect()":""},'
-      ]);
+  _expectParse(Arg arg) => '.expect("failed to parse arg (${arg.id.emacs}) of type (${arg.argType}")';
+
+
+  _pullNonStringArg(Arg arg) => 
+    '${arg.id.snake}: matches.value_of("${arg.id.snake}").unwrap().parse()${_expectParse(arg)},';
+
+  _pullStringArg(Arg arg) => 
+    '${arg.id.snake}: matches.value_of("${arg.id.snake}").unwrap(),';
+
+  _pullSingleArg(Arg arg) => arg.argType == argString? _pullStringArg(arg) : _pullNonStringArg(arg);
+  
+  _pullMultipleNonStringArg(Arg arg) => 
+  '${arg.id.snake}: matches.values_of("${arg.id.snake}").unwrap().into_iter().map(|x| x.parse()${_expectParse(arg)}).collect(),';
+
+  _pullMultipleStringArg(Arg arg) => 
+  '${arg.id.snake}: matches.values_of("${arg.id.snake}").unwrap().into_iter().collect(),';
+
+  _pullMultipleArg(Arg arg) => arg.argType == argString? _pullMultipleStringArg(arg) :
+    _pullMultipleNonStringArg(arg);
+
+  _pullArg(Arg arg) => arg.isMultiple? _pullMultipleArg(arg) : _pullSingleArg(arg);
 
   // end <class Clap>
 
@@ -389,6 +411,6 @@ ${customBlock('module main ${rootModule.name}')}
 
 crate(id, [CrateType crateType = libCrate]) => new Crate(id, crateType);
 
-arg(id) => new Arg(id);
+Arg arg(id) => new Arg(id);
 
 // end <library crate>

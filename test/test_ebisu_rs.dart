@@ -77,11 +77,18 @@ First struct in root module.
               arg('foo_bar')
                 ..short = 'f'
                 ..doc = 'Must be fubared'
+                ..argType = argString
                 ..isRequired = true,
               //
               arg('goo_bardy')..defaultValue = 'goober',
-              arg('temp')
-                ..argType = argF32
+              arg('a_f64')
+                ..argType = argF64
+                ..defaultValue = '3.14',
+              arg('a_str_s')
+                ..argType = argString
+                ..isMultiple = true,
+              arg('a_f64_s')
+                ..argType = argF64
                 ..isMultiple = true
                 ..defaultValue = '3.14',
             ])

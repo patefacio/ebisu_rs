@@ -129,6 +129,7 @@ All rust named items are *RsEntity* instances.'''
           enum_('arg_type')
             ..hasLibraryScopedValues = true
             ..values = [
+              'bool',
               'string',
               'i8',
               'i16',
@@ -156,9 +157,6 @@ All rust named items are *RsEntity* instances.'''
               member('help'),
               member('is_required')..init = false,
               member('is_multiple')..init = false,
-              member('takes_value')
-                ..type = 'bool'
-                ..access = WO,
               member('default_value')..doc = 'Sets default value for arg',
               member('arg_type')
                 ..type = 'ArgType'
