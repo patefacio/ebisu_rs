@@ -7,6 +7,7 @@ import 'package:ebisu_rs/struct.dart';
 import 'package:id/id.dart';
 import 'package:logging/logging.dart';
 import 'package:path/path.dart';
+import 'package:quiver/iterables.dart';
 
 // custom <additional imports>
 // end <additional imports>
@@ -25,7 +26,7 @@ class Module extends RsEntity with IsPub implements HasFilePath, HasCode {
       : super(id),
         _moduleType = moduleType;
 
-  List<Module> get children => new List<Module>.from(modules, growable: false);
+  Iterable<Module> get children => concat([structs, modules]);
 
   toString() => 'mod($name:$moduleType)';
 
@@ -101,9 +102,9 @@ class Module extends RsEntity with IsPub implements HasFilePath, HasCode {
   get isInlineModule => moduleType == inlineModule;
   get isDeclaredModule => moduleType != inlineModule;
 
-  get inlineMods => children.where((module) => module.isInlineModule);
+  get inlineMods => modules.where((module) => module.isInlineModule);
 
-  get declaredMods => children.where((module) => module.isDeclaredModule);
+  get declaredMods => modules.where((module) => module.isDeclaredModule);
 
   get name => id.snake;
 

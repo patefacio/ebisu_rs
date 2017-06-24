@@ -2,18 +2,27 @@ library ebisu_rs.struct;
 
 import 'package:ebisu/ebisu.dart';
 import 'package:ebisu_rs/entity.dart';
+import 'package:ebisu_rs/type.dart';
 import 'package:id/id.dart';
+import 'package:quiver/iterables.dart';
 
 // custom <additional imports>
 // end <additional imports>
 
 class Member extends RsEntity with IsPub implements HasCode {
   /// Type of the member
-  String type = 'String';
+  RsType get type => _type;
 
   // custom <class Member>
 
   get children => new Iterable.empty();
+
+  onOwnershipEstablished() {
+    print("^^^^^^^^Ownership of ${id}:${runtimeType}");
+  }
+
+  set type(type) =>
+      _type = type is String ? _type = new UserDefinedType(type) : type;
 
   toString() => 'member($name:$type)';
 
@@ -21,12 +30,16 @@ class Member extends RsEntity with IsPub implements HasCode {
 
   get code => brCompact([
         tripleSlashComment(doc ?? 'TODO: comment member'),
-        '$pubDecl$name: $type,',
+        '$pubDecl$name: ${type.scopedDecl},',
       ]);
+
+  get lifetimes => type.lifetimes;
 
   // end <class Member>
 
   Member(id) : super(id);
+
+  RsType _type = str;
 }
 
 class Struct extends RsEntity with IsPub implements HasCode {
@@ -40,9 +53,29 @@ class Struct extends RsEntity with IsPub implements HasCode {
 
   get name => id.capCamel;
 
+  @override
+  onOwnershipEstablished() {
+    print("---------Ownership of ${id}:${runtimeType}");
+    for (final member in members) {
+      if (member.type.isRef) {}
+    }
+  }
+
+  get lifetimes =>
+    new Set.from(concat(members.map((m) => m.lifetimes.map((lt) => "'$lt"))))
+    .toList()
+    ..sort();
+
+  get template {
+    var contents = chomp(brCompact([
+      lifetimes.join(', '),
+    ]));
+    return contents.isNotEmpty ? '< $contents >' : '';
+  }
+
   get code => brCompact([
         tripleSlashComment(doc ?? 'TODO: comment struct'),
-        '${pubDecl}struct $name {',
+        '${pubDecl}struct${template} $name {',
         indentBlock(br(members.map((m) => m.code))),
         '}'
       ]);

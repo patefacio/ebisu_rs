@@ -5,6 +5,7 @@ import 'package:ebisu_rs/entity.dart';
 import 'package:ebisu_rs/module.dart';
 import 'package:ebisu_rs/repo.dart';
 import 'package:ebisu_rs/struct.dart';
+import 'package:ebisu_rs/type.dart';
 import 'package:id/id.dart';
 import 'package:logging/logging.dart';
 import 'package:path/path.dart';
@@ -122,22 +123,22 @@ class Arg {
 
   get type => isMultiple ? 'Vec<$_baseType>' : _baseType;
 
-  static const Map<ArgType, String> _baseTypes = const {
-    argString: '&\'a str',
-    argI8: 'i8',
-    argI16: 'i16',
-    argI32: 'i32',
-    argI64: 'i64',
-    argU8: 'u8',
-    argU16: 'u16',
-    argU32: 'u32',
-    argU64: 'u64',
-    argIsize: 'isize',
-    argUsize: 'usize',
-    argF32: 'f32',
-    argF64: 'f64'
+  static final Map<ArgType, RsType> _baseTypes = {
+    argString: mref(ref(str, 'a'), 'b'),
+    argI8: i8,
+    argI16: i16,
+    argI32: i32,
+    argI64: i64,
+    argU8: u8,
+    argU16: u16,
+    argU32: u32,
+    argU64: u64,
+    argIsize: isize,
+    argUsize: usize,
+    argF32: f32,
+    argF64: f64
   };
-  get _baseType => _baseTypes[argType] ?? 'String';
+  get _baseType => _baseTypes[argType] ?? string;
 
   // end <class Arg>
 

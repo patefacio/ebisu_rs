@@ -122,6 +122,7 @@ All rust named items are *RsEntity* instances.'''
           'package:ebisu_rs/module.dart',
           'package:ebisu_rs/repo.dart',
           'package:ebisu_rs/struct.dart',
+          'package:ebisu_rs/type.dart',
           'package:path/path.dart',
         ])
         ..enums = [
@@ -252,6 +253,7 @@ All rust named items are *RsEntity* instances.'''
           'package:path/path.dart',
           'package:ebisu_rs/struct.dart',
           'package:ebisu_rs/crate.dart',
+          'package:quiver/iterables.dart',
         ])
         ..includesLogger = true
         ..classes = [
@@ -307,8 +309,69 @@ All rust named items are *RsEntity* instances.'''
                 ..init = [],
             ])
         ],
+
+      library('type')
+      ..includesMain = true
+      ..imports = [
+        'package:quiver/iterables.dart',
+      ]
+      ..classes = [
+        class_('rs_type')
+        ..isAbstract = true,
+        class_('str')
+        ..extend = 'RsType',
+        class_('built_in_type')
+        ..extend = 'RsType'
+        ..members = [
+            member('type_name')..isFinal = true
+        ],
+        class_('rs_string')
+        ..extend = 'RsType',
+        class_('int')
+        ..extend = 'RsType'
+        ..members = [
+          member('size')..type = 'int'..isFinal = true,
+          member('is_signed')..type = 'bool'..isFinal = true,
+        ],
+        class_('float')
+        ..extend = 'RsType'
+        ..members = [
+          member('size')..type = 'int'..isFinal = true,
+        ],
+        class_('user_defined_type')
+        ..extend = 'RsType'
+        ..members = [
+          member('name')..isFinal = true,
+        ],
+
+        class_('ref_type')
+        ..extend = 'RsType'
+        ..isAbstract = true
+        ..members = [
+          member('referent')..type = 'RsType'..isFinal = true,
+          member('lifetime'),
+        ],
+
+        class_('ref')
+        ..extend = 'RefType'
+        ..members = [
+
+        ],
+
+        class_('mref')
+        ..extend = 'RefType'
+        ..members = [
+        ],      
+
+      ],
+
+
       library('struct')
         ..imports = commonIncludes()
+        ..imports.addAll([
+          'package:ebisu_rs/type.dart',
+          'package:quiver/iterables.dart',
+        ])
         ..classes = [
           class_('member')
             ..implement = ['HasCode']
@@ -317,7 +380,9 @@ All rust named items are *RsEntity* instances.'''
             ..members = [
               member('type')
                 ..doc = 'Type of the member'
-                ..init = 'String',
+                ..type = 'RsType'
+                ..init = 'str'
+                ..access = RO,
             ],
           class_('struct')
             ..implement = ['HasCode']

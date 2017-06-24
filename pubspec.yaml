@@ -10,9 +10,13 @@ dependencies:
 
 # custom <ebisu_rs dependencies>
 
-  ebisu: ">=0.7.7"
+  #ebisu: ">=0.7.7"
+  ebisu:
+    path: "../ebisu"
 
-  id: "^1.0.16"  
+  id: "^1.0.16"
+
+  quiver: ">=0.21.0 <0.25.0"
 
 # end <ebisu_rs dependencies>
 
@@ -26,6 +30,9 @@ dev_dependencies:
 
 dependency_overrides:
 # custom <ebisu_rs dependency overrides>
+
+  ebisu:
+    path: "../ebisu"
 
 # end <ebisu_rs dependency overrides>
 
