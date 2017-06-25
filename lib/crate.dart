@@ -109,22 +109,28 @@ class Arg {
 
   Arg(id) : _id = makeId(id);
 
-  get code => brCompact([
-        '.arg(Arg::with_name("${id.snake}")',
-        indent(brCompact([
-          doc != null ? '.help("${doc}")' : null,
-          '.long("${id.emacs}")',
-          short != null ? '.short("${short}")' : null,
-          isRequired ? '.required(true)' : null,
-          isMultiple ? '.multiple(true)' : null,
-          defaultValue != null ? '.default_value("$defaultValue")' : null,
-          (defaultValue == null) && takesValue ? '.takes_value(true)' : null,
-        ])),
-        ')'
-      ]);
+  toString() => "arg(${id.snake})";
 
-  get takesValue =>
-      defaultValue != null || argType != argBool;
+  get code {
+    assert(!(isMultiple && defaultValue != null),
+        "Args can not be isMultiple and have defaultValue $this");
+
+    return brCompact([
+      '.arg(Arg::with_name("${id.snake}")',
+      indent(brCompact([
+        doc != null ? '.help("${doc}")' : null,
+        '.long("${id.emacs}")',
+        short != null ? '.short("${short}")' : null,
+        isRequired ? '.required(true)' : null,
+        isMultiple ? '.multiple(true)' : null,
+        defaultValue != null ? '.default_value("$defaultValue")' : null,
+        (defaultValue == null) && takesValue ? '.takes_value(true)' : null,
+      ])),
+      ')'
+    ]);
+  }
+
+  get takesValue => defaultValue != null || argType != argBool;
 
   get type => isMultiple ? 'Vec<${_baseType.scopedDecl}>' : _baseType;
 
@@ -231,27 +237,43 @@ class Clap {
     ]);
   }
 
-  _expectParse(Arg arg) => '.expect("failed to parse arg (${arg.id.emacs}) of type (${arg.argType}")';
+  _expectParse(Arg arg) =>
+      '.expect("failed to parse arg (${arg.id.emacs}) of type (${arg.argType})")';
 
+  _expectUnwrap(Arg arg) =>
+      '.expect("failed to unwrap <value_of(\\"${arg.id.snake}\\")>")';
 
-  _pullNonStringArg(Arg arg) => 
-    '${arg.id.snake}: matches.value_of("${arg.id.snake}").unwrap().parse()${_expectParse(arg)},';
+  _pullNonStringArg(Arg arg) =>
+      '${arg.id.snake}: matches.value_of("${arg.id.snake}")${_expectUnwrap(arg)}.parse()${_expectParse(arg)},';
 
-  _pullStringArg(Arg arg) => 
-    '${arg.id.snake}: matches.value_of("${arg.id.snake}").unwrap(),';
+  _pullStringArg(Arg arg) =>
+      '${arg.id.snake}: matches.value_of("${arg.id.snake}")${_expectUnwrap(arg)},';
 
-  _pullSingleArg(Arg arg) => arg.argType == argString? _pullStringArg(arg) : _pullNonStringArg(arg);
-  
-  _pullMultipleNonStringArg(Arg arg) => 
-  '${arg.id.snake}: matches.values_of("${arg.id.snake}").unwrap().into_iter().map(|x| x.parse()${_expectParse(arg)}).collect(),';
+  _pullSingleArg(Arg arg) =>
+      arg.argType == argString ? _pullStringArg(arg) : _pullNonStringArg(arg);
 
-  _pullMultipleStringArg(Arg arg) => 
-  '${arg.id.snake}: matches.values_of("${arg.id.snake}").unwrap().into_iter().collect(),';
+  _pullMultipleNonStringArg(Arg arg) =>
+      '''
+  ${arg.id.snake}: match matches.values_of("${arg.id.snake}") {
+      None => vec![],
+      Some(v) => v.into_iter().map(|x| x.parse()${_expectParse(arg)}).collect()
+  },
+  ''';
 
-  _pullMultipleArg(Arg arg) => arg.argType == argString? _pullMultipleStringArg(arg) :
-    _pullMultipleNonStringArg(arg);
+  _pullMultipleStringArg(Arg arg) =>
+      '''
+  ${arg.id.snake}: match matches.values_of("${arg.id.snake}") {
+     None => vec![],
+     Some(v) => v.into_iter().collect()
+  },
+  ''';
 
-  _pullArg(Arg arg) => arg.isMultiple? _pullMultipleArg(arg) : _pullSingleArg(arg);
+  _pullMultipleArg(Arg arg) => arg.argType == argString
+      ? _pullMultipleStringArg(arg)
+      : _pullMultipleNonStringArg(arg);
+
+  _pullArg(Arg arg) =>
+      arg.isMultiple ? _pullMultipleArg(arg) : _pullSingleArg(arg);
 
   // end <class Clap>
 

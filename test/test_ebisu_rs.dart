@@ -71,7 +71,6 @@ First struct in root module.
               dependency('clap', '^2.4.2')
             ])
           ..withClap((Clap clap) => clap
-            //..doc = 'Bam - dont get the clap'
             ..args = [
               //
               arg('foo_bar')
@@ -89,8 +88,7 @@ First struct in root module.
                 ..isMultiple = true,
               arg('a_f64_s')
                 ..argType = argF64
-                ..isMultiple = true
-                ..defaultValue = '3.14',
+                ..isMultiple = true,
             ])
           ..withRootModule((Module rootModule) => rootModule
             ..modules = [

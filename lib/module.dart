@@ -53,6 +53,7 @@ class Module extends RsEntity with IsPub implements HasFilePath, HasCode {
 
     if (isDeclaredModule) {
       mergeWithFile(code, codePath);
+      formatRustFile(codePath);
     }
 
     modules.forEach((module) => module.generate());
@@ -87,9 +88,8 @@ class Module extends RsEntity with IsPub implements HasFilePath, HasCode {
 
       List<String> guts = [];
       addInlineCode(modules, guts);
-      _logger.info('Done with guts:\n${indent(brCompact(guts))}');
+
       if (_codeBlock != null) {
-        print('Codeblock contents ${_codeBlock.toString()}');
         guts.add(_codeBlock.toString());
       }
       return brCompact(guts);

@@ -60,10 +60,12 @@ main(List<String> args) {
 Support for rust entity *recursive entity graph*.
 
 All rust named items are *RsEntity* instances.'''
+        ..includesLogger = true
         ..imports = [
           'package:id/id.dart',
           'package:ebisu/ebisu.dart',
           'package:path/path.dart',
+          'dart:io',
         ]
         ..enums = [
           enum_('crate_type')

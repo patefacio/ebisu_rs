@@ -3,12 +3,16 @@
 /// All rust named items are *RsEntity* instances.
 library ebisu_rs.entity;
 
+import 'dart:io';
 import 'package:ebisu/ebisu.dart';
 import 'package:id/id.dart';
+import 'package:logging/logging.dart';
 import 'package:path/path.dart';
 
 // custom <additional imports>
 // end <additional imports>
+
+final Logger _logger = new Logger('entity');
 
 enum CrateType { libCrate, appCrate }
 
@@ -83,4 +87,8 @@ class IsPub {
 // custom <library entity>
 
 indent(s) => indentBlock(s, '    ');
+
+formatRustFile(filePath) =>
+    Process.runSync('rustfmt', ['--skip-children', filePath]);
+    
 // end <library entity>
