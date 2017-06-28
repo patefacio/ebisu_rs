@@ -1,6 +1,7 @@
 library ebisu_rs.crate;
 
 import 'package:ebisu/ebisu.dart';
+import 'package:ebisu_rs/dependency.dart';
 import 'package:ebisu_rs/entity.dart';
 import 'package:ebisu_rs/module.dart';
 import 'package:ebisu_rs/repo.dart';
@@ -9,6 +10,8 @@ import 'package:ebisu_rs/type.dart';
 import 'package:id/id.dart';
 import 'package:logging/logging.dart';
 import 'package:path/path.dart';
+
+export 'package:ebisu_rs/dependency.dart';
 
 // custom <additional imports>
 // end <additional imports>
@@ -87,6 +90,24 @@ const ArgType argF32 = ArgType.argF32;
 /// Convenient access to ArgType.argF64 with *argF64* see [ArgType].
 ///
 const ArgType argF64 = ArgType.argF64;
+
+enum LoggerType { envLogger, simpleLogger, stderrLogger, flexiLogger }
+
+/// Convenient access to LoggerType.envLogger with *envLogger* see [LoggerType].
+///
+const LoggerType envLogger = LoggerType.envLogger;
+
+/// Convenient access to LoggerType.simpleLogger with *simpleLogger* see [LoggerType].
+///
+const LoggerType simpleLogger = LoggerType.simpleLogger;
+
+/// Convenient access to LoggerType.stderrLogger with *stderrLogger* see [LoggerType].
+///
+const LoggerType stderrLogger = LoggerType.stderrLogger;
+
+/// Convenient access to LoggerType.flexiLogger with *flexiLogger* see [LoggerType].
+///
+const LoggerType flexiLogger = LoggerType.flexiLogger;
 
 /// *clap* arg
 class Arg {
@@ -279,29 +300,6 @@ class Clap {
   Command _command;
 }
 
-class Dependency {
-  Dependency(this.crate, this.version);
-
-  String crate;
-  String version;
-  bool isBuildDependency = false;
-  String path;
-
-  // custom <class Dependency>
-
-  get _decl =>
-      path != null ? '{ version = "$version", path = "$path" }' : '"$version"';
-
-  toString() => '${crate} = $_decl';
-
-  // end <class Dependency>
-
-}
-
-/// Create Dependency without new, for more declarative construction
-Dependency dependency(String crate, String version) =>
-    new Dependency(crate, version);
-
 class CrateToml {
   Crate crate;
   List<Dependency> deps = [];
@@ -370,6 +368,7 @@ class Crate extends RsEntity implements HasFilePath {
   CrateType crateType;
   Module rootModule;
   String get filePath => _filePath;
+  LoggerType loggerType;
 
   /// For app crates a command line argument processor
   Clap get clap => _clap;

@@ -44,6 +44,8 @@ main(List<String> args) {
       library('test_crate')..imports = ['package:ebisu_rs/crate.dart'],
       library('test_module')..imports = ['package:ebisu_rs/module.dart'],
       library('test_ebisu_rs')..imports = ['package:ebisu_rs/ebisu_rs.dart'],
+      library('test_dependency')
+        ..imports = ['package:ebisu_rs/dependency.dart'],
     ]
     ..libraries = [
       library('ebisu_rs')
@@ -117,6 +119,51 @@ All rust named items are *RsEntity* instances.'''
               member('root_path')..access = WO,
             ]
         ],
+
+      // dependency library
+      library('dependency')
+        ..imports = commonIncludes()
+        ..includesLogger = true
+        ..enums = [
+          enum_('compare_op')
+            ..hasLibraryScopedValues = true
+            ..values = ['gt', 'lt', 'ge', 'le', 'eq', 'tilda', 'caret']
+        ]
+        ..classes = [
+          class_('version')
+            ..doc =
+                'Models a [*Semantic Versioning*](http://semver.org/) version'
+            ..members = [
+              member('major')..type = 'int',
+              member('minor')..type = 'int',
+              member('patch')..type = 'int',
+            ],
+          class_('version_constraint')
+            ..doc = 'Models single constriant in *VersionSpec*'
+            ..members = [
+              member('compare_op')..type = 'CompareOp',
+              member('version')..type = 'Version',
+            ],
+          class_('version_spec')
+            ..doc =
+                'Models a crate verion spec (eg containing caret, constraints)'
+            ..members = [
+              member('constraints')
+                ..type = 'List<VersionConstraint>'
+                ..init = []
+            ],
+          class_('dependency')
+            ..members = [
+              member('crate'),
+              member('version')
+                ..type = 'VersionSpec'
+                ..access = RO,
+              member('path'),
+              member('is_build_dependency')..init = false,
+            ],
+        ],
+
+      // crate library
       library('crate')
         ..imports = commonIncludes()
         ..includesLogger = true
@@ -127,6 +174,7 @@ All rust named items are *RsEntity* instances.'''
           'package:ebisu_rs/type.dart',
           'package:path/path.dart',
         ])
+        ..importAndExportAll(['package:ebisu_rs/dependency.dart'])
         ..enums = [
           enum_('arg_type')
             ..hasLibraryScopedValues = true
@@ -145,7 +193,15 @@ All rust named items are *RsEntity* instances.'''
               'usize',
               'f32',
               'f64'
-            ].map((primitive) => 'arg_$primitive')
+            ].map((primitive) => 'arg_$primitive'),
+          enum_('logger_type')
+            ..hasLibraryScopedValues = true
+            ..values = [
+              'env_logger',
+              'simple_logger',
+              'stderr_logger',
+              'flexi_logger'
+            ]
         ]
         ..classes = [
           class_('arg')
@@ -192,18 +248,12 @@ All rust named items are *RsEntity* instances.'''
               member('args')
                 ..type = 'List<Arg>'
                 ..init = [],
-              member('command')..type = 'Command'..access = RO,
+              member('command')
+                ..type = 'Command'
+                ..access = RO,
               member('sub_commands')
                 ..type = 'List<Command>'
                 ..init = [],
-            ],
-          class_('dependency')
-            ..hasCtorSansNew = true
-            ..members = [
-              member('crate')..ctors = [''],
-              member('version')..ctors = [''],
-              member('is_build_dependency')..init = false,
-              member('path'),
             ],
           class_('crate_toml')
             ..members = [
@@ -238,6 +288,7 @@ All rust named items are *RsEntity* instances.'''
               member('crate_type')..type = 'CrateType',
               member('root_module')..type = 'Module',
               member('file_path')..access = RO,
+              member('logger_type')..type = 'LoggerType',
               member('crate_toml')
                 ..type = 'CrateToml'
                 ..access = IA,
@@ -311,60 +362,55 @@ All rust named items are *RsEntity* instances.'''
         ],
 
       library('type')
-      ..includesMain = true
-      ..imports = [
-        'package:quiver/iterables.dart',
-      ]
-      ..classes = [
-        class_('rs_type')
-        ..isAbstract = true,
-        class_('str')
-        ..extend = 'RsType',
-        class_('built_in_type')
-        ..extend = 'RsType'
-        ..members = [
-            member('type_name')..isFinal = true
+        ..includesMain = true
+        ..imports = [
+          'package:quiver/iterables.dart',
+        ]
+        ..classes = [
+          class_('rs_type')..isAbstract = true,
+          class_('str')..extend = 'RsType',
+          class_('built_in_type')
+            ..extend = 'RsType'
+            ..members = [member('type_name')..isFinal = true],
+          class_('rs_string')..extend = 'RsType',
+          class_('int')
+            ..extend = 'RsType'
+            ..members = [
+              member('size')
+                ..type = 'int'
+                ..isFinal = true,
+              member('is_signed')
+                ..type = 'bool'
+                ..isFinal = true,
+            ],
+          class_('float')
+            ..extend = 'RsType'
+            ..members = [
+              member('size')
+                ..type = 'int'
+                ..isFinal = true,
+            ],
+          class_('user_defined_type')
+            ..extend = 'RsType'
+            ..members = [
+              member('name')..isFinal = true,
+            ],
+          class_('ref_type')
+            ..extend = 'RsType'
+            ..isAbstract = true
+            ..members = [
+              member('referent')
+                ..type = 'RsType'
+                ..isFinal = true,
+              member('lifetime'),
+            ],
+          class_('ref')
+            ..extend = 'RefType'
+            ..members = [],
+          class_('mref')
+            ..extend = 'RefType'
+            ..members = [],
         ],
-        class_('rs_string')
-        ..extend = 'RsType',
-        class_('int')
-        ..extend = 'RsType'
-        ..members = [
-          member('size')..type = 'int'..isFinal = true,
-          member('is_signed')..type = 'bool'..isFinal = true,
-        ],
-        class_('float')
-        ..extend = 'RsType'
-        ..members = [
-          member('size')..type = 'int'..isFinal = true,
-        ],
-        class_('user_defined_type')
-        ..extend = 'RsType'
-        ..members = [
-          member('name')..isFinal = true,
-        ],
-
-        class_('ref_type')
-        ..extend = 'RsType'
-        ..isAbstract = true
-        ..members = [
-          member('referent')..type = 'RsType'..isFinal = true,
-          member('lifetime'),
-        ],
-
-        class_('ref')
-        ..extend = 'RefType'
-        ..members = [
-
-        ],
-
-        class_('mref')
-        ..extend = 'RefType'
-        ..members = [
-        ],      
-
-      ],
-
 
       library('struct')
         ..imports = commonIncludes()
@@ -374,20 +420,20 @@ All rust named items are *RsEntity* instances.'''
         ])
         ..enums = [
           enum_('derivable')
-          ..libraryScopedValuesCase = capCamelCase
-          ..hasJsonSupport = true
-          ..values = [
-            'eq',
-            'partial_eq',
-            'ord',
-            'partial_ord',
-            'clone',
-            'copy',
-            'hash',
-            'default_value',
-            'zero',
-            'debug'
-          ]
+            ..libraryScopedValuesCase = capCamelCase
+            ..hasJsonSupport = true
+            ..values = [
+              'eq',
+              'partial_eq',
+              'ord',
+              'partial_ord',
+              'clone',
+              'copy',
+              'hash',
+              'default_value',
+              'zero',
+              'debug'
+            ]
         ]
         ..classes = [
           class_('member')
@@ -402,9 +448,11 @@ All rust named items are *RsEntity* instances.'''
                 ..access = RO,
             ],
           class_('Derives')
-          ..members = [
-            member('derive')..type = 'List<Derivable>'..init = []
-          ],
+            ..members = [
+              member('derive')
+                ..type = 'List<Derivable>'
+                ..init = []
+            ],
           class_('struct')
             ..implement = ['HasCode']
             ..mixins = ['IsPub', 'Derives']
