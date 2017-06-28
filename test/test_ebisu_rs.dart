@@ -56,8 +56,10 @@ First struct in root module.
               struct('rm_s2')
                 ..doc = 'Second struct in root module'
                 ..members = [
-                  member('rm_s2_m1'),
-                  member('rm_s2_m2')..isPub = true
+                  member('rm_s2_m1')..doc = 'hmm',
+                  member('rm_s2_m2')
+                    ..doc = 'bam'
+                    ..isPub = true
                 ],
             ]
             ..modules = [module('sub_mod_1'), module('sub_mod_2')]),

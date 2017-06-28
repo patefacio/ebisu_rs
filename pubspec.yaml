@@ -10,9 +10,9 @@ dependencies:
 
 # custom <ebisu_rs dependencies>
 
-  #ebisu: ">=0.7.7"
-  ebisu:
-    path: "../ebisu"
+  ebisu: ">=0.7.9"
+#  ebisu:
+#    path: "../ebisu"
 
   id: "^1.0.16"
 

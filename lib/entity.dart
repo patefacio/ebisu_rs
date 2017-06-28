@@ -90,5 +90,5 @@ indent(s) => indentBlock(s, '    ');
 
 formatRustFile(filePath) =>
     Process.runSync('rustfmt', ['--skip-children', filePath]);
-    
+
 // end <library entity>

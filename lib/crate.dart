@@ -213,6 +213,7 @@ class Clap {
 
   _defineStruct(id, List<Arg> args) {
     var structDecl = struct(id)
+      ..derive = [Debug]
       ..members.addAll(args.map((arg) => member(arg.id)
         ..doc = arg.doc
         ..type = arg.type));
@@ -252,16 +253,14 @@ class Clap {
   _pullSingleArg(Arg arg) =>
       arg.argType == argString ? _pullStringArg(arg) : _pullNonStringArg(arg);
 
-  _pullMultipleNonStringArg(Arg arg) =>
-      '''
+  _pullMultipleNonStringArg(Arg arg) => '''
   ${arg.id.snake}: match matches.values_of("${arg.id.snake}") {
       None => vec![],
       Some(v) => v.into_iter().map(|x| x.parse()${_expectParse(arg)}).collect()
   },
   ''';
 
-  _pullMultipleStringArg(Arg arg) =>
-      '''
+  _pullMultipleStringArg(Arg arg) => '''
   ${arg.id.snake}: match matches.values_of("${arg.id.snake}") {
      None => vec![],
      Some(v) => v.into_iter().collect()

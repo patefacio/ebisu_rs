@@ -372,6 +372,23 @@ All rust named items are *RsEntity* instances.'''
           'package:ebisu_rs/type.dart',
           'package:quiver/iterables.dart',
         ])
+        ..enums = [
+          enum_('derivable')
+          ..libraryScopedValuesCase = capCamelCase
+          ..hasJsonSupport = true
+          ..values = [
+            'eq',
+            'partial_eq',
+            'ord',
+            'partial_ord',
+            'clone',
+            'copy',
+            'hash',
+            'default_value',
+            'zero',
+            'debug'
+          ]
+        ]
         ..classes = [
           class_('member')
             ..implement = ['HasCode']
@@ -381,12 +398,16 @@ All rust named items are *RsEntity* instances.'''
               member('type')
                 ..doc = 'Type of the member'
                 ..type = 'RsType'
-                ..init = 'str'
+                ..init = 'string'
                 ..access = RO,
             ],
+          class_('Derives')
+          ..members = [
+            member('derive')..type = 'List<Derivable>'..init = []
+          ],
           class_('struct')
             ..implement = ['HasCode']
-            ..mixins = ['IsPub']
+            ..mixins = ['IsPub', 'Derives']
             ..withClass(commonFeatures)
             ..members.addAll([
               member('members')
@@ -396,13 +417,13 @@ All rust named items are *RsEntity* instances.'''
           class_('tuple_struct')
             ..doc = 'Tuple struct'
             ..implement = ['HasCode']
-            ..mixins = ['IsPub']
+            ..mixins = ['IsPub', 'Derives']
             ..withClass(commonFeatures)
             ..members.addAll([]),
           class_('unit_struct')
             ..doc = 'Unit struct'
             ..implement = ['HasCode']
-            ..mixins = ['IsPub']
+            ..mixins = ['IsPub', 'Derives']
             ..withClass(commonFeatures)
             ..members.addAll([]),
         ]
