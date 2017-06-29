@@ -122,7 +122,6 @@ All rust named items are *RsEntity* instances.'''
 
       // dependency library
       library('dependency')
-        ..imports = commonIncludes()
         ..includesLogger = true
         ..enums = [
           enum_('compare_op')
@@ -196,12 +195,7 @@ All rust named items are *RsEntity* instances.'''
             ].map((primitive) => 'arg_$primitive'),
           enum_('logger_type')
             ..hasLibraryScopedValues = true
-            ..values = [
-              'env_logger',
-              'simple_logger',
-              'stderr_logger',
-              'flexi_logger'
-            ]
+            ..values = ['env_logger', 'flexi_logger']
         ]
         ..classes = [
           class_('arg')
@@ -307,7 +301,37 @@ All rust named items are *RsEntity* instances.'''
           'package:quiver/iterables.dart',
         ])
         ..includesLogger = true
+        ..enums = [
+           enum_('main_code_block')                
+                ..hasLibraryScopedValues = true
+                ..values = [
+                  enumValue(id('main_open'))
+                    ..doc =
+                        'The custom block appearing just after *main* is opened',
+                  enumValue(id('main_close'))
+                    ..doc =
+                        'The custom block appearing just after *main* is closed',
+                ],
+            enum_('module_code_block')                
+                ..hasLibraryScopedValues = true
+                ..values = [
+                  enumValue(id('module_top'))
+                    ..doc =
+                        'The custom block appearing just after imports, mod statements and usings',
+                  enumValue(id('module_bottom'))
+                    ..doc =
+                        'The custom block appearing at end of module',
+                ],
+        ]
         ..classes = [
+          class_('import')
+            ..members = [
+              member('import')
+                ..doc = 'Name of crate to import'
+                ..access = RO
+                ..isFinal = true,
+              member('uses_macros')..init = false
+            ],
           class_('module')
             ..extend = 'RsEntity'
             ..implement = ['HasFilePath', 'HasCode']
@@ -320,14 +344,25 @@ All rust named items are *RsEntity* instances.'''
               member('modules')
                 ..type = 'List<Module>'
                 ..init = [],
+              member('imports')
+                ..type = 'List<Import>'
+                ..init = [],
               member('structs')
                 ..type = 'List<Struct>'
                 ..init = [],
               member('code_block')
                 ..type = 'CodeBlock'
-                ..access = IA
+                ..access = IA,
+              member('module_code_blocks')
+              ..type = 'Map<ModuleCodeBlock, CodeBlock>'
+              ..init = {},
+              member('main_code_blocks')
+              ..type = 'Map<MainCodeBlock, CodeBlock>'
+              ..init = {},
             ])
         ],
+
+      // trait library
       library('trait')
         ..imports = commonIncludes()
         ..classes = [

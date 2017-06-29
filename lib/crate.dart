@@ -91,19 +91,11 @@ const ArgType argF32 = ArgType.argF32;
 ///
 const ArgType argF64 = ArgType.argF64;
 
-enum LoggerType { envLogger, simpleLogger, stderrLogger, flexiLogger }
+enum LoggerType { envLogger, flexiLogger }
 
 /// Convenient access to LoggerType.envLogger with *envLogger* see [LoggerType].
 ///
 const LoggerType envLogger = LoggerType.envLogger;
-
-/// Convenient access to LoggerType.simpleLogger with *simpleLogger* see [LoggerType].
-///
-const LoggerType simpleLogger = LoggerType.simpleLogger;
-
-/// Convenient access to LoggerType.stderrLogger with *stderrLogger* see [LoggerType].
-///
-const LoggerType stderrLogger = LoggerType.stderrLogger;
 
 /// Convenient access to LoggerType.flexiLogger with *flexiLogger* see [LoggerType].
 ///
@@ -219,7 +211,6 @@ class Clap {
   set about(String about) => command.about = about;
 
   get code => brCompact([
-        'extern crate clap;',
         'use clap::{App, Arg};',
         'let matches = App::new("${crate.name}")',
         indent(brCompact([
@@ -323,8 +314,13 @@ class CrateToml {
     _logger.info('Generating crate toml $crate');
 
     var tomlPath = join(crate.filePath, 'Cargo.toml');
-
     mergeWithFile(contents, tomlPath);
+  }
+
+  void _addIfMissing(Dependency dependency) {
+    if (!deps.any((d) => d.crate == dependency.crate)) {
+      deps.add(dependency);
+    }
   }
 
   get contents => brCompact([
@@ -398,20 +394,47 @@ class Crate extends RsEntity implements HasFilePath {
   generate() {
     _logger.info('Generating crate $id into $filePath');
 
+    _addLogSupport();
+
     if (_clap != null) {
-      rootModule.withCodeBlock((CodeBlock cb) => cb.snippets.add(brCompact([
-            _clap.defineStructs,
-            '''
-fn main() {  
-${indent(_clap.code)}
-${customBlock('module main ${rootModule.name}')}
-} 
-'''
-          ])));
+      rootModule
+      ..import('clap')
+      ..withMainCodeBlock(
+          mainOpen,
+          (CodeBlock cb) => cb
+            ..hasSnippetsFirst = true
+            ..snippets.add(brCompact([
+              loggerType == envLogger? '''
+use log::LogLevel;
+env_logger::init().expect("Successful init of env_logger");
+''' : null,
+              indent(_clap.code),
+            ])));
     }
 
     rootModule..generate();
     _crateToml.generate();
+  }
+
+  _addLogSupport() {
+    if (loggerType != null) {
+      _crateToml._addIfMissing(new Dependency('log', '^0.3.8'));
+      rootModule.importWithMacros('log');
+      _logger.info('Adding logging for $loggerType');
+      switch (loggerType) {
+        case envLogger:
+          {
+            _crateToml._addIfMissing(new Dependency('env_logger', '^0.4.3'));
+            rootModule.import('env_logger');
+            break;
+          }
+        case flexiLogger:
+          {
+            _crateToml._addIfMissing(new Dependency('flexi_logger', '^0.5.2'));
+            break;
+          }
+      }
+    }
   }
 
   get isLib => crateType == libCrate;

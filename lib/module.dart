@@ -14,11 +14,73 @@ import 'package:quiver/iterables.dart';
 
 final Logger _logger = new Logger('module');
 
+enum MainCodeBlock {
+  /// The custom block appearing just after *main* is opened
+  mainOpen,
+
+  /// The custom block appearing just after *main* is closed
+  mainClose
+}
+
+/// Convenient access to MainCodeBlock.mainOpen with *mainOpen* see [MainCodeBlock].
+///
+/// The custom block appearing just after *main* is opened
+///
+const MainCodeBlock mainOpen = MainCodeBlock.mainOpen;
+
+/// Convenient access to MainCodeBlock.mainClose with *mainClose* see [MainCodeBlock].
+///
+/// The custom block appearing just after *main* is closed
+///
+const MainCodeBlock mainClose = MainCodeBlock.mainClose;
+
+enum ModuleCodeBlock {
+  /// The custom block appearing just after imports, mod statements and usings
+  moduleTop,
+
+  /// The custom block appearing at end of module
+  moduleBottom
+}
+
+/// Convenient access to ModuleCodeBlock.moduleTop with *moduleTop* see [ModuleCodeBlock].
+///
+/// The custom block appearing just after imports, mod statements and usings
+///
+const ModuleCodeBlock moduleTop = ModuleCodeBlock.moduleTop;
+
+/// Convenient access to ModuleCodeBlock.moduleBottom with *moduleBottom* see [ModuleCodeBlock].
+///
+/// The custom block appearing at end of module
+///
+const ModuleCodeBlock moduleBottom = ModuleCodeBlock.moduleBottom;
+
+class Import {
+  /// Name of crate to import
+  String get import => _import;
+  bool usesMacros = false;
+
+  // custom <class Import>
+
+  Import(this._import, [this.usesMacros = false]);
+
+  get code => brCompact([
+        usesMacros ? '#[macro_use]' : null,
+        'extern crate $_import;',
+      ]);
+
+  // end <class Import>
+
+  final String _import;
+}
+
 class Module extends RsEntity with IsPub implements HasFilePath, HasCode {
   String get filePath => _filePath;
   ModuleType get moduleType => _moduleType;
   List<Module> modules = [];
+  List<Import> imports = [];
   List<Struct> structs = [];
+  Map<ModuleCodeBlock, CodeBlock> moduleCodeBlocks = {};
+  Map<MainCodeBlock, CodeBlock> mainCodeBlocks = {};
 
   // custom <class Module>
 
@@ -33,6 +95,10 @@ class Module extends RsEntity with IsPub implements HasFilePath, HasCode {
   CodeBlock withCodeBlock(f(CodeBlock codeBlock)) =>
       f(_codeBlock ?? (_codeBlock = new CodeBlock('module $name')));
 
+  CodeBlock withMainCodeBlock(MainCodeBlock mainCodeBlock, f(CodeBlock)) =>
+      f(mainCodeBlocks.putIfAbsent(
+          mainCodeBlock, () => codeBlock('main ${mainCodeBlock}')));
+
   onOwnershipEstablished() {
     var ownerPath = (owner as HasFilePath).filePath;
 
@@ -46,6 +112,11 @@ class Module extends RsEntity with IsPub implements HasFilePath, HasCode {
 
     _logger.info("Ownership of module($id) established in $filePath");
   }
+
+  import(import) => imports.add(import is Import ? import : new Import(import));
+
+  importWithMacros(String crateName) =>
+      imports.add(new Import(crateName, true));
 
   generate() {
     _logger
@@ -110,12 +181,29 @@ class Module extends RsEntity with IsPub implements HasFilePath, HasCode {
 
   get _structDecls => br(structs.map((s) => s.code));
 
+  get _imports => brCompact(imports.map((i) => i.code));
+
   get code => brCompact([
+        _imports,
         brCompact(declaredMods
             .map((module) => '${module.pubDecl}mod ${module.name};')),
         isDeclaredModule ? _structDecls : indent(_structDecls),
         _inlineCode,
+        _main,
       ]);
+
+  get _hasMain => mainCodeBlocks.isNotEmpty;
+
+  _mainCodeBlockText(MainCodeBlock mainCodeBlock) =>
+      mainCodeBlocks[mainCodeBlock]?.toString();
+
+  get _main => _hasMain
+      ? brCompact([
+      'fn main() {',
+      _mainCodeBlockText(mainOpen),
+      _mainCodeBlockText(mainClose),
+      '}'
+      ]) : null;
 
   // end <class Module>
 

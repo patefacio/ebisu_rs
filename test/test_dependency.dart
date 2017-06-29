@@ -34,6 +34,10 @@ void main([List<String> args]) {
       expect(spec.toString(), '<=1.3');
     }
     {
+      final spec = new VersionSpec.fromString('~ 1.3.2');
+      expect(spec.toString(), '~1.3.2');
+    }
+    {
       final spec = new VersionSpec.fromString('>2.3.1,<=2.3.5,=2.3.2');
       expect(spec.toString(), '>2.3.1, <=2.3.5, =2.3.2');
     }

@@ -67,6 +67,7 @@ First struct in root module.
         //// Crate 2
         crate('crate_2', appCrate)
           ..doc = 'This is the second crate'
+          ..loggerType = envLogger
           ..withCrateToml((crateToml) => crateToml
             ..deps = [
               // sample dep
