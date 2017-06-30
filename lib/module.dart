@@ -79,8 +79,8 @@ class Module extends RsEntity with IsPub implements HasFilePath, HasCode {
   List<Module> modules = [];
   List<Import> imports = [];
   List<Struct> structs = [];
-  Map<ModuleCodeBlock, CodeBlock> moduleCodeBlocks = {};
-  Map<MainCodeBlock, CodeBlock> mainCodeBlocks = {};
+  Map<ModuleCodeBlock, CodeBlock> get moduleCodeBlocks => _moduleCodeBlocks;
+  Map<MainCodeBlock, CodeBlock> get mainCodeBlocks => _mainCodeBlocks;
 
   // custom <class Module>
 
@@ -92,12 +92,14 @@ class Module extends RsEntity with IsPub implements HasFilePath, HasCode {
 
   toString() => 'mod($name:$moduleType)';
 
-  CodeBlock withCodeBlock(f(CodeBlock codeBlock)) =>
-      f(_codeBlock ?? (_codeBlock = new CodeBlock('module $name')));
-
   CodeBlock withMainCodeBlock(MainCodeBlock mainCodeBlock, f(CodeBlock)) =>
       f(mainCodeBlocks.putIfAbsent(
           mainCodeBlock, () => codeBlock('main ${mainCodeBlock}')));
+
+  CodeBlock withModuleCodeBlock(
+          ModuleCodeBlock moduleCodeBlock, f(CodeBlock)) =>
+      f(moduleCodeBlocks.putIfAbsent(
+          moduleCodeBlock, () => codeBlock('main ${moduleCodeBlock}')));
 
   onOwnershipEstablished() {
     var ownerPath = (owner as HasFilePath).filePath;
@@ -160,9 +162,6 @@ class Module extends RsEntity with IsPub implements HasFilePath, HasCode {
       List<String> guts = [];
       addInlineCode(modules, guts);
 
-      if (_codeBlock != null) {
-        guts.add(_codeBlock.toString());
-      }
       return brCompact(guts);
     }
   }
@@ -199,17 +198,19 @@ class Module extends RsEntity with IsPub implements HasFilePath, HasCode {
 
   get _main => _hasMain
       ? brCompact([
-      'fn main() {',
-      _mainCodeBlockText(mainOpen),
-      _mainCodeBlockText(mainClose),
-      '}'
-      ]) : null;
+          'fn main() {',
+          _mainCodeBlockText(mainOpen),
+          _mainCodeBlockText(mainClose),
+          '}'
+        ])
+      : null;
 
   // end <class Module>
 
   String _filePath;
   ModuleType _moduleType;
-  CodeBlock _codeBlock;
+  Map<ModuleCodeBlock, CodeBlock> _moduleCodeBlocks = {};
+  Map<MainCodeBlock, CodeBlock> _mainCodeBlocks = {};
 }
 
 // custom <library module>

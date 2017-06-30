@@ -398,18 +398,19 @@ class Crate extends RsEntity implements HasFilePath {
 
     if (_clap != null) {
       rootModule
-      ..import('clap')
-      ..withMainCodeBlock(
-          mainOpen,
-          (CodeBlock cb) => cb
-            ..hasSnippetsFirst = true
-            ..snippets.add(brCompact([
-              loggerType == envLogger? '''
-use log::LogLevel;
+        ..import('clap')
+        ..withMainCodeBlock(
+            mainOpen,
+            (CodeBlock cb) => cb
+              ..hasSnippetsFirst = true
+              ..snippets.add(brCompact([
+                loggerType == envLogger
+                    ? '''
 env_logger::init().expect("Successful init of env_logger");
-''' : null,
-              indent(_clap.code),
-            ])));
+'''
+                    : null,
+                indent(_clap.code),
+              ])));
     }
 
     rootModule..generate();

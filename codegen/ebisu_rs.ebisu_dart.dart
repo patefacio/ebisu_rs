@@ -350,15 +350,14 @@ All rust named items are *RsEntity* instances.'''
               member('structs')
                 ..type = 'List<Struct>'
                 ..init = [],
-              member('code_block')
-                ..type = 'CodeBlock'
-                ..access = IA,
               member('module_code_blocks')
               ..type = 'Map<ModuleCodeBlock, CodeBlock>'
-              ..init = {},
+              ..init = {}
+              ..access = RO,
               member('main_code_blocks')
               ..type = 'Map<MainCodeBlock, CodeBlock>'
-              ..init = {},
+              ..init = {}
+              ..access = RO,
             ])
         ],
 
