@@ -112,10 +112,12 @@ class Module extends RsEntity with IsPub implements HasFilePath, HasCode {
         ? join(ownerPath, id.snake)
         : ownerPath;
 
-    _logger.info("Ownership of module($id) established in $filePath");
+    _logger.info("Ownership of module($id) established in   $filePath");
   }
 
-  import(import) => imports.add(import is Import ? import : new Import(import));
+  import(import) => import is Iterable
+      ? import.forEach((i) => this.import(i))
+      : imports.add(import is Import ? import : new Import(import));
 
   importWithMacros(String crateName) =>
       imports.add(new Import(crateName, true));

@@ -99,6 +99,30 @@ All rust named items are *RsEntity* instances.'''
               member('is_pub')..init = false,
             ]
         ],
+
+      library('generic')
+      ..imports.addAll([
+          'package:id/id.dart',
+      ])
+      ..classes = [
+
+        class_('lifetime')
+        ..members = [
+          member('id')..type = 'Id',
+        ],
+
+        class_('type_parm')
+        ..members = [
+          member('id')..type = 'Id',          
+        ],
+
+        class_('generics')
+        ..members = [
+          member('lifetimes')..type = 'List<Lifetime>'..init = [],
+          member('type_parms')..type = 'List<TypeParm>'..init = [],
+        ]
+      ],
+
       library('repo')
         ..doc = 'Library supporting generation of a rust repo'
         ..imports = commonIncludes()
@@ -510,8 +534,6 @@ All rust named items are *RsEntity* instances.'''
             ..members.addAll([]),
         ]
     ];
-
-  _logger.info("BOOd");
   ebisuRs.generate(generateDrudge: true);
 
   print('''

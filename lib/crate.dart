@@ -323,6 +323,8 @@ class CrateToml {
     }
   }
 
+  addDep(String crateName, version) => deps.add(dependency(crateName, version));
+
   get contents => brCompact([
         '[package]',
         // name

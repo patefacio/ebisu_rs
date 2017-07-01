@@ -69,10 +69,13 @@ First struct in root module.
           ..doc = 'This is the second crate'
           ..loggerType = envLogger
           ..withCrateToml((crateToml) => crateToml
-            ..deps = [
+            ..addDep('clap', '^2.4.2')
+            ..addDep('serde', '^1.0.8')
+            ..deps.addAll([
               // sample dep
-              dependency('clap', '^2.4.2')
-            ])
+              dependency('serde_derive', '^1.0.9'),
+              dependency('serde_json', '^1.0.2'),
+            ]))
           ..withClap((Clap clap) => clap
             ..args = [
               //
@@ -94,6 +97,8 @@ First struct in root module.
                 ..isMultiple = true,
             ])
           ..withRootModule((Module rootModule) => rootModule
+            ..importWithMacros('serde_derive')
+            ..import(['serde', 'serde_json'])
             ..modules = [
               // sub_mod1
               module('sub_mod1', inlineModule)
