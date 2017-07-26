@@ -49,7 +49,7 @@ main(List<String> args) {
     ]
     ..libraries = [
       library('ebisu_rs')
-        ..importAndExportAll([
+        ..exports.addAll([
           'package:ebisu_rs/repo.dart',
           'package:ebisu_rs/crate.dart',
           'package:ebisu_rs/module.dart',
