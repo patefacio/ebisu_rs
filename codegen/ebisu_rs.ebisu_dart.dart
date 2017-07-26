@@ -25,7 +25,7 @@ main(List<String> args) {
     cls
       ..extend = 'RsEntity'
       ..withCustomBlock(
-          (blk) => blk.snippets.add('${cls.name}(id) : super(id);'));
+          (blk) => blk.snippets.add('${cls.name}(dynamic id) : super(id);'));
   }
 
   _topDir = dirname(dirname(here));

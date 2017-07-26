@@ -80,14 +80,16 @@ class VersionConstraint {
 
   // custom <class VersionConstraint>
 
-  VersionConstraint(compareOp, version) {
-    this.compareOp =
-        compareOp is String ? _compareOpFromString(compareOp) : compareOp;
-    this.version =
-        version is String ? new Version.fromString(version) : version;
+  VersionConstraint(dynamic compareOp, dynamic version) {
+    this.compareOp = compareOp is String
+        ? _compareOpFromString(compareOp)
+        : compareOp as CompareOp;
+    this.version = version is String
+        ? new Version.fromString(version)
+        : version as Version;
   }
 
-  toString() => '${compareOpToString(compareOp)}$version';
+  String toString() => '${compareOpToString(compareOp)}$version';
 
   static CompareOp _compareOpFromString(String op) {
     CompareOp resolved;
@@ -179,9 +181,9 @@ class Dependency {
 
   set version(dynamic versionSpec) => _version = versionSpec is String
       ? new VersionSpec.fromString(versionSpec)
-      : versionSpec;
+      : versionSpec as VersionSpec;
 
-  get _decl =>
+  String get _decl =>
       path != null ? '{ version = "$version", path = "$path" }' : '"$version"';
 
   toString() => '${crate} = $_decl';
@@ -193,9 +195,10 @@ class Dependency {
 
 // custom <library dependency>
 
-dependency(String crate, dynamic version) => new Dependency(crate, version);
+Dependency dependency(String crate, dynamic version) =>
+    new Dependency(crate, version);
 
-compareOpToString(CompareOp compareOp) {
+String compareOpToString(CompareOp compareOp) {
   switch (compareOp) {
     case lt:
       return '<';
@@ -212,6 +215,7 @@ compareOpToString(CompareOp compareOp) {
     case caret:
       return '^';
   }
+  return 'Unrecognized CompareOp($compareOp)';
 }
 
 // end <library dependency>

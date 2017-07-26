@@ -49,7 +49,7 @@ abstract class RsEntity extends Object with Entity {
 
   // custom <class RsEntity>
 
-  RsEntity(id) : this.id = makeId(id);
+  RsEntity(dynamic id) : this.id = makeId(id);
 
   // end <class RsEntity>
 
@@ -78,7 +78,7 @@ class IsPub {
 
   // custom <class IsPub>
 
-  get pubDecl => isPub ? 'pub ' : '';
+  String get pubDecl => isPub ? 'pub ' : '';
 
   // end <class IsPub>
 
@@ -86,9 +86,9 @@ class IsPub {
 
 // custom <library entity>
 
-indent(s) => indentBlock(s, '    ');
+String indent(String s) => indentBlock(s, '    ');
 
-formatRustFile(filePath) =>
+ProcessResult formatRustFile(String filePath) =>
     Process.runSync('rustfmt', ['--skip-children', filePath]);
 
 // end <library entity>

@@ -63,7 +63,7 @@ class Import {
 
   Import(this._import, [this.usesMacros = false]);
 
-  get code => brCompact([
+  String get code => brCompact([
         usesMacros ? '#[macro_use]' : null,
         'extern crate $_import;',
       ]);
@@ -84,20 +84,23 @@ class Module extends RsEntity with IsPub implements HasFilePath, HasCode {
 
   // custom <class Module>
 
-  Module(id, [moduleType = fileModule])
-      : super(id),
-        _moduleType = moduleType;
+  Module(dynamic id, [ModuleType moduleType = fileModule])
+      : _moduleType = moduleType,
+        super(id);
 
-  Iterable<Module> get children => concat([structs, modules]);
+  @override
+  Iterable<Entity> get children =>
+      concat(<List<Entity>>[structs, modules]) as Iterable<Entity>;
 
-  toString() => 'mod($name:$moduleType)';
+  String toString() => 'mod($name:$moduleType)';
 
-  CodeBlock withMainCodeBlock(MainCodeBlock mainCodeBlock, f(CodeBlock)) =>
+  void withMainCodeBlock(
+          MainCodeBlock mainCodeBlock, void f(CodeBlock codeBlock)) =>
       f(mainCodeBlocks.putIfAbsent(
           mainCodeBlock, () => codeBlock('main ${mainCodeBlock}')));
 
-  CodeBlock withModuleCodeBlock(
-          ModuleCodeBlock moduleCodeBlock, f(CodeBlock)) =>
+  void withModuleCodeBlock(
+          ModuleCodeBlock moduleCodeBlock, void f(CodeBlock codeBlock)) =>
       f(moduleCodeBlocks.putIfAbsent(
           moduleCodeBlock, () => codeBlock('main ${moduleCodeBlock}')));
 
@@ -108,23 +111,23 @@ class Module extends RsEntity with IsPub implements HasFilePath, HasCode {
       ownerPath = join(ownerPath, 'src');
     }
 
-    _filePath = isDirectoryModule || isInlineModule
+    _filePath = (isDirectoryModule || isInlineModule)
         ? join(ownerPath, id.snake)
         : ownerPath;
 
     _logger.info("Ownership of module($id) established in   $filePath");
   }
 
-  import(import) => import is Iterable
-      ? import.forEach((i) => this.import(i))
-      : imports.add(import is Import ? import : new Import(import));
+  void import(dynamic import) => import is Iterable
+      ? import.forEach((dynamic i) => this.import(i))
+      : imports.add(import is Import ? import : new Import(import as String));
 
-  importWithMacros(String crateName) =>
+  void importWithMacros(String crateName) =>
       imports.add(new Import(crateName, true));
 
-  generate() {
-    _logger
-        .info('Generating module $pubDecl$id:$filePath:${chomp(detailedPath)}');
+  void generate() {
+    _logger.info(
+        'Generating module $pubDecl$id:$filePath:${chomp(detailedPath.toString())}');
 
     if (isDeclaredModule) {
       mergeWithFile(code, codePath);
@@ -134,7 +137,7 @@ class Module extends RsEntity with IsPub implements HasFilePath, HasCode {
     modules.forEach((module) => module.generate());
   }
 
-  get codePath {
+  String get codePath {
     if (isFileModule) {
       return join(filePath, '$name.rs');
     } else if (isDirectoryModule) {
@@ -147,7 +150,7 @@ class Module extends RsEntity with IsPub implements HasFilePath, HasCode {
     }
   }
 
-  get _inlineCode {
+  String get _inlineCode {
     if (isDeclaredModule) {
       addInlineCode(Iterable<Module> modules, List<String> guts) {
         for (Module module in modules) {
@@ -166,25 +169,28 @@ class Module extends RsEntity with IsPub implements HasFilePath, HasCode {
 
       return brCompact(guts);
     }
+    return '';
   }
 
-  get isFileModule => moduleType == fileModule;
-  get isDirectoryModule => moduleType == directoryModule;
-  get isRootModule => moduleType == rootModule;
-  get isInlineModule => moduleType == inlineModule;
-  get isDeclaredModule => moduleType != inlineModule;
+  bool get isFileModule => moduleType == fileModule;
+  bool get isDirectoryModule => moduleType == directoryModule;
+  bool get isRootModule => moduleType == rootModule;
+  bool get isInlineModule => moduleType == inlineModule;
+  bool get isDeclaredModule => moduleType != inlineModule;
 
-  get inlineMods => modules.where((module) => module.isInlineModule);
+  Iterable<Module> get inlineMods =>
+      modules.where((module) => module.isInlineModule);
 
-  get declaredMods => modules.where((module) => module.isDeclaredModule);
+  Iterable<Module> get declaredMods =>
+      modules.where((module) => module.isDeclaredModule);
 
-  get name => id.snake;
+  String get name => id.snake;
 
-  get _structDecls => br(structs.map((s) => s.code));
+  String get _structDecls => br(structs.map((s) => s.code));
 
-  get _imports => brCompact(imports.map((i) => i.code));
+  String get _imports => brCompact(imports.map((i) => i.code));
 
-  get code => brCompact([
+  String get code => brCompact([
         _imports,
         brCompact(declaredMods
             .map((module) => '${module.pubDecl}mod ${module.name};')),
@@ -193,12 +199,12 @@ class Module extends RsEntity with IsPub implements HasFilePath, HasCode {
         _main,
       ]);
 
-  get _hasMain => mainCodeBlocks.isNotEmpty;
+  bool get _hasMain => mainCodeBlocks.isNotEmpty;
 
-  _mainCodeBlockText(MainCodeBlock mainCodeBlock) =>
+  String _mainCodeBlockText(MainCodeBlock mainCodeBlock) =>
       mainCodeBlocks[mainCodeBlock]?.toString();
 
-  get _main => _hasMain
+  String get _main => _hasMain
       ? brCompact([
           'fn main() {',
           _mainCodeBlockText(mainOpen),
@@ -217,6 +223,7 @@ class Module extends RsEntity with IsPub implements HasFilePath, HasCode {
 
 // custom <library module>
 
-module(id, [ModuleType moduleType = fileModule]) => new Module(id, moduleType);
+Module module(dynamic id, [ModuleType moduleType = fileModule]) =>
+    new Module(id, moduleType);
 
 // end <library module>

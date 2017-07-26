@@ -29,7 +29,7 @@ class Parm extends RsEntity implements HasCode {
 
   // end <class Parm>
 
-  Parm(id) : super(id);
+  Parm(dynamic id) : super(id);
 }
 
 class Fn extends RsEntity with IsPub implements HasCode {
@@ -51,7 +51,7 @@ class Fn extends RsEntity with IsPub implements HasCode {
 
   // end <class Fn>
 
-  Fn(id) : super(id);
+  Fn(dynamic id) : super(id);
 }
 
 class Trait extends RsEntity with IsPub implements HasCode {
@@ -63,7 +63,7 @@ class Trait extends RsEntity with IsPub implements HasCode {
 
   // end <class Trait>
 
-  Trait(id) : super(id);
+  Trait(dynamic id) : super(id);
 }
 
 // custom <library trait>

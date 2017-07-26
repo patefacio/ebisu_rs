@@ -167,7 +167,7 @@ const u64 = const Int(64, false);
 const f32 = const Float(32);
 const f64 = const Float(64);
 
-ref(type, [lifetime]) => new Ref(type, lifetime);
+Ref ref(type, [lifetime]) => new Ref(type, lifetime);
 
 mref(type, [lifetime]) => new Mref(type, lifetime);
 

@@ -23,13 +23,13 @@ class Repo extends RsEntity {
 
   get children => new List<Crate>.from(crates, growable: false);
 
-  get rootPath =>
+  String get rootPath =>
       _rootPath ??= dirname(dirname(absolute(Platform.script.toFilePath())));
 
-  toString() =>
+  String toString() =>
       brCompact(['Repo($id:$rootPath)', indentBlock(brCompact(crates))]);
 
-  generate() {
+  void generate() {
     owner = null;
     new Directory(_rootPath)..createSync(recursive: true);
     _logger.info('Generating repo $id:$_rootPath');
@@ -38,13 +38,13 @@ class Repo extends RsEntity {
 
   // end <class Repo>
 
-  Repo(id) : super(id);
+  Repo(dynamic id) : super(id);
 
   String _rootPath;
 }
 
 // custom <library repo>
 
-repo(id) => new Repo(id);
+Repo repo(dynamic id) => new Repo(id);
 
 // end <library repo>

@@ -120,15 +120,15 @@ class Arg {
 
   // custom <class Arg>
 
-  Arg(id) : _id = makeId(id);
+  Arg(dynamic id) : _id = makeId(id);
 
   toString() => "arg(${id.snake})";
 
-  get code {
+  String get code {
     assert(!(isMultiple && defaultValue != null),
         "Args can not be isMultiple and have defaultValue $this");
 
-    return brCompact([
+    return brCompact(<String>[
       '.arg(Arg::with_name("${id.snake}")',
       indent(brCompact([
         doc != null ? '.help("${doc}")' : null,
@@ -137,15 +137,16 @@ class Arg {
         isRequired ? '.required(true)' : null,
         isMultiple ? '.multiple(true)' : null,
         defaultValue != null ? '.default_value("$defaultValue")' : null,
-        (defaultValue == null) && takesValue ? '.takes_value(true)' : null,
+        ((defaultValue == null) && takesValue) ? '.takes_value(true)' : null,
       ])),
       ')'
     ]);
   }
 
-  get takesValue => defaultValue != null || argType != argBool;
+  bool get takesValue => defaultValue != null || argType != argBool;
 
-  get type => isMultiple ? 'Vec<${_baseType.scopedDecl}>' : _baseType;
+  String get type =>
+      isMultiple ? 'Vec<${_baseType.scopedDecl}>' : _baseType.toString();
 
   static final Map<ArgType, RsType> _baseTypes = {
     argString: ref(str, 'a'),
@@ -162,7 +163,8 @@ class Arg {
     argF32: f32,
     argF64: f64
   };
-  get _baseType => _baseTypes[argType] ?? string;
+
+  RsType get _baseType => _baseTypes[argType] ?? string;
 
   // end <class Arg>
 
@@ -182,7 +184,7 @@ class Command {
 
   // custom <class Command>
 
-  Command(id) : _id = makeId(id);
+  Command(dynamic id) : _id = makeId(id);
 
   // end <class Command>
 
@@ -210,7 +212,7 @@ class Clap {
   set author(String author) => command.author = author;
   set about(String about) => command.about = about;
 
-  get code => brCompact([
+  String get code => brCompact([
         'use clap::{App, Arg};',
         'let matches = App::new("${crate.name}")',
         indent(brCompact([
@@ -220,29 +222,29 @@ class Clap {
         '.get_matches();',
       ]);
 
-  get defineStructs =>
+  String get defineStructs =>
       pullArgs ? _defineStruct('${crate.name}_options', args) : null;
 
-  _defineStruct(id, List<Arg> args) {
-    var structDecl = struct(id)
-      ..derive = [Debug]
+  String _defineStruct(dynamic id, List<Arg> args) {
+    Struct structDecl = struct(id)
+      ..derive = <Derivable>[Debug]
       ..members.addAll(args.map((arg) => member(arg.id)
         ..doc = arg.doc
         ..type = arg.type));
 
-    var literal = brCompact([
+    String literal = brCompact(<String>[
       '${structDecl.name} {',
       indent(brCompact(args.map(_pullArg))),
       '}',
     ]);
 
-    var ctor = brCompact([
+    String ctor = brCompact(<String>[
       'fn from_matches(matches: &\'a clap::ArgMatches) -> ${structDecl.name}<\'a> {',
       indent(literal),
       '}',
     ]);
 
-    return brCompact([
+    return brCompact(<String>[
       structDecl.code,
       'impl<\'a> ${structDecl.name}<\'a> {',
       indent(ctor),
@@ -250,40 +252,40 @@ class Clap {
     ]);
   }
 
-  _expectParse(Arg arg) =>
+  String _expectParse(Arg arg) =>
       '.expect("failed to parse arg (${arg.id.emacs}) of type (${arg.argType})")';
 
-  _expectUnwrap(Arg arg) =>
+  String _expectUnwrap(Arg arg) =>
       '.expect("failed to unwrap <value_of(\\"${arg.id.snake}\\")>")';
 
-  _pullNonStringArg(Arg arg) =>
+  String _pullNonStringArg(Arg arg) =>
       '${arg.id.snake}: matches.value_of("${arg.id.snake}")${_expectUnwrap(arg)}.parse()${_expectParse(arg)},';
 
-  _pullStringArg(Arg arg) =>
+  String _pullStringArg(Arg arg) =>
       '${arg.id.snake}: matches.value_of("${arg.id.snake}")${_expectUnwrap(arg)},';
 
-  _pullSingleArg(Arg arg) =>
+  String _pullSingleArg(Arg arg) =>
       arg.argType == argString ? _pullStringArg(arg) : _pullNonStringArg(arg);
 
-  _pullMultipleNonStringArg(Arg arg) => '''
+  String _pullMultipleNonStringArg(Arg arg) => '''
   ${arg.id.snake}: match matches.values_of("${arg.id.snake}") {
       None => vec![],
       Some(v) => v.into_iter().map(|x| x.parse()${_expectParse(arg)}).collect()
   },
   ''';
 
-  _pullMultipleStringArg(Arg arg) => '''
+  String _pullMultipleStringArg(Arg arg) => '''
   ${arg.id.snake}: match matches.values_of("${arg.id.snake}") {
      None => vec![],
      Some(v) => v.into_iter().collect()
   },
   ''';
 
-  _pullMultipleArg(Arg arg) => arg.argType == argString
+  String _pullMultipleArg(Arg arg) => arg.argType == argString
       ? _pullMultipleStringArg(arg)
       : _pullMultipleNonStringArg(arg);
 
-  _pullArg(Arg arg) =>
+  String _pullArg(Arg arg) =>
       arg.isMultiple ? _pullMultipleArg(arg) : _pullSingleArg(arg);
 
   // end <class Clap>
@@ -323,9 +325,10 @@ class CrateToml {
     }
   }
 
-  addDep(String crateName, version) => deps.add(dependency(crateName, version));
+  void addDep(String crateName, dynamic version) =>
+      deps.add(dependency(crateName, version));
 
-  get contents => brCompact([
+  String get contents => brCompact(<String>[
         '[package]',
         // name
         'name = "${crate.id}"',
@@ -352,7 +355,7 @@ class CrateToml {
         _buildDeps,
       ]);
 
-  get _buildDeps => buildDeps.isEmpty
+  String get _buildDeps => buildDeps.isEmpty
       ? null
       : '''\n\n[build-dependencies]
 ${buildDeps.join("\n")}
@@ -373,27 +376,27 @@ class Crate extends RsEntity implements HasFilePath {
 
   // custom <class Crate>
 
-  Crate(id, [crateType = libCrate])
-      : super(id),
-        crateType = crateType,
-        rootModule = new Module(id, ModuleType.rootModule) {
+  Crate(dynamic id, [CrateType crateType = libCrate])
+      : crateType = crateType,
+        rootModule = new Module(id, ModuleType.rootModule),
+        super(id) {
     _crateToml = new CrateToml(this);
   }
 
-  Module withRootModule(f(Module module)) => f(rootModule);
-  CrateToml withCrateToml(f(CrateToml crateToml)) => f(_crateToml);
-  Clap withClap(f(Clap clap)) => f(_clap ?? (_clap = new Clap(this)));
+  void withRootModule(void f(Module module)) => f(rootModule);
+  void withCrateToml(void f(CrateToml crateToml)) => f(_crateToml);
+  void withClap(void f(Clap clap)) => f(_clap ?? (_clap = new Clap(this)));
 
   get children => new List<Module>.filled(1, rootModule, growable: false);
 
-  toString() => 'crate($name)';
+  String toString() => 'crate($name)';
 
   onOwnershipEstablished() {
     _filePath = join((owner as Repo).rootPath, id.snake);
     _logger.info("Ownership of crate($id) established");
   }
 
-  generate() {
+  void generate() {
     _logger.info('Generating crate $id into $filePath');
 
     _addLogSupport();
@@ -419,7 +422,7 @@ env_logger::init().expect("Successful init of env_logger");
     _crateToml.generate();
   }
 
-  _addLogSupport() {
+  void _addLogSupport() {
     if (loggerType != null) {
       _crateToml._addIfMissing(new Dependency('log', '^0.3.8'));
       rootModule.importWithMacros('log');
@@ -440,11 +443,11 @@ env_logger::init().expect("Successful init of env_logger");
     }
   }
 
-  get isLib => crateType == libCrate;
+  bool get isLib => crateType == libCrate;
 
-  get isApp => crateType == appCrate;
+  bool get isApp => crateType == appCrate;
 
-  get name => id.snake;
+  String get name => id.snake;
 
   // end <class Crate>
 
@@ -455,8 +458,9 @@ env_logger::init().expect("Successful init of env_logger");
 
 // custom <library crate>
 
-crate(id, [CrateType crateType = libCrate]) => new Crate(id, crateType);
+Crate crate(dynamic id, [CrateType crateType = libCrate]) =>
+    new Crate(id, crateType);
 
-Arg arg(id) => new Arg(id);
+Arg arg(dynamic id) => new Arg(id);
 
 // end <library crate>

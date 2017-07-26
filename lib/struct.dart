@@ -182,7 +182,7 @@ class Member extends RsEntity with IsPub implements HasCode {
 
   // end <class Member>
 
-  Member(id) : super(id);
+  Member(dynamic id) : super(id);
 
   RsType _type = string;
 }
@@ -240,7 +240,7 @@ class Struct extends RsEntity with IsPub, Derives implements HasCode {
 
   // end <class Struct>
 
-  Struct(id) : super(id);
+  Struct(dynamic id) : super(id);
 }
 
 /// Tuple struct
@@ -259,7 +259,7 @@ class TupleStruct extends RsEntity with IsPub, Derives implements HasCode {
 
   // end <class TupleStruct>
 
-  TupleStruct(id) : super(id);
+  TupleStruct(dynamic id) : super(id);
 }
 
 /// Unit struct
@@ -274,12 +274,12 @@ class UnitStruct extends RsEntity with IsPub, Derives implements HasCode {
 
   // end <class UnitStruct>
 
-  UnitStruct(id) : super(id);
+  UnitStruct(dynamic id) : super(id);
 }
 
 // custom <library struct>
 
-struct(id) => new Struct(id);
-member(id) => new Member(id);
+Struct struct(id) => new Struct(id);
+Member member(id) => new Member(id);
 
 // end <library struct>
