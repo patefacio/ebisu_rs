@@ -16,7 +16,6 @@ main(List<String> args) {
   String here = absolute(Platform.script.toFilePath());
 
   commonIncludes() => [
-        'package:id/id.dart',
         'package:ebisu/ebisu.dart',
         'package:ebisu_rs/entity.dart',
       ];
@@ -66,8 +65,7 @@ All rust named items are *RsEntity* instances.'''
         ..imports = [
           'package:id/id.dart',
           'package:ebisu/ebisu.dart',
-          'package:path/path.dart',
-          'dart:io',
+         'dart:io',
         ]
         ..enums = [
           enum_('crate_type')
@@ -191,6 +189,7 @@ All rust named items are *RsEntity* instances.'''
         ..imports = commonIncludes()
         ..includesLogger = true
         ..imports.addAll([
+          'package:id/id.dart',
           'package:ebisu_rs/module.dart',
           'package:ebisu_rs/repo.dart',
           'package:ebisu_rs/struct.dart',
@@ -473,6 +472,7 @@ All rust named items are *RsEntity* instances.'''
       library('struct')
         ..imports = commonIncludes()
         ..imports.addAll([
+          'package:id/id.dart',
           'package:ebisu_rs/type.dart',
           'package:quiver/iterables.dart',
         ])

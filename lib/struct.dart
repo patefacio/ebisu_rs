@@ -111,8 +111,8 @@ class Derivable implements Comparable<Derivable> {
 
   static Derivable fromJson(dynamic v) {
     return (v is String)
-        ? fromString(v as String)
-        : (v is int) ? values[v as int] : v as Derivable;
+        ? fromString(v)
+        : (v is int) ? values[v] : v as Derivable;
   }
 }
 
@@ -168,9 +168,8 @@ class Member extends RsEntity with IsPub implements HasCode {
     print("^^^^^^^^Ownership of ${id}:${runtimeType}");
   }
 
-  set type(dynamic type) => _type = type is String
-      ? _type = new UserDefinedType(type as String)
-      : type as RsType;
+  set type(dynamic type) => _type =
+      type is String ? _type = new UserDefinedType(type) : type as RsType;
 
   String toString() => 'member($name:$type)';
 

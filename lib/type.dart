@@ -16,7 +16,7 @@ abstract class RsType {
 
   bool get isRefType => false;
 
-  get scopedDecl => toString();
+  String get scopedDecl => toString();
 
   Iterable<String> get lifetimes => new Iterable.empty();
 
@@ -37,6 +37,7 @@ class BuiltInType extends RsType {
 
   const BuiltInType(this.typeName);
 
+  @override
   toString() => typeName;
 
   // end <class BuiltInType>
@@ -57,6 +58,7 @@ class Int extends RsType {
 
   const Int(this.size, [this.isSigned = true]);
 
+  @override
   toString() => '${isSigned? "i":"u"}$size';
 
   // end <class Int>
@@ -70,6 +72,7 @@ class Float extends RsType {
 
   const Float(this.size);
 
+  @override
   toString() => 'f$size';
 
   // end <class Float>
@@ -99,7 +102,7 @@ abstract class RefType extends RsType {
 
   bool get isRefType => true;
 
-  get scopedDecl {
+  String get scopedDecl {
     if (lifetime.isNotEmpty) {
       return '& \'$lifetime $_mutTag${referent.scopedDecl}';
     } else {
@@ -107,18 +110,19 @@ abstract class RefType extends RsType {
     }
   }
 
-  get lifetimes => lifetime.isNotEmpty
-      ? concat([
+  Iterable<String> get lifetimes => lifetime.isNotEmpty
+      ? concat(<Iterable<String>>[
           [lifetime],
           referent.lifetimes
-        ])
+        ]) as Iterable<String>
       : referent.lifetimes;
 
-  get _mutTag => isMutable ? 'mut ' : '';
+  String get _mutTag => isMutable ? 'mut ' : '';
 
+  @override
   toString() => '& $_mutTag$referent';
 
-  get isMutable => false;
+  bool get isMutable => false;
 
   // end <class RefType>
 
@@ -127,7 +131,7 @@ abstract class RefType extends RsType {
 class Ref extends RefType {
   // custom <class Ref>
 
-  Ref(referent, [String lifetime]) : super(referent, lifetime);
+  Ref(RsType referent, [String lifetime]) : super(referent, lifetime);
 
   bool get isRef => true;
 
@@ -138,9 +142,9 @@ class Ref extends RefType {
 class Mref extends RefType {
   // custom <class Mref>
 
-  Mref(referent, [String lifetime]) : super(referent, lifetime);
+  Mref(RsType referent, [String lifetime]) : super(referent, lifetime);
 
-  get isMutable => true;
+  bool get isMutable => true;
 
   bool get isMref => true;
 
@@ -167,9 +171,9 @@ const u64 = const Int(64, false);
 const f32 = const Float(32);
 const f64 = const Float(64);
 
-Ref ref(type, [lifetime]) => new Ref(type, lifetime);
+Ref ref(RsType type, [String lifetime]) => new Ref(type, lifetime);
 
-mref(type, [lifetime]) => new Mref(type, lifetime);
+Mref mref(RsType type, [String lifetime]) => new Mref(type, lifetime);
 
 // end <library type>
 

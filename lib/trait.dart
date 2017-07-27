@@ -2,7 +2,6 @@ library ebisu_rs.trait;
 
 import 'package:ebisu/ebisu.dart';
 import 'package:ebisu_rs/entity.dart';
-import 'package:id/id.dart';
 
 // custom <additional imports>
 // end <additional imports>
@@ -38,16 +37,16 @@ class Fn extends RsEntity with IsPub implements HasCode {
 
   // custom <class Fn>
 
-  get children => new List<Parm>.from(parms, growable: false);
+  Iterable<Entity> get children => new List<Parm>.from(parms, growable: false);
 
-  get code => brCompact([
+  String get code => brCompact([
         '${pubDecl}fn $name($_parmsText) -> $returnType {',
         '}',
       ]);
 
-  get name => id.snake;
+  String get name => id.snake;
 
-  get _parmsText => parms.map((p) => p.code).join(', ');
+  String get _parmsText => parms.map((p) => p.code).join(', ');
 
   // end <class Fn>
 
@@ -59,7 +58,10 @@ class Trait extends RsEntity with IsPub implements HasCode {
 
   // custom <class Trait>
 
-  get children => new List<Fn>.from(functions, growable: false);
+  Iterable<Entity> get children =>
+      new List<Fn>.from(functions, growable: false);
+
+  String get code => 'TODO';
 
   // end <class Trait>
 

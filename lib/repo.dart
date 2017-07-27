@@ -5,7 +5,6 @@ import 'dart:io';
 import 'package:ebisu/ebisu.dart';
 import 'package:ebisu_rs/crate.dart';
 import 'package:ebisu_rs/entity.dart';
-import 'package:id/id.dart';
 import 'package:logging/logging.dart';
 import 'package:path/path.dart';
 
