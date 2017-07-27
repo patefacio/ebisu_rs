@@ -30,7 +30,7 @@ class Derivable implements Comparable<Derivable> {
 
   static const Derivable DEBUG = const Derivable._(9);
 
-  static get values => [
+  static List<Derivable> get values => const <Derivable>[
         EQ,
         PARTIAL_EQ,
         ORD,
@@ -49,7 +49,7 @@ class Derivable implements Comparable<Derivable> {
 
   const Derivable._(this.value);
 
-  copy() => this;
+  Derivable copy() => this;
 
   int compareTo(Derivable other) => value.compareTo(other.value);
 
@@ -107,10 +107,12 @@ class Derivable implements Comparable<Derivable> {
     }
   }
 
-  toJson() => toString();
+  String toJson() => toString();
 
   static Derivable fromJson(dynamic v) {
-    return (v is String) ? fromString(v) : (v is int) ? values[v] : v;
+    return (v is String)
+        ? fromString(v as String)
+        : (v is int) ? values[v as int] : v as Derivable;
   }
 }
 
@@ -166,19 +168,20 @@ class Member extends RsEntity with IsPub implements HasCode {
     print("^^^^^^^^Ownership of ${id}:${runtimeType}");
   }
 
-  set type(type) =>
-      _type = type is String ? _type = new UserDefinedType(type) : type;
+  set type(dynamic type) => _type = type is String
+      ? _type = new UserDefinedType(type as String)
+      : type as RsType;
 
-  toString() => 'member($name:$type)';
+  String toString() => 'member($name:$type)';
 
-  get name => id.snake;
+  String get name => id.snake;
 
-  get code => brCompact([
-        tripleSlashComment(doc ?? 'TODO: comment member'),
+  String get code => brCompact([
+        tripleSlashComment(doc?.toString() ?? 'TODO: comment member'),
         '$pubDecl$name: ${type.scopedDecl},',
       ]);
 
-  get lifetimes => type.lifetimes;
+  Iterable<String> get lifetimes => type.lifetimes;
 
   // end <class Member>
 
@@ -202,9 +205,9 @@ class Struct extends RsEntity with IsPub, Derives implements HasCode {
 
   get children => new List<Member>.from(members, growable: false);
 
-  toString() => 'struct($name)';
+  String toString() => 'struct($name)';
 
-  get name => id.capCamel;
+  String get name => id.capCamel;
 
   @override
   onOwnershipEstablished() {
@@ -214,24 +217,23 @@ class Struct extends RsEntity with IsPub, Derives implements HasCode {
     }
   }
 
-  get lifetimes =>
-      new Set.from(concat(members.map((m) => m.lifetimes.map((lt) => "'$lt"))))
-          .toList()
-            ..sort();
+  Iterable<String> get lifetimes => new Set<String>.from(concat(members
+      .map<Iterable<String>>((m) => m.lifetimes.map((lt) => "'$lt")))).toList()
+    ..sort();
 
-  get template {
+  String get template {
     var contents = chomp(brCompact([
       lifetimes.join(', '),
     ]));
     return contents.isNotEmpty ? '<$contents>' : '';
   }
 
-  get derives => derive.isEmpty
+  String get derives => derive.isEmpty
       ? null
       : '#[derive(${derive.map((d) => idFromString(d.toString()).capCamel).join(", ")})]';
 
-  get code => brCompact([
-        tripleSlashComment(doc ?? 'TODO: comment struct'),
+  String get code => brCompact([
+        tripleSlashComment(doc?.toString() ?? 'TODO: comment struct'),
         derives,
         '${pubDecl}struct $name${template} {',
         indentBlock(br(members.map((m) => m.code))),
@@ -247,15 +249,15 @@ class Struct extends RsEntity with IsPub, Derives implements HasCode {
 class TupleStruct extends RsEntity with IsPub, Derives implements HasCode {
   // custom <class TupleStruct>
 
-  get children => new Iterable.empty();
+  Iterable<Entity> get children => new Iterable.empty();
 
-  get code => brCompact([
-        tripleSlashComment(doc),
+  String get code => brCompact([
+        tripleSlashComment(doc?.toString() ?? 'TODO: Comment TupleStruct($id)'),
         'struct $name {',
         '}',
       ]);
 
-  get name => id.capCamel;
+  String get name => id.capCamel;
 
   // end <class TupleStruct>
 
@@ -266,11 +268,14 @@ class TupleStruct extends RsEntity with IsPub, Derives implements HasCode {
 class UnitStruct extends RsEntity with IsPub, Derives implements HasCode {
   // custom <class UnitStruct>
 
-  get children => new Iterable.empty();
+  Iterable<Entity> get children => new Iterable.empty();
 
-  get code => brCompact([tripleSlashComment(doc), 'struct $name;']);
+  String get code => brCompact([
+        tripleSlashComment(doc?.toString() ?? 'TODO: Comment UnitStruct($id)'),
+        'struct $name;'
+      ]);
 
-  get name => id.capCamel;
+  String get name => id.capCamel;
 
   // end <class UnitStruct>
 
@@ -279,7 +284,7 @@ class UnitStruct extends RsEntity with IsPub, Derives implements HasCode {
 
 // custom <library struct>
 
-Struct struct(id) => new Struct(id);
-Member member(id) => new Member(id);
+Struct struct(dynamic id) => new Struct(id);
+Member member(dynamic id) => new Member(id);
 
 // end <library struct>
