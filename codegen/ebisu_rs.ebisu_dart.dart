@@ -42,6 +42,7 @@ main(List<String> args) {
       library('test_repo')..imports = ['package:ebisu_rs/repo.dart'],
       library('test_crate')..imports = ['package:ebisu_rs/crate.dart'],
       library('test_module')..imports = ['package:ebisu_rs/module.dart'],
+      library('test_enumeration')..imports = ['package:ebisu_rs/enumeration.dart'],
       library('test_ebisu_rs')..imports = ['package:ebisu_rs/ebisu_rs.dart'],
       library('test_dependency')
         ..imports = ['package:ebisu_rs/dependency.dart'],
@@ -118,6 +119,32 @@ All rust named items are *RsEntity* instances.'''
         ..members = [
           member('lifetimes')..type = 'List<Lifetime>'..init = [],
           member('type_parms')..type = 'List<TypeParm>'..init = [],
+        ]
+      ],
+
+      library('enumeration')
+      ..doc = 'Library for enums'
+      ..imports = commonIncludes()
+      ..imports.addAll([
+
+      ])
+      ..classes = [
+        class_('variant')
+        ..implement = ['HasCode']
+        ..defaultMemberAccess = RO
+        ..withClass(commonFeatures)
+        ..members = [
+
+        ],
+
+        class_('enum')
+        ..implement = ['HasCode']
+        ..defaultMemberAccess = RO
+        ..withClass(commonFeatures)
+        ..members = [
+          member('variants')..type = 'List<Variant>'..init = [],
+          member('use_self')..init = false
+          ..doc = 'If self includes *use self::<name>::*;'
         ]
       ],
 
