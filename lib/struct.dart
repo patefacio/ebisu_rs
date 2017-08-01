@@ -2,7 +2,7 @@ library ebisu_rs.struct;
 
 import 'package:ebisu/ebisu.dart';
 import 'package:ebisu_rs/entity.dart';
-import 'package:ebisu_rs/member.dart';
+import 'package:ebisu_rs/field.dart';
 import 'package:ebisu_rs/type.dart';
 import 'package:id/id.dart';
 import 'package:quiver/iterables.dart';
@@ -166,11 +166,11 @@ class Derives {
 }
 
 class Struct extends RsEntity with IsPub, Derives implements HasCode {
-  List<Member> members = [];
+  List<Field> fields = [];
 
   // custom <class Struct>
 
-  get children => new List<Member>.from(members, growable: false);
+  get children => new List<Field>.from(fields, growable: false);
 
   String toString() => 'struct($name)';
 
@@ -179,14 +179,15 @@ class Struct extends RsEntity with IsPub, Derives implements HasCode {
   @override
   onOwnershipEstablished() {
     print("---------Ownership of ${id}:${runtimeType}");
-    for (final member in members) {
-      if (member.type.isRef) {}
+    for (final field in fields) {
+      if (field.type.isRef) {}
     }
   }
 
-  Iterable<String> get lifetimes => new Set<String>.from(concat(members
-      .map<Iterable<String>>((m) => m.lifetimes.map((lt) => "'$lt")))).toList()
-    ..sort();
+  Iterable<String> get lifetimes => new Set<String>.from(concat(
+          fields.map<Iterable<String>>((m) => m.lifetimes.map((lt) => "'$lt"))))
+      .toList()
+        ..sort();
 
   String get template {
     var contents = chomp(brCompact([
@@ -203,7 +204,7 @@ class Struct extends RsEntity with IsPub, Derives implements HasCode {
         tripleSlashComment(doc?.toString() ?? 'TODO: comment struct'),
         derives,
         '${pubDecl}struct $name${template} {',
-        indentBlock(br(members.map((m) => m.code))),
+        indentBlock(br(fields.map((m) => m.code))),
         '}'
       ]);
 
@@ -252,6 +253,6 @@ class UnitStruct extends RsEntity with IsPub, Derives implements HasCode {
 // custom <library struct>
 
 Struct struct(dynamic id) => new Struct(id);
-Member member(dynamic id) => new Member(id);
+Field field(dynamic id) => new Field(id);
 
 // end <library struct>

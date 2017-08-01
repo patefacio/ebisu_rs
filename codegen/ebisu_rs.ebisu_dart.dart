@@ -128,7 +128,7 @@ All rust named items are *RsEntity* instances.'''
         ..doc = 'Library for enums'
         ..imports = commonIncludes()
         ..imports.addAll([
-          'package:ebisu_rs/member.dart',
+          'package:ebisu_rs/field.dart',
           'package:ebisu_rs/type.dart',
         ])
         ..classes = [
@@ -160,8 +160,8 @@ All rust named items are *RsEntity* instances.'''
           class_('struct_variant')
             ..extend = 'Variant'
             ..members = [
-              member('members')
-                ..type = 'List<Member>'
+              member('fields')
+                ..type = 'List<Field>'
                 ..init = []
             ],
           class_('enum')
@@ -525,19 +525,19 @@ All rust named items are *RsEntity* instances.'''
             ..members = [],
         ],
 
-      library('member')
+      library('field')
         ..imports = commonIncludes()
         ..imports.addAll([
           'package:ebisu_rs/type.dart',
         ])
         ..classes = [
-          class_('member')
+          class_('field')
             ..implement = ['HasCode']
             ..mixins = ['IsPub']
             ..withClass(commonFeatures)
             ..members = [
               member('type')
-                ..doc = 'Type of the member'
+                ..doc = 'Type of the field'
                 ..type = 'RsType'
                 ..init = 'string'
                 ..access = RO,
@@ -549,7 +549,7 @@ All rust named items are *RsEntity* instances.'''
         ..imports.addAll([
           'package:id/id.dart',
           'package:ebisu_rs/type.dart',
-          'package:ebisu_rs/member.dart',
+          'package:ebisu_rs/field.dart',
           'package:quiver/iterables.dart',
         ])
         ..enums = [
@@ -581,8 +581,8 @@ All rust named items are *RsEntity* instances.'''
             ..mixins = ['IsPub', 'Derives']
             ..withClass(commonFeatures)
             ..members.addAll([
-              member('members')
-                ..type = 'List<Member>'
+              member('fields')
+                ..type = 'List<Field>'
                 ..init = [],
             ]),
           class_('tuple_struct')

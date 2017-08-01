@@ -3,7 +3,7 @@ library ebisu_rs.enumeration;
 
 import 'package:ebisu/ebisu.dart';
 import 'package:ebisu_rs/entity.dart';
-import 'package:ebisu_rs/member.dart';
+import 'package:ebisu_rs/field.dart';
 import 'package:ebisu_rs/type.dart';
 
 // custom <additional imports>
@@ -45,11 +45,8 @@ class TupleField implements HasCode {
   TupleField(type, [this.doc]) : this.type = rsType(type);
 
   @override
-  String get code =>
-      brCompact([
-        tripleSlashComment(doc == null ? 'TODO: comment' : doc), 
-        type
-        ]);
+  String get code => brCompact(
+      [tripleSlashComment(doc == null ? 'TODO: comment' : doc), type]);
 
   // end <class TupleField>
 
@@ -87,7 +84,7 @@ class TupleVariant extends Variant implements HasCode {
 }
 
 class StructVariant extends Variant {
-  List<Member> members = [];
+  List<Field> fields = [];
 
   // custom <class StructVariant>
 
@@ -137,8 +134,7 @@ Enum enum_(dynamic id, List<dynamic> variants) => new Enum(id)
   ..variants = variants.map((v) => v is String ? uv(v) : v as Variant);
 
 UnitVariant uv(dynamic id, [dynamic value]) => new UnitVariant(id, value);
-TupleVariant tv(dynamic id, [Iterable members]) =>
-    new TupleVariant(id, members);
+TupleVariant tv(dynamic id, [Iterable fields]) => new TupleVariant(id, fields);
 
 TupleField tf(dynamic type, [String doc]) => new TupleField(type, doc);
 

@@ -228,7 +228,7 @@ class Clap {
   String _defineStruct(dynamic id, List<Arg> args) {
     Struct structDecl = struct(id)
       ..derive = <Derivable>[Debug]
-      ..members.addAll(args.map((arg) => member(arg.id)
+      ..fields.addAll(args.map((arg) => field(arg.id)
         ..doc = arg.doc
         ..type = arg.type));
 

@@ -48,16 +48,16 @@ First struct in root module.
 # The first struct is most important
 ## All the rest are secondary
 '''
-                ..members = [
-                  member('rm_s1_m1')
-                    ..doc = 'First member'
+                ..fields = [
+                  field('rm_s1_m1')
+                    ..doc = 'First field'
                     ..type = 'i32'
                 ],
               struct('rm_s2')
                 ..doc = 'Second struct in root module'
-                ..members = [
-                  member('rm_s2_m1')..doc = 'hmm',
-                  member('rm_s2_m2')
+                ..fields = [
+                  field('rm_s2_m1')..doc = 'hmm',
+                  field('rm_s2_m2')
                     ..doc = 'bam'
                     ..isPub = true
                 ],
