@@ -8,6 +8,9 @@ import 'package:id/id.dart';
 import 'package:quiver/iterables.dart';
 
 // custom <additional imports>
+
+export 'package:ebisu_rs/field.dart';
+
 // end <additional imports>
 
 class Derivable implements Comparable<Derivable> {
@@ -253,6 +256,9 @@ class UnitStruct extends RsEntity with IsPub, Derives implements HasCode {
 // custom <library struct>
 
 Struct struct(dynamic id) => new Struct(id);
-Field field(dynamic id) => new Field(id);
+
+UnitStruct ustruct(dynamic id) => new UnitStruct(id);
+
+TupleStruct tstruct(dynamic id) => new TupleStruct(id);
 
 // end <library struct>

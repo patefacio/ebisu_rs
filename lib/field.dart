@@ -40,5 +40,25 @@ class Field extends RsEntity with IsPub implements HasCode {
   RsType _type = string;
 }
 
+/// A field with type but no name, whose access is indexed
+class TupleField implements HasCode {
+  RsType type;
+  String doc;
+
+  // custom <class TupleField>
+
+  TupleField(type, [this.doc]) : this.type = rsType(type);
+
+  @override
+  String get code => brCompact(
+      [tripleSlashComment(doc == null ? 'TODO: comment' : doc), type]);
+
+  // end <class TupleField>
+
+}
+
 // custom <library field>
+
+Field field(dynamic id) => new Field(id);
+
 // end <library field>

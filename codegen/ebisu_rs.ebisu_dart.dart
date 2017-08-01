@@ -141,13 +141,6 @@ All rust named items are *RsEntity* instances.'''
           class_('unit_variant')
             ..extend = 'Variant'
             ..members = [member('value')..type = 'dynamic'],
-          class_('tuple_field')
-          ..implement = ['HasCode']
-          ..members = [
-            member('type')..type = 'RsType',
-            member('doc')..type = 'String',
-          ],
-          
           class_('tuple_variant')
             ..extend = 'Variant'
             ..implement = ['HasCode']
@@ -541,6 +534,13 @@ All rust named items are *RsEntity* instances.'''
                 ..type = 'RsType'
                 ..init = 'string'
                 ..access = RO,
+            ],
+          class_('tuple_field')
+            ..doc = 'A field with type but no name, whose access is indexed'
+            ..implement = ['HasCode']
+            ..members = [
+              member('type')..type = 'RsType',
+              member('doc')..type = 'String',
             ],
         ],
 

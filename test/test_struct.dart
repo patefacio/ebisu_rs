@@ -22,8 +22,14 @@ void main([List<String> args]) {
 // custom <main>
 
   test('struct creation', () {
-    var s = struct('bam')..fields = [field('foo')];
-    print(s);
+    var s = struct('bam')
+      ..doc = 'Bam struct'
+      ..fields = [field('foo')];
+    print(s.code);
+
+    print((ustruct('bong')..doc = 'Bong struct').code);
+
+    print((tstruct('tong')..doc = 'Tong struct').code);
   });
 
 // end <main>

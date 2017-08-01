@@ -36,22 +36,6 @@ class UnitVariant extends Variant {
 
 }
 
-class TupleField implements HasCode {
-  RsType type;
-  String doc;
-
-  // custom <class TupleField>
-
-  TupleField(type, [this.doc]) : this.type = rsType(type);
-
-  @override
-  String get code => brCompact(
-      [tripleSlashComment(doc == null ? 'TODO: comment' : doc), type]);
-
-  // end <class TupleField>
-
-}
-
 class TupleVariant extends Variant implements HasCode {
   List<TupleField> get fields => _fields;
 
