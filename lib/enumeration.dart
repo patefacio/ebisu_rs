@@ -3,11 +3,13 @@ library ebisu_rs.enumeration;
 
 import 'package:ebisu/ebisu.dart';
 import 'package:ebisu_rs/entity.dart';
+import 'package:ebisu_rs/member.dart';
+import 'package:ebisu_rs/type.dart';
 
 // custom <additional imports>
 // end <additional imports>
 
-class Variant extends RsEntity implements HasCode {
+abstract class Variant extends RsEntity implements HasCode {
   // custom <class Variant>
 
   @override
@@ -15,12 +17,87 @@ class Variant extends RsEntity implements HasCode {
 
   String get name => id.camel;
 
-  @override
-  String get code => name;
-
   // end <class Variant>
 
   Variant(dynamic id) : super(id);
+}
+
+class UnitVariant extends Variant {
+  dynamic value;
+
+  // custom <class UnitVariant>
+
+  UnitVariant(dynamic id, [this.value]) : super(id);
+
+  @override
+  String get code => id.capCamel;
+
+  // end <class UnitVariant>
+
+}
+
+class TupleField implements HasCode {
+  RsType type;
+  String doc;
+
+  // custom <class TupleField>
+
+  TupleField(type, [this.doc]) : this.type = rsType(type);
+
+  @override
+  String get code =>
+      brCompact([
+        tripleSlashComment(doc == null ? 'TODO: comment' : doc), 
+        type
+        ]);
+
+  // end <class TupleField>
+
+}
+
+class TupleVariant extends Variant implements HasCode {
+  List<TupleField> get fields => _fields;
+
+  // custom <class TupleVariant>
+
+  TupleVariant(dynamic id, [Iterable fields]) : super(id) {
+    this.fields = fields;
+  }
+
+  set fields(Iterable fields) => _fields = fields.map(makeField).toList();
+
+  @override
+  String get code => brCompact([
+        '${id.capCamel}(',
+        indentBlock(br(fields.map((f) => f.code), ',\n')),
+        ')',
+      ]);
+
+  static TupleField makeField(dynamic f) => f is TupleField
+      ? f
+      : f is RsType
+          ? new TupleField(f)
+          : f is String
+              ? new TupleField(new UserDefinedType(f))
+              : throw 'makeField requires RsType or String -> ${f.runtimeType}';
+
+  // end <class TupleVariant>
+
+  List<TupleField> _fields = [];
+}
+
+class StructVariant extends Variant {
+  List<Member> members = [];
+
+  // custom <class StructVariant>
+
+  StructVariant(dynamic id) : super(id);
+
+  @override
+  String get code => id.camel;
+
+  // end <class StructVariant>
+
 }
 
 class Enum extends RsEntity implements HasCode {
@@ -33,16 +110,13 @@ class Enum extends RsEntity implements HasCode {
 
   String get name => id.capCamel;
 
-  void set variants(Iterable<dynamic> variants) =>
-    _variants = variants.map(makeVariant).toList();
-
-  Variant makeVariant(dynamic variant) => variant is String?
-    new Variant(variant) : variant as Variant;
+  void set variants(Iterable<Variant> variants) =>
+      _variants = new List<Variant>.from(variants);
 
   @override
   String get code => brCompact([
         'enum $name {',
-        indent(brCompact(variants.map((v) => v.code))),
+        indent(br(variants.map((v) => v.code), ',\n')),
         '}',
       ]);
 
@@ -59,7 +133,13 @@ class Enum extends RsEntity implements HasCode {
 
 // custom <library enumeration>
 
-Enum enum_(dynamic id, List<dynamic> variants) =>
-  new Enum(id)..variants = variants;
+Enum enum_(dynamic id, List<dynamic> variants) => new Enum(id)
+  ..variants = variants.map((v) => v is String ? uv(v) : v as Variant);
+
+UnitVariant uv(dynamic id, [dynamic value]) => new UnitVariant(id, value);
+TupleVariant tv(dynamic id, [Iterable members]) =>
+    new TupleVariant(id, members);
+
+TupleField tf(dynamic type, [String doc]) => new TupleField(type, doc);
 
 // end <library enumeration>

@@ -42,7 +42,8 @@ main(List<String> args) {
       library('test_repo')..imports = ['package:ebisu_rs/repo.dart'],
       library('test_crate')..imports = ['package:ebisu_rs/crate.dart'],
       library('test_module')..imports = ['package:ebisu_rs/module.dart'],
-      library('test_enumeration')..imports = ['package:ebisu_rs/enumeration.dart'],
+      library('test_enumeration')
+        ..imports = ['package:ebisu_rs/enumeration.dart'],
       library('test_ebisu_rs')..imports = ['package:ebisu_rs/ebisu_rs.dart'],
       library('test_dependency')
         ..imports = ['package:ebisu_rs/dependency.dart'],
@@ -66,7 +67,7 @@ All rust named items are *RsEntity* instances.'''
         ..imports = [
           'package:id/id.dart',
           'package:ebisu/ebisu.dart',
-         'dart:io',
+          'dart:io',
         ]
         ..enums = [
           enum_('crate_type')
@@ -100,53 +101,82 @@ All rust named items are *RsEntity* instances.'''
         ],
 
       library('generic')
-      ..imports.addAll([
+        ..imports.addAll([
           'package:id/id.dart',
-      ])
-      ..classes = [
-
-        class_('lifetime')
-        ..members = [
-          member('id')..type = 'Id',
+        ])
+        ..classes = [
+          class_('lifetime')
+            ..members = [
+              member('id')..type = 'Id',
+            ],
+          class_('type_parm')
+            ..members = [
+              member('id')..type = 'Id',
+            ],
+          class_('generics')
+            ..members = [
+              member('lifetimes')
+                ..type = 'List<Lifetime>'
+                ..init = [],
+              member('type_parms')
+                ..type = 'List<TypeParm>'
+                ..init = [],
+            ]
         ],
-
-        class_('type_parm')
-        ..members = [
-          member('id')..type = 'Id',          
-        ],
-
-        class_('generics')
-        ..members = [
-          member('lifetimes')..type = 'List<Lifetime>'..init = [],
-          member('type_parms')..type = 'List<TypeParm>'..init = [],
-        ]
-      ],
 
       library('enumeration')
-      ..doc = 'Library for enums'
-      ..imports = commonIncludes()
-      ..imports.addAll([
-
-      ])
-      ..classes = [
-        class_('variant')
-        ..implement = ['HasCode']
-        ..defaultMemberAccess = RO
-        ..withClass(commonFeatures)
-        ..members = [
-
+        ..doc = 'Library for enums'
+        ..imports = commonIncludes()
+        ..imports.addAll([
+          'package:ebisu_rs/member.dart',
+          'package:ebisu_rs/type.dart',
+        ])
+        ..classes = [
+          class_('variant')
+            ..isAbstract = true
+            ..implement = ['HasCode']
+            ..defaultMemberAccess = RO
+            ..withClass(commonFeatures)
+            ..members = [],
+          class_('unit_variant')
+            ..extend = 'Variant'
+            ..members = [member('value')..type = 'dynamic'],
+          class_('tuple_field')
+          ..implement = ['HasCode']
+          ..members = [
+            member('type')..type = 'RsType',
+            member('doc')..type = 'String',
+          ],
+          
+          class_('tuple_variant')
+            ..extend = 'Variant'
+            ..implement = ['HasCode']
+            ..members = [
+              member('fields')
+                ..type = 'List<TupleField>'
+                ..access = RO
+                ..init = [],
+            ],
+          class_('struct_variant')
+            ..extend = 'Variant'
+            ..members = [
+              member('members')
+                ..type = 'List<Member>'
+                ..init = []
+            ],
+          class_('enum')
+            ..implement = ['HasCode']
+            ..defaultMemberAccess = RO
+            ..withClass(commonFeatures)
+            ..members = [
+              member('variants')
+                ..type = 'List<Variant>'
+                ..init = [],
+              member('use_self')
+                ..init = false
+                ..doc = 'If self includes *use self::<name>::*;'
+            ]
         ],
-
-        class_('enum')
-        ..implement = ['HasCode']
-        ..defaultMemberAccess = RO
-        ..withClass(commonFeatures)
-        ..members = [
-          member('variants')..type = 'List<Variant>'..init = [],
-          member('use_self')..init = false
-          ..doc = 'If self includes *use self::<name>::*;'
-        ]
-      ],
 
       library('repo')
         ..doc = 'Library supporting generation of a rust repo'
@@ -352,26 +382,25 @@ All rust named items are *RsEntity* instances.'''
         ])
         ..includesLogger = true
         ..enums = [
-           enum_('main_code_block')                
-                ..hasLibraryScopedValues = true
-                ..values = [
-                  enumValue(id('main_open'))
-                    ..doc =
-                        'The custom block appearing just after *main* is opened',
-                  enumValue(id('main_close'))
-                    ..doc =
-                        'The custom block appearing just after *main* is closed',
-                ],
-            enum_('module_code_block')                
-                ..hasLibraryScopedValues = true
-                ..values = [
-                  enumValue(id('module_top'))
-                    ..doc =
-                        'The custom block appearing just after imports, mod statements and usings',
-                  enumValue(id('module_bottom'))
-                    ..doc =
-                        'The custom block appearing at end of module',
-                ],
+          enum_('main_code_block')
+            ..hasLibraryScopedValues = true
+            ..values = [
+              enumValue(id('main_open'))
+                ..doc =
+                    'The custom block appearing just after *main* is opened',
+              enumValue(id('main_close'))
+                ..doc =
+                    'The custom block appearing just after *main* is closed',
+            ],
+          enum_('module_code_block')
+            ..hasLibraryScopedValues = true
+            ..values = [
+              enumValue(id('module_top'))
+                ..doc =
+                    'The custom block appearing just after imports, mod statements and usings',
+              enumValue(id('module_bottom'))
+                ..doc = 'The custom block appearing at end of module',
+            ],
         ]
         ..classes = [
           class_('import')
@@ -401,13 +430,13 @@ All rust named items are *RsEntity* instances.'''
                 ..type = 'List<Struct>'
                 ..init = [],
               member('module_code_blocks')
-              ..type = 'Map<ModuleCodeBlock, CodeBlock>'
-              ..init = {}
-              ..access = RO,
+                ..type = 'Map<ModuleCodeBlock, CodeBlock>'
+                ..init = {}
+                ..access = RO,
               member('main_code_blocks')
-              ..type = 'Map<MainCodeBlock, CodeBlock>'
-              ..init = {}
-              ..access = RO,
+                ..type = 'Map<MainCodeBlock, CodeBlock>'
+                ..init = {}
+                ..access = RO,
             ])
         ],
 
@@ -496,11 +525,31 @@ All rust named items are *RsEntity* instances.'''
             ..members = [],
         ],
 
+      library('member')
+        ..imports = commonIncludes()
+        ..imports.addAll([
+          'package:ebisu_rs/type.dart',
+        ])
+        ..classes = [
+          class_('member')
+            ..implement = ['HasCode']
+            ..mixins = ['IsPub']
+            ..withClass(commonFeatures)
+            ..members = [
+              member('type')
+                ..doc = 'Type of the member'
+                ..type = 'RsType'
+                ..init = 'string'
+                ..access = RO,
+            ],
+        ],
+
       library('struct')
         ..imports = commonIncludes()
         ..imports.addAll([
           'package:id/id.dart',
           'package:ebisu_rs/type.dart',
+          'package:ebisu_rs/member.dart',
           'package:quiver/iterables.dart',
         ])
         ..enums = [
@@ -521,17 +570,6 @@ All rust named items are *RsEntity* instances.'''
             ]
         ]
         ..classes = [
-          class_('member')
-            ..implement = ['HasCode']
-            ..mixins = ['IsPub']
-            ..withClass(commonFeatures)
-            ..members = [
-              member('type')
-                ..doc = 'Type of the member'
-                ..type = 'RsType'
-                ..init = 'string'
-                ..access = RO,
-            ],
           class_('Derives')
             ..members = [
               member('derive')

@@ -20,10 +20,15 @@ void main([List<String> args]) {
   }
 // custom <main>
 
-test('c-style enum', () {
-  var e = enum_('color', ['red','green','blue']);
-  print(e.code);
-});
+  test('c-style enum', () {
+    var e = enum_('color', [
+      'red',
+      'green',
+      'blue',
+      tv('tv', ['A', tf('str')..doc = 'Field is a str', 'C'])
+    ]);
+    print(e.code);
+  });
 
 // end <main>
 }

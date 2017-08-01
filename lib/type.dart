@@ -175,6 +175,9 @@ Ref ref(RsType type, [String lifetime]) => new Ref(type, lifetime);
 
 Mref mref(RsType type, [String lifetime]) => new Mref(type, lifetime);
 
+RsType rsType(dynamic details) => details is RsType? details :details
+ is String? new UserDefinedType(details) : throw 'Unsupported rstype ${details.runtimeType}';
+
 // end <library type>
 
 void main([List<String> args]) {
