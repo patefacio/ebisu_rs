@@ -46,6 +46,7 @@ void main([List<String> args]) {
 
   test('struct variants', () {
     var e = enum_('sv_e', [
+      uv('bam'),
       sv('sv', [
         'A',
       ])
@@ -56,6 +57,9 @@ void main([List<String> args]) {
     print(e.code);
 
     e.isPub = true;
+    print(e.code);
+
+    e.useSelf = true;
     print(e.code);
   });
 

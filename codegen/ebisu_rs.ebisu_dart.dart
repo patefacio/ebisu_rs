@@ -170,6 +170,7 @@ All rust named items are *RsEntity* instances.'''
                 ..init = [],
               member('use_self')
                 ..init = false
+                ..access = RW
                 ..doc = 'If self includes *use self::<name>::*;'
             ]
         ],

@@ -103,7 +103,7 @@ class Enum extends RsEntity with IsPub, Derives implements HasCode {
   List<Variant> get variants => _variants;
 
   /// If self includes *use self::<name>::*;
-  bool get useSelf => _useSelf;
+  bool useSelf = false;
 
   // custom <class Enum>
 
@@ -119,6 +119,7 @@ class Enum extends RsEntity with IsPub, Derives implements HasCode {
         '${pubDecl}enum $name {',
         indent(br(variants.map((v) => v.code), ',\n')),
         '}',
+        useSelf ? 'use self::$name::*;' : null
       ]);
 
   @override
@@ -129,7 +130,6 @@ class Enum extends RsEntity with IsPub, Derives implements HasCode {
   Enum(dynamic id) : super(id);
 
   List<Variant> _variants = [];
-  bool _useSelf = false;
 }
 
 // custom <library enumeration>
