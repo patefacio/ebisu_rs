@@ -3,6 +3,7 @@ library ebisu_rs.crate;
 import 'package:ebisu/ebisu.dart';
 import 'package:ebisu_rs/dependency.dart';
 import 'package:ebisu_rs/entity.dart';
+import 'package:ebisu_rs/enumeration.dart';
 import 'package:ebisu_rs/module.dart';
 import 'package:ebisu_rs/repo.dart';
 import 'package:ebisu_rs/struct.dart';
@@ -12,6 +13,12 @@ import 'package:logging/logging.dart';
 import 'package:path/path.dart';
 
 export 'package:ebisu_rs/dependency.dart';
+export 'package:ebisu_rs/enumeration.dart';
+export 'package:ebisu_rs/module.dart';
+export 'package:ebisu_rs/repo.dart';
+export 'package:ebisu_rs/struct.dart';
+export 'package:ebisu_rs/type.dart';
+export 'package:path/path.dart';
 
 // custom <additional imports>
 // end <additional imports>
@@ -388,6 +395,9 @@ class Crate extends RsEntity implements HasFilePath {
   void withClap(void f(Clap clap)) => f(_clap ?? (_clap = new Clap(this)));
 
   get children => new List<Module>.filled(1, rootModule, growable: false);
+
+  get enums => progeny.where((dynamic e) => e is Enum);
+  get structs => progeny.where((dynamic s) => s is Struct);
 
   String toString() => 'crate($name)';
 

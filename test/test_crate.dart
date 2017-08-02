@@ -27,9 +27,30 @@ void main([List<String> args]) {
   test('crate creation', () {
     var c = crate('crate')
       ..rootModule = (module('root_mod')
-        ..modules = [module('sub_mod_1'), module('sub_mod_2')]);
+        ..enums = [
+          enum_('e1', ['a', 'b']),
+          enum_('e2', ['c', 'd'])
+        ]
+        ..structs = [struct('s1'), struct('s2')]
+        ..modules = [
+          module('sub_mod_1')
+            ..enums = [
+              enum_('sm1_e1', ['a', 'b']),
+              enum_('sm1_e2', ['c', 'd'])
+            ]
+            ..structs = [struct('sm1_s1'), struct('sm1_s2')],
+          module('sub_mod_2')
+            ..enums = [
+              enum_('sm2_e1', ['a', 'b']),
+              enum_('sm2_e2', ['c', 'd'])
+            ]
+            ..structs = [struct('sm2_s1'), struct('sm2_s2')],
+        ]);
 
     print(c);
+
+    print(c.structs);
+    print(c.enums);
   });
 
 // end <main>

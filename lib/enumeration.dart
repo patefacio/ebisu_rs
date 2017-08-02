@@ -37,7 +37,7 @@ class UnitVariant extends Variant {
   @override
   String get code => brCompact([
         tripleSlashComment(doc == null ? 'TODO: comment $id' : doc),
-        id.capCamel
+        value != null ? '${id.capCamel} = $value' : id.capCamel
       ]);
 
   // end <class UnitVariant>
@@ -121,6 +121,9 @@ class Enum extends RsEntity with IsPub, Derives implements HasCode {
         '}',
         useSelf ? 'use self::$name::*;' : null
       ]);
+
+  @override
+  toString() => 'enum($name)';
 
   @override
   Iterable<RsEntity> get children => variants;

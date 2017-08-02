@@ -244,6 +244,9 @@ All rust named items are *RsEntity* instances.'''
         ..includesLogger = true
         ..imports.addAll([
           'package:id/id.dart',
+        ])
+        ..importAndExportAll([
+          'package:ebisu_rs/enumeration.dart',
           'package:ebisu_rs/module.dart',
           'package:ebisu_rs/repo.dart',
           'package:ebisu_rs/struct.dart',
@@ -423,6 +426,9 @@ All rust named items are *RsEntity* instances.'''
               member('imports')
                 ..type = 'List<Import>'
                 ..init = [],
+                              member('enums')
+                ..type = 'List<Enum>'
+                ..init = [],
               member('structs')
                 ..type = 'List<Struct>'
                 ..init = [],
@@ -567,7 +573,11 @@ All rust named items are *RsEntity* instances.'''
               'hash',
               'default_value',
               'zero',
-              'debug'
+              'debug',
+
+              // Serde,
+              'serialize',
+              'deserialize'
             ]
         ]
         ..classes = [

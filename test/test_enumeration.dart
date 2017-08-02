@@ -24,7 +24,9 @@ void main([List<String> args]) {
   test('c-style enum', () {
     var e = enum_('color', [
       'red',
-      uv('green')..doc = 'The color of grass',
+      uv('green')
+        ..doc = 'The color of grass'
+        ..value = 22,
       'blue',
     ])
       ..derive = [Clone, Debug]
@@ -46,7 +48,7 @@ void main([List<String> args]) {
 
   test('struct variants', () {
     var e = enum_('sv_e', [
-      uv('bam'),
+      uv('bam')..value = 32,
       sv('sv', [
         'A',
       ])

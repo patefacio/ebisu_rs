@@ -77,6 +77,7 @@ class Module extends RsEntity with IsPub implements HasFilePath, HasCode {
   ModuleType get moduleType => _moduleType;
   List<Module> modules = [];
   List<Import> imports = [];
+  List<Enum> enums = [];
   List<Struct> structs = [];
   Map<ModuleCodeBlock, CodeBlock> get moduleCodeBlocks => _moduleCodeBlocks;
   Map<MainCodeBlock, CodeBlock> get mainCodeBlocks => _mainCodeBlocks;
@@ -89,7 +90,7 @@ class Module extends RsEntity with IsPub implements HasFilePath, HasCode {
 
   @override
   Iterable<Entity> get children =>
-      concat(<List<Entity>>[structs, modules]) as Iterable<Entity>;
+      concat(<List<Entity>>[enums, structs, modules]) as Iterable<Entity>;
 
   String toString() => 'mod($name:$moduleType)';
 
@@ -184,7 +185,7 @@ class Module extends RsEntity with IsPub implements HasFilePath, HasCode {
       modules.where((module) => module.isDeclaredModule);
 
   String get name => id.snake;
-
+  String get _enumDecls => br(enums.map((e) => e.code));
   String get _structDecls => br(structs.map((s) => s.code));
 
   String get _imports => brCompact(imports.map((i) => i.code));
@@ -194,6 +195,7 @@ class Module extends RsEntity with IsPub implements HasFilePath, HasCode {
         brCompact(declaredMods
             .map((module) => '${module.pubDecl}mod ${module.name};')),
         isDeclaredModule ? _structDecls : indent(_structDecls),
+        isDeclaredModule ? _enumDecls : indent(_enumDecls),
         _inlineCode,
         _main,
       ]);
