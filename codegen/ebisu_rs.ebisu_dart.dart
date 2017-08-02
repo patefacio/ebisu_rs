@@ -127,8 +127,9 @@ All rust named items are *RsEntity* instances.'''
       library('enumeration')
         ..doc = 'Library for enums'
         ..imports = commonIncludes()
-        ..imports.addAll([
+        ..importAndExportAll([
           'package:ebisu_rs/field.dart',
+          'package:ebisu_rs/macro.dart',
           'package:ebisu_rs/type.dart',
         ])
         ..classes = [
@@ -160,6 +161,7 @@ All rust named items are *RsEntity* instances.'''
             ],
           class_('enum')
             ..implement = ['HasCode']
+            ..mixins = ['IsPub', 'Derives']
             ..defaultMemberAccess = RO
             ..withClass(commonFeatures)
             ..members = [
@@ -545,14 +547,11 @@ All rust named items are *RsEntity* instances.'''
             ],
         ],
 
-      library('struct')
-        ..imports = commonIncludes()
-        ..imports.addAll([
+      library('macro')
+        ..doc = 'Support for macro related code'
+        ..imports = [
           'package:id/id.dart',
-          'package:ebisu_rs/type.dart',
-          'package:ebisu_rs/field.dart',
-          'package:quiver/iterables.dart',
-        ])
+        ]
         ..enums = [
           enum_('derivable')
             ..libraryScopedValuesCase = capCamelCase
@@ -577,6 +576,16 @@ All rust named items are *RsEntity* instances.'''
                 ..type = 'List<Derivable>'
                 ..init = []
             ],
+        ],
+
+      library('struct')
+        ..imports = commonIncludes()
+        ..imports.addAll([
+          'package:ebisu_rs/macro.dart',
+          'package:ebisu_rs/field.dart',
+          'package:quiver/iterables.dart',
+        ])
+        ..classes = [
           class_('struct')
             ..implement = ['HasCode']
             ..mixins = ['IsPub', 'Derives']

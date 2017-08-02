@@ -4,7 +4,12 @@ library ebisu_rs.enumeration;
 import 'package:ebisu/ebisu.dart';
 import 'package:ebisu_rs/entity.dart';
 import 'package:ebisu_rs/field.dart';
+import 'package:ebisu_rs/macro.dart';
 import 'package:ebisu_rs/type.dart';
+
+export 'package:ebisu_rs/field.dart';
+export 'package:ebisu_rs/macro.dart';
+export 'package:ebisu_rs/type.dart';
 
 // custom <additional imports>
 // end <additional imports>
@@ -30,7 +35,10 @@ class UnitVariant extends Variant {
   UnitVariant(dynamic id, [this.value]) : super(id);
 
   @override
-  String get code => id.capCamel;
+  String get code => brCompact([
+        tripleSlashComment(doc == null ? 'TODO: comment $id' : doc),
+        id.capCamel
+      ]);
 
   // end <class UnitVariant>
 
@@ -81,9 +89,9 @@ class StructVariant extends Variant {
   @override
   String get code => brCompact([
         tripleSlashComment(doc == null ? 'TODO: comment $id' : doc),
-        '${id.capCamel}(',
+        '${id.capCamel}{',
         indentBlock(br(fields.map((f) => f.code), ',\n')),
-        ')',
+        '}',
       ]);
 
   // end <class StructVariant>
@@ -91,7 +99,7 @@ class StructVariant extends Variant {
   List<Field> _fields = [];
 }
 
-class Enum extends RsEntity implements HasCode {
+class Enum extends RsEntity with IsPub, Derives implements HasCode {
   List<Variant> get variants => _variants;
 
   /// If self includes *use self::<name>::*;
@@ -106,7 +114,9 @@ class Enum extends RsEntity implements HasCode {
 
   @override
   String get code => brCompact([
-        'enum $name {',
+        tripleSlashComment(doc == null ? 'TODO: comment $id' : doc),
+        derives,
+        '${pubDecl}enum $name {',
         indent(br(variants.map((v) => v.code), ',\n')),
         '}',
       ]);

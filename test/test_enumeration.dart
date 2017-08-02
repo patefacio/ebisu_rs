@@ -5,6 +5,7 @@ import 'package:logging/logging.dart';
 import 'package:test/test.dart';
 
 // custom <additional imports>
+
 // end <additional imports>
 
 final Logger _logger = new Logger('test_enumeration');
@@ -23,20 +24,23 @@ void main([List<String> args]) {
   test('c-style enum', () {
     var e = enum_('color', [
       'red',
-      uv('green'),
+      uv('green')..doc = 'The color of grass',
       'blue',
-    ]);
+    ])
+      ..derive = [Clone, Debug]
+      ..doc = 'A c-style enum';
     print(e.code);
   });
 
   test('tuple variants', () {
     var e = enum_('tv_e', [
       tv('tv', [
-        'A',
-        tf('str')..doc = 'Field is a str',
-        'C',
+        'i32',
+        tf('[char;5]')..doc = 'Field is a str',
+        'f64',
       ])
-    ]);
+    ])
+      ..doc = 'A tuple variant enum';
     print(e.code);
   });
 
@@ -46,7 +50,12 @@ void main([List<String> args]) {
         'A',
       ])
         ..doc = 'An sv'
-    ]);
+    ])
+      ..derive = [Clone, Debug]
+      ..doc = 'A struct variant enum';
+    print(e.code);
+
+    e.isPub = true;
     print(e.code);
   });
 
