@@ -155,6 +155,7 @@ All rust named items are *RsEntity* instances.'''
             ..members = [
               member('fields')
                 ..type = 'List<Field>'
+                ..access = RO
                 ..init = []
             ],
           class_('enum')

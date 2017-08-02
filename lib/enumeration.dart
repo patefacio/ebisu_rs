@@ -68,17 +68,27 @@ class TupleVariant extends Variant implements HasCode {
 }
 
 class StructVariant extends Variant {
-  List<Field> fields = [];
+  List<Field> get fields => _fields;
 
   // custom <class StructVariant>
 
-  StructVariant(dynamic id) : super(id);
+  StructVariant(dynamic id, [Iterable fields]) : super(id) {
+    this.fields = fields;
+  }
+
+  set fields(Iterable fields) => _fields = fields.map(field).toList();
 
   @override
-  String get code => id.camel;
+  String get code => brCompact([
+        tripleSlashComment(doc == null ? 'TODO: comment $id' : doc),
+        '${id.capCamel}(',
+        indentBlock(br(fields.map((f) => f.code), ',\n')),
+        ')',
+      ]);
 
   // end <class StructVariant>
 
+  List<Field> _fields = [];
 }
 
 class Enum extends RsEntity implements HasCode {
@@ -119,7 +129,7 @@ Enum enum_(dynamic id, List<dynamic> variants) => new Enum(id)
 
 UnitVariant uv(dynamic id, [dynamic value]) => new UnitVariant(id, value);
 TupleVariant tv(dynamic id, [Iterable fields]) => new TupleVariant(id, fields);
-
 TupleField tf(dynamic type, [String doc]) => new TupleField(type, doc);
-
+StructVariant sv(dynamic id, [Iterable fields]) =>
+    new StructVariant(id, fields);
 // end <library enumeration>

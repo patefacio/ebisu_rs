@@ -28,7 +28,7 @@ class Field extends RsEntity with IsPub implements HasCode {
 
   String get code => brCompact([
         tripleSlashComment(doc?.toString() ?? 'TODO: comment field'),
-        '$pubDecl$name: ${type.scopedDecl},',
+        '$pubDecl$name: ${type.scopedDecl}',
       ]);
 
   Iterable<String> get lifetimes => type.lifetimes;

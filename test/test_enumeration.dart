@@ -23,9 +23,29 @@ void main([List<String> args]) {
   test('c-style enum', () {
     var e = enum_('color', [
       'red',
-      'green',
+      uv('green'),
       'blue',
-      tv('tv', ['A', tf('str')..doc = 'Field is a str', 'C'])
+    ]);
+    print(e.code);
+  });
+
+  test('tuple variants', () {
+    var e = enum_('tv_e', [
+      tv('tv', [
+        'A',
+        tf('str')..doc = 'Field is a str',
+        'C',
+      ])
+    ]);
+    print(e.code);
+  });
+
+  test('struct variants', () {
+    var e = enum_('sv_e', [
+      sv('sv', [
+        'A',
+      ])
+        ..doc = 'An sv'
     ]);
     print(e.code);
   });

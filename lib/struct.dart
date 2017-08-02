@@ -207,7 +207,7 @@ class Struct extends RsEntity with IsPub, Derives implements HasCode {
         tripleSlashComment(doc?.toString() ?? 'TODO: comment struct'),
         derives,
         '${pubDecl}struct $name${template} {',
-        indentBlock(br(fields.map((m) => m.code))),
+        indentBlock(br(fields.map((m) => m.code), ',\n')),
         '}'
       ]);
 
