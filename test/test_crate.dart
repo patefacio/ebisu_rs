@@ -51,6 +51,7 @@ void main([List<String> args]) {
 
     print(c.structs);
     print(c.enums);
+    print(c.modules);
   });
 
 // end <main>

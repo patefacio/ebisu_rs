@@ -396,6 +396,7 @@ class Crate extends RsEntity implements HasFilePath {
 
   get children => new List<Module>.filled(1, rootModule, growable: false);
 
+  get modules => progeny.where((dynamic m) => m is Module);
   get enums => progeny.where((dynamic e) => e is Enum);
   get structs => progeny.where((dynamic s) => s is Struct);
 
