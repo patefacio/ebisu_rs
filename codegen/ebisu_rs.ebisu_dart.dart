@@ -451,17 +451,15 @@ All rust named items are *RsEntity* instances.'''
       library('trait')
         ..imports = commonIncludes()
         ..imports.addAll([
-          'package:ebisu_rs/generic.dart'
+          'package:ebisu_rs/generic.dart',
+          'package:ebisu_rs/type.dart',
         ])
         ..classes = [
-          class_('type')
-            ..implement = ['HasCode']
-            ..members.addAll([member('type')]),
           class_('parm')
             ..implement = ['HasCode']
             ..withClass(commonFeatures)
             ..members.addAll([
-              member('type')..type = 'Type',
+              member('type')..type = 'RsType',
             ]),
           class_('fn')
             ..implement = ['HasCode']
@@ -471,7 +469,7 @@ All rust named items are *RsEntity* instances.'''
               member('parms')
                 ..type = 'List<Parm>'
                 ..init = [],
-              member('return_type')..type = 'Type',
+              member('return_type')..type = 'RsType',
             ]),
           class_('trait')
             ..implement = ['HasCode']
@@ -488,9 +486,12 @@ All rust named items are *RsEntity* instances.'''
         ..includesMain = true
         ..imports = [
           'package:quiver/iterables.dart',
+          'package:ebisu_rs/entity.dart',
         ]
         ..classes = [
-          class_('rs_type')..isAbstract = true,
+          class_('rs_type')
+          ..implement = [ 'HasCode' ]
+          ..isAbstract = true,
           class_('str')..extend = 'RsType',
           class_('built_in_type')
             ..extend = 'RsType'

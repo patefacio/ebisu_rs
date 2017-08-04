@@ -3,23 +3,13 @@ library ebisu_rs.trait;
 import 'package:ebisu/ebisu.dart';
 import 'package:ebisu_rs/entity.dart';
 import 'package:ebisu_rs/generic.dart';
+import 'package:ebisu_rs/type.dart';
 
 // custom <additional imports>
 // end <additional imports>
 
-class Type implements HasCode {
-  String type;
-
-  // custom <class Type>
-
-  get code => '$type';
-
-  // end <class Type>
-
-}
-
 class Parm extends RsEntity implements HasCode {
-  Type type;
+  RsType type;
 
   // custom <class Parm>
 
@@ -34,7 +24,7 @@ class Parm extends RsEntity implements HasCode {
 
 class Fn extends RsEntity with IsPub, Generic implements HasCode {
   List<Parm> parms = [];
-  Type returnType;
+  RsType returnType;
 
   // custom <class Fn>
 

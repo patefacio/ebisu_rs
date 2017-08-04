@@ -1,11 +1,12 @@
 library ebisu_rs.type;
 
+import 'package:ebisu_rs/entity.dart';
 import 'package:quiver/iterables.dart';
 
 // custom <additional imports>
 // end <additional imports>
 
-abstract class RsType {
+abstract class RsType implements HasCode {
   // custom <class RsType>
 
   const RsType();
@@ -26,6 +27,10 @@ abstract class RsType {
 
 class Str extends RsType {
   // custom <class Str>
+
+  @override
+  String get code => 'String';
+
   // end <class Str>
 
 }
@@ -36,6 +41,9 @@ class BuiltInType extends RsType {
   // custom <class BuiltInType>
 
   const BuiltInType(this.typeName);
+
+  @override
+  String get code => typeName;
 
   @override
   toString() => typeName;
