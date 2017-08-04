@@ -3,6 +3,7 @@ library ebisu_rs.struct;
 import 'package:ebisu/ebisu.dart';
 import 'package:ebisu_rs/entity.dart';
 import 'package:ebisu_rs/field.dart';
+import 'package:ebisu_rs/generic.dart';
 import 'package:ebisu_rs/macro.dart';
 import 'package:quiver/iterables.dart';
 
@@ -12,7 +13,7 @@ export 'package:ebisu_rs/field.dart';
 
 // end <additional imports>
 
-class Struct extends RsEntity with IsPub, Derives implements HasCode {
+class Struct extends RsEntity with IsPub, Derives, Generic implements HasCode {
   List<Field> fields = [];
 
   // custom <class Struct>
@@ -57,7 +58,9 @@ class Struct extends RsEntity with IsPub, Derives implements HasCode {
 }
 
 /// Tuple struct
-class TupleStruct extends RsEntity with IsPub, Derives implements HasCode {
+class TupleStruct extends RsEntity
+    with IsPub, Derives, Generic
+    implements HasCode {
   // custom <class TupleStruct>
 
   Iterable<Entity> get children => new Iterable.empty();

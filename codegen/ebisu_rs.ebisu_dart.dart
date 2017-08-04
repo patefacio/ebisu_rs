@@ -601,12 +601,13 @@ All rust named items are *RsEntity* instances.'''
         ..imports.addAll([
           'package:ebisu_rs/macro.dart',
           'package:ebisu_rs/field.dart',
+          'package:ebisu_rs/generic.dart',
           'package:quiver/iterables.dart',
         ])
         ..classes = [
           class_('struct')
             ..implement = ['HasCode']
-            ..mixins = ['IsPub', 'Derives']
+            ..mixins = ['IsPub', 'Derives', 'Generic']
             ..withClass(commonFeatures)
             ..members.addAll([
               member('fields')
@@ -616,7 +617,7 @@ All rust named items are *RsEntity* instances.'''
           class_('tuple_struct')
             ..doc = 'Tuple struct'
             ..implement = ['HasCode']
-            ..mixins = ['IsPub', 'Derives']
+            ..mixins = ['IsPub', 'Derives', 'Generic']
             ..withClass(commonFeatures)
             ..members.addAll([]),
           class_('unit_struct')
