@@ -11,6 +11,7 @@ import 'package:ebisu_rs/type.dart';
 import 'package:id/id.dart';
 import 'package:logging/logging.dart';
 import 'package:path/path.dart';
+import 'package:quiver/iterables.dart';
 
 export 'package:ebisu_rs/dependency.dart';
 export 'package:ebisu_rs/enumeration.dart';
@@ -407,10 +408,22 @@ class Crate extends RsEntity implements HasFilePath {
     _logger.info("Ownership of crate($id) established");
   }
 
+  void addInferredDependencies() {
+    _addLogSupport();
+    if (_requiresSerde) {
+      _crateToml._addIfMissing(new Dependency('serde', '^1.0.11'));
+    }
+  }
+
+  bool get _requiresSerde => concat([enums, structs]).any((item) =>
+      (item is Derives) &&
+      item.derive.any(
+          (derivable) => derivable == Serialize || derivable == Deserialize));
+
   void generate() {
     _logger.info('Generating crate $id into $filePath');
 
-    _addLogSupport();
+    addInferredDependencies();
 
     if (_clap != null) {
       rootModule

@@ -248,6 +248,7 @@ All rust named items are *RsEntity* instances.'''
         ..includesLogger = true
         ..imports.addAll([
           'package:id/id.dart',
+          'package:quiver/iterables.dart',
         ])
         ..importAndExportAll([
           'package:ebisu_rs/enumeration.dart',

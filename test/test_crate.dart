@@ -29,7 +29,7 @@ void main([List<String> args]) {
       ..rootModule = (module('root_mod')
         ..enums = [
           enum_('e1', ['a', 'b']),
-          enum_('e2', ['c', 'd'])
+          enum_('e2', ['c', 'd'])..derive = [Serialize]
         ]
         ..structs = [struct('s1'), struct('s2')]
         ..modules = [
@@ -45,10 +45,12 @@ void main([List<String> args]) {
               enum_('sm2_e2', ['c', 'd'])
             ]
             ..structs = [struct('sm2_s1'), struct('sm2_s2')],
-        ]);
+        ])
+        ..withCrateToml((crateToml) => crateToml.addDep("foo", "0.0.1"));
 
+    c.addInferredDependencies();
     print(c);
-
+    c.withCrateToml((CrateToml crateToml) => print(crateToml.contents));
     print(c.structs);
     print(c.enums);
     print(c.modules);

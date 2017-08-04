@@ -199,6 +199,7 @@ Dependency dependency(String crate, dynamic version) =>
     new Dependency(crate, version);
 
 String compareOpToString(CompareOp compareOp) {
+  if(compareOp == null) return '';
   switch (compareOp) {
     case lt:
       return '<';
