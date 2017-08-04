@@ -35,6 +35,11 @@ class Repo extends RsEntity {
     crates.forEach((crate) => crate.generate());
   }
 
+  @override
+  onOwnershipEstablished() {
+    _logger.info("Ownership of repo ${id}:${runtimeType}");
+  }
+
   // end <class Repo>
 
   Repo(dynamic id) : super(id);

@@ -401,14 +401,17 @@ class Crate extends RsEntity implements HasFilePath {
   get enums => progeny.where((dynamic e) => e is Enum);
   get structs => progeny.where((dynamic s) => s is Struct);
 
+  String get toml => _crateToml.contents;
+
   String toString() => 'crate($name)';
 
   onOwnershipEstablished() {
-    _filePath = join((owner as Repo).rootPath, id.snake);
     _logger.info("Ownership of crate($id) established");
+    _filePath = join((owner as Repo).rootPath, id.snake);
+    _addInferredDependencies();
   }
 
-  void addInferredDependencies() {
+  void _addInferredDependencies() {
     _addLogSupport();
     if (_requiresSerde) {
       _crateToml._addIfMissing(new Dependency('serde', '^1.0.11'));
@@ -422,8 +425,6 @@ class Crate extends RsEntity implements HasFilePath {
 
   void generate() {
     _logger.info('Generating crate $id into $filePath');
-
-    addInferredDependencies();
 
     if (_clap != null) {
       rootModule

@@ -6,12 +6,9 @@ library ebisu_rs.entity;
 import 'dart:io';
 import 'package:ebisu/ebisu.dart';
 import 'package:id/id.dart';
-import 'package:logging/logging.dart';
 
 // custom <additional imports>
 // end <additional imports>
-
-final Logger _logger = new Logger('entity');
 
 enum CrateType { libCrate, appCrate }
 

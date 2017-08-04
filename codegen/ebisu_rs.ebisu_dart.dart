@@ -63,7 +63,6 @@ main(List<String> args) {
 Support for rust entity *recursive entity graph*.
 
 All rust named items are *RsEntity* instances.'''
-        ..includesLogger = true
         ..imports = [
           'package:id/id.dart',
           'package:ebisu/ebisu.dart',
@@ -108,12 +107,12 @@ All rust named items are *RsEntity* instances.'''
         ])
         ..classes = [
           class_('lifetime')
-          ..withClass(commonFeatures)
+            ..withClass(commonFeatures)
             ..members = [
               member('id')..type = 'Id',
             ],
           class_('type_parm')
-          ..withClass(commonFeatures)
+            ..withClass(commonFeatures)
             ..members = [
               member('id')..type = 'Id',
             ],
@@ -431,7 +430,7 @@ All rust named items are *RsEntity* instances.'''
               member('imports')
                 ..type = 'List<Import>'
                 ..init = [],
-                              member('enums')
+              member('enums')
                 ..type = 'List<Enum>'
                 ..init = [],
               member('structs')
@@ -491,8 +490,8 @@ All rust named items are *RsEntity* instances.'''
         ]
         ..classes = [
           class_('rs_type')
-          ..implement = [ 'HasCode' ]
-          ..isAbstract = true,
+            ..implement = ['HasCode']
+            ..isAbstract = true,
           class_('str')..extend = 'RsType',
           class_('built_in_type')
             ..extend = 'RsType'
@@ -600,6 +599,7 @@ All rust named items are *RsEntity* instances.'''
 
       library('struct')
         ..imports = commonIncludes()
+        ..includesLogger = true
         ..imports.addAll([
           'package:ebisu_rs/macro.dart',
           'package:ebisu_rs/field.dart',
@@ -630,6 +630,7 @@ All rust named items are *RsEntity* instances.'''
             ..members.addAll([]),
         ]
     ];
+
   ebisuRs.generate(generateDrudge: true);
 
   print('''

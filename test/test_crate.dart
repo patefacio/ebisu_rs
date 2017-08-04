@@ -7,6 +7,7 @@ import 'package:test/test.dart';
 // custom <additional imports>
 
 import 'package:ebisu_rs/module.dart';
+import 'package:ebisu/ebisu.dart';
 
 // end <additional imports>
 
@@ -24,8 +25,10 @@ void main([List<String> args]) {
   }
 // custom <main>
 
+  //Logger.root.level = Level.INFO;
+
   test('crate creation', () {
-    var c = crate('crate')
+    var crate_ = crate('crate')
       ..rootModule = (module('root_mod')
         ..enums = [
           enum_('e1', ['a', 'b']),
@@ -46,14 +49,23 @@ void main([List<String> args]) {
             ]
             ..structs = [struct('sm2_s1'), struct('sm2_s2')],
         ])
-        ..withCrateToml((crateToml) => crateToml.addDep("foo", "0.0.1"));
+      ..withCrateToml((crateToml) => crateToml.addDep("foo", "0.0.1"));
 
-    c.addInferredDependencies();
-    print(c);
-    c.withCrateToml((CrateToml crateToml) => print(crateToml.contents));
-    print(c.structs);
-    print(c.enums);
-    print(c.modules);
+    final repo_ = repo('test_crate')..crates = [crate_];
+    repo_.setAsRoot();
+    final toml = darkMatter(crate_.toml);
+
+    [
+      'foo = "0.0.1"',
+      'serde = "^1.0.11"',
+    ].forEach((required) {
+      expect(toml.contains(darkMatter(required)), true);
+    });
+
+    print(crate_);
+    print(crate_.structs);
+    print(crate_.enums);
+    print(crate_.modules);
   });
 
 // end <main>

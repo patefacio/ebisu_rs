@@ -5,6 +5,7 @@ import 'package:ebisu_rs/entity.dart';
 import 'package:ebisu_rs/field.dart';
 import 'package:ebisu_rs/generic.dart';
 import 'package:ebisu_rs/macro.dart';
+import 'package:logging/logging.dart';
 import 'package:quiver/iterables.dart';
 
 // custom <additional imports>
@@ -12,6 +13,8 @@ import 'package:quiver/iterables.dart';
 export 'package:ebisu_rs/field.dart';
 
 // end <additional imports>
+
+final Logger _logger = new Logger('struct');
 
 class Struct extends RsEntity with IsPub, Derives, Generic implements HasCode {
   List<Field> fields = [];
@@ -26,7 +29,7 @@ class Struct extends RsEntity with IsPub, Derives, Generic implements HasCode {
 
   @override
   onOwnershipEstablished() {
-    print("---------Ownership of ${id}:${runtimeType}");
+    _logger.info("Ownership of struct ${id}:${runtimeType}");
     for (final field in fields) {
       if (field.type.isRef) {}
     }
