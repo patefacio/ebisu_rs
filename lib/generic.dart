@@ -1,32 +1,44 @@
 library ebisu_rs.generic;
 
+import 'package:ebisu_rs/entity.dart';
 import 'package:id/id.dart';
+import 'package:quiver/iterables.dart';
 
 // custom <additional imports>
 // end <additional imports>
 
-class Lifetime {
+class Lifetime extends RsEntity {
   Id id;
 
   // custom <class Lifetime>
+  get children => new Iterable.empty();
   // end <class Lifetime>
 
+  Lifetime(dynamic id) : super(id);
 }
 
-class TypeParm {
+class TypeParm extends RsEntity {
   Id id;
 
   // custom <class TypeParm>
+
+  get children => new Iterable.empty();
+
   // end <class TypeParm>
 
+  TypeParm(dynamic id) : super(id);
 }
 
-class Generics {
+class Generic {
   List<Lifetime> lifetimes = [];
   List<TypeParm> typeParms = [];
 
-  // custom <class Generics>
-  // end <class Generics>
+  // custom <class Generic>
+
+  get children =>
+      new List<RsEntity>.from(concat([lifetimes, typeParms]), growable: false);
+
+  // end <class Generic>
 
 }
 

@@ -103,17 +103,21 @@ All rust named items are *RsEntity* instances.'''
       library('generic')
         ..imports.addAll([
           'package:id/id.dart',
+          'package:ebisu_rs/entity.dart',
+          'package:quiver/iterables.dart',
         ])
         ..classes = [
           class_('lifetime')
+          ..withClass(commonFeatures)
             ..members = [
               member('id')..type = 'Id',
             ],
           class_('type_parm')
+          ..withClass(commonFeatures)
             ..members = [
               member('id')..type = 'Id',
             ],
-          class_('generics')
+          class_('generic')
             ..members = [
               member('lifetimes')
                 ..type = 'List<Lifetime>'
@@ -446,6 +450,9 @@ All rust named items are *RsEntity* instances.'''
       // trait library
       library('trait')
         ..imports = commonIncludes()
+        ..imports.addAll([
+          'package:ebisu_rs/generic.dart'
+        ])
         ..classes = [
           class_('type')
             ..implement = ['HasCode']
@@ -458,7 +465,7 @@ All rust named items are *RsEntity* instances.'''
             ]),
           class_('fn')
             ..implement = ['HasCode']
-            ..mixins = ['IsPub']
+            ..mixins = ['IsPub', 'Generic']
             ..withClass(commonFeatures)
             ..members.addAll([
               member('parms')
@@ -468,7 +475,7 @@ All rust named items are *RsEntity* instances.'''
             ]),
           class_('trait')
             ..implement = ['HasCode']
-            ..mixins = ['IsPub']
+            ..mixins = ['IsPub', 'Generic']
             ..withClass(commonFeatures)
             ..members.addAll([
               member('functions')

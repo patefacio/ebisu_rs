@@ -2,6 +2,7 @@ library ebisu_rs.trait;
 
 import 'package:ebisu/ebisu.dart';
 import 'package:ebisu_rs/entity.dart';
+import 'package:ebisu_rs/generic.dart';
 
 // custom <additional imports>
 // end <additional imports>
@@ -31,7 +32,7 @@ class Parm extends RsEntity implements HasCode {
   Parm(dynamic id) : super(id);
 }
 
-class Fn extends RsEntity with IsPub implements HasCode {
+class Fn extends RsEntity with IsPub, Generic implements HasCode {
   List<Parm> parms = [];
   Type returnType;
 
@@ -53,7 +54,7 @@ class Fn extends RsEntity with IsPub implements HasCode {
   Fn(dynamic id) : super(id);
 }
 
-class Trait extends RsEntity with IsPub implements HasCode {
+class Trait extends RsEntity with IsPub, Generic implements HasCode {
   List<Fn> functions = [];
 
   // custom <class Trait>
