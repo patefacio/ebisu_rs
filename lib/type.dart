@@ -107,14 +107,14 @@ abstract class RefType extends RsType {
 
   // custom <class RefType>
 
-  RefType(this.referent, [this.lifetime = '']);
+  RefType(this.referent, [this.lifetime]);
 
   bool get isRefType => true;
 
-  get lifetimeTag =>
-      lifetime != null && lifetime.isNotEmpty ? "'$lifetime " : '';
+  get _lifetimeTag =>
+      lifetime != null && lifetime.isNotEmpty ? "'$lifetime " : "'a ";
 
-  String get lifetimeDecl => "& $lifetimeTag$_mutTag${referent.lifetimeDecl}";
+  String get lifetimeDecl => "& $_lifetimeTag$_mutTag${referent.lifetimeDecl}";
 
   Iterable<String> get lifetimes => lifetime.isNotEmpty
       ? concat(<Iterable<String>>[

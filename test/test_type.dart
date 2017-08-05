@@ -21,8 +21,14 @@ void main([List<String> args]) {
 // custom <main>
 
   test('types', () {
-    print(ref(mref(rsType('i32'), 'a'), 'a').lifetimeDecl);
-    print(ref(mref(rsType('i32'), 'a'), 'b').code);
+    var t = ref(mref(f64));
+    expect(t.lifetimeDecl, "& 'a & 'a mut f64");
+    expect(t.code, "& & mut f64");
+
+    t = mref(ref(mref(i32, 'x'), 'y'));
+    expect(t.lifetimeDecl, "& 'a mut & 'y & 'x mut i32");
+    expect(t.code, "& mut & & mut i32");
+
     //expect(rsType('i32'))
   });
 
