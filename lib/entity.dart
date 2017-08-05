@@ -84,7 +84,13 @@ class IsPub {
 
 String indent(String s) => indentBlock(s, '    ');
 
-ProcessResult formatRustFile(String filePath) =>
-    Process.runSync('rustfmt', ['--skip-children', filePath]);
+ProcessResult formatRustFile(String filePath) {
+    final result = Process.runSync('rustfmt', ['--skip-children', filePath]);
+    var backup = new File('$filePath.bk');
+    if(backup.existsSync()) {
+      backup.deleteSync();
+    }
+    return result;
+}
 
 // end <library entity>

@@ -38,6 +38,7 @@ main(List<String> args) {
     ..doc = purpose
     ..scripts = []
     ..testLibraries = [
+      library('test_type')..imports = ['package:ebisu_rs/type.dart'],
       library('test_struct')..imports = ['package:ebisu_rs/struct.dart'],
       library('test_repo')..imports = ['package:ebisu_rs/repo.dart'],
       library('test_crate')..imports = ['package:ebisu_rs/crate.dart'],

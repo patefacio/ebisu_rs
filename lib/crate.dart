@@ -154,7 +154,7 @@ class Arg {
   bool get takesValue => defaultValue != null || argType != argBool;
 
   String get type =>
-      isMultiple ? 'Vec<${_baseType.scopedDecl}>' : _baseType.toString();
+      isMultiple ? 'Vec<${_baseType.lifetimeDecl}>' : _baseType.lifetimeDecl;
 
   static final Map<ArgType, RsType> _baseTypes = {
     argString: ref(str, 'a'),
@@ -434,6 +434,7 @@ class Crate extends RsEntity implements HasFilePath {
             (CodeBlock cb) => cb
               ..hasSnippetsFirst = true
               ..snippets.add(brCompact([
+                clap.defineStructs,
                 loggerType == envLogger
                     ? '''
 env_logger::init().expect("Successful init of env_logger");

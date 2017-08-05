@@ -17,9 +17,12 @@ abstract class RsType implements HasCode {
 
   bool get isRefType => false;
 
-  String get scopedDecl => toString();
+  /// Returns type with lifetime attributes
+  String get lifetimeDecl => toString();
 
   Iterable<String> get lifetimes => new Iterable.empty();
+
+  String toString() => code;
 
   // end <class RsType>
 
@@ -45,9 +48,6 @@ class BuiltInType extends RsType {
   @override
   String get code => typeName;
 
-  @override
-  toString() => typeName;
-
   // end <class BuiltInType>
 
 }
@@ -67,7 +67,7 @@ class Int extends RsType {
   const Int(this.size, [this.isSigned = true]);
 
   @override
-  toString() => '${isSigned? "i":"u"}$size';
+  get code => '${isSigned? "i":"u"}$size';
 
   // end <class Int>
 
@@ -81,7 +81,7 @@ class Float extends RsType {
   const Float(this.size);
 
   @override
-  toString() => 'f$size';
+  get code => 'f$size';
 
   // end <class Float>
 
@@ -94,7 +94,8 @@ class UserDefinedType extends RsType {
 
   UserDefinedType(this.name);
 
-  toString() => name;
+  @override
+  get code => name;
 
   // end <class UserDefinedType>
 
@@ -110,13 +111,10 @@ abstract class RefType extends RsType {
 
   bool get isRefType => true;
 
-  String get scopedDecl {
-    if (lifetime.isNotEmpty) {
-      return '& \'$lifetime $_mutTag${referent.scopedDecl}';
-    } else {
-      return toString();
-    }
-  }
+  get lifetimeTag =>
+      lifetime != null && lifetime.isNotEmpty ? "'$lifetime " : '';
+
+  String get lifetimeDecl => "& $lifetimeTag$_mutTag${referent.lifetimeDecl}";
 
   Iterable<String> get lifetimes => lifetime.isNotEmpty
       ? concat(<Iterable<String>>[
@@ -126,9 +124,6 @@ abstract class RefType extends RsType {
       : referent.lifetimes;
 
   String get _mutTag => isMutable ? 'mut ' : '';
-
-  @override
-  toString() => '& $_mutTag$referent';
 
   bool get isMutable => false;
 
@@ -143,6 +138,9 @@ class Ref extends RefType {
 
   bool get isRef => true;
 
+  @override
+  get code => "& $referent";
+
   // end <class Ref>
 
 }
@@ -155,6 +153,9 @@ class Mref extends RefType {
   bool get isMutable => true;
 
   bool get isMref => true;
+
+  @override
+  get code => "& mut $referent";
 
   // end <class Mref>
 
