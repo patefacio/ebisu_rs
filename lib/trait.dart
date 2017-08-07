@@ -16,27 +16,52 @@ class Parm extends RsEntity implements HasCode {
 
   // custom <class Parm>
 
+  Parm(dynamic id, [dynamic type])
+      : type = type != null ? rsType(type) : type,
+        super(id);
+
   get children => new Iterable<Parm>.generate(0);
 
-  get code => '${id.snake} : ${type.code}';
+  get code => '${id.snake} : ${type.lifetimeDecl}';
 
   // end <class Parm>
 
-  Parm(dynamic id) : super(id);
 }
 
 class Fn extends RsEntity with IsPub, Generic implements HasCode {
-  List<Parm> parms = [];
-  RsType returnType = UnitType;
+  List<Parm> get parms => _parms;
+  RsType get returnType => _returnType;
 
   // custom <class Fn>
 
+  Fn(dynamic id, [Iterable<Parm> parms, dynamic returnType = UnitType])
+      : _returnType = returnType,
+        super(id) {
+    if (parms != null) {
+      this.parms = parms;
+    }
+  }
+
   Iterable<Entity> get children => new List<Parm>.from(parms, growable: false);
 
+  set parms(Iterable<Parm> parms) => _parms = new List.from(parms);
+
+  set returnType(dynamic type) => _returnType = rsType(type);
+
   String get code => brCompact([
+        _docComment,
         '${pubDecl}fn $name($_parmsText) -> $returnType {',
         '}',
       ]);
+
+  String get _docComment {
+    var fnDoc = [descr == null ? 'TODO: comment fn $id' : descr];
+    return tripleSlashComment(chomp(br([
+      fnDoc,
+      brCompact(parms.map((p) =>
+          ' * `${p.id.snake}` - ${p.doc == null? "TODO: comment parm" : p.doc}'))
+    ])));
+  }
 
   set returns(dynamic rt) => returnType = rt is String
       ? new UserDefinedType(rt)
@@ -48,9 +73,12 @@ class Fn extends RsEntity with IsPub, Generic implements HasCode {
 
   String get _parmsText => parms.map((p) => p.code).join(', ');
 
+  addParm(dynamic id, [dynamic type]) => _parms.add(new Parm(id, type));
+
   // end <class Fn>
 
-  Fn(dynamic id) : super(id);
+  List<Parm> _parms = [];
+  RsType _returnType = UnitType;
 }
 
 class Trait extends RsEntity with IsPub, Generic implements HasCode {
@@ -70,6 +98,9 @@ class Trait extends RsEntity with IsPub, Generic implements HasCode {
 
 // custom <library trait>
 
-Fn fn(dynamic id) => new Fn(id);
+Fn fn(dynamic id, [Iterable<dynamic> parms, dynamic returnType = UnitType]) =>
+    new Fn(id, parms, returnType);
+
+Parm parm(dynamic id, dynamic type) => new Parm(id, type);
 
 // end <library trait>

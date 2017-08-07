@@ -4,6 +4,7 @@
 library ebisu_rs.entity;
 
 import 'dart:io';
+import 'dart:mirrors';
 import 'package:ebisu/ebisu.dart';
 import 'package:id/id.dart';
 
@@ -45,7 +46,7 @@ abstract class RsEntity extends Object with Entity {
 
   // custom <class RsEntity>
 
-  RsEntity(dynamic id) : this.id = makeId(id);
+  RsEntity(dynamic id) : this.id = makeRsId(id);
 
   // end <class RsEntity>
 
@@ -81,6 +82,8 @@ class IsPub {
 }
 
 // custom <library entity>
+
+makeRsId(dynamic id) => makeId(id is Symbol ? MirrorSystem.getName(id) : id);
 
 String indent(String s) => indentBlock(s, '    ');
 

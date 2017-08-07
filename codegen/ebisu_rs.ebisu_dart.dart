@@ -67,6 +67,7 @@ All rust named items are *RsEntity* instances.'''
         ..imports = [
           'package:id/id.dart',
           'package:ebisu/ebisu.dart',
+          'dart:mirrors',
           'dart:io',
         ]
         ..enums = [
@@ -457,20 +458,23 @@ All rust named items are *RsEntity* instances.'''
         ])
         ..classes = [
           class_('parm')
+            ..extend = 'RsEntity'
             ..implement = ['HasCode']
-            ..withClass(commonFeatures)
             ..members.addAll([
               member('type')..type = 'RsType',
             ]),
           class_('fn')
+            ..extend = 'RsEntity'
             ..implement = ['HasCode']
             ..mixins = ['IsPub', 'Generic']
-            ..withClass(commonFeatures)
             ..members.addAll([
               member('parms')
+                ..access = RO
                 ..type = 'List<Parm>'
                 ..init = [],
-              member('return_type')..type = 'RsType'..init = 'UnitType',
+              member('return_type')
+              ..access = RO
+              ..type = 'RsType'..init = 'UnitType',
             ]),
           class_('trait')
             ..implement = ['HasCode']

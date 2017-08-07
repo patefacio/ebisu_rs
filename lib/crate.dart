@@ -128,7 +128,7 @@ class Arg {
 
   // custom <class Arg>
 
-  Arg(dynamic id) : _id = makeId(id);
+  Arg(dynamic id) : _id = makeRsId(id);
 
   toString() => "arg(${id.snake})";
 
@@ -192,7 +192,7 @@ class Command {
 
   // custom <class Command>
 
-  Command(dynamic id) : _id = makeId(id);
+  Command(dynamic id) : _id = makeRsId(id);
 
   // end <class Command>
 

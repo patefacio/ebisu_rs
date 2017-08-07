@@ -21,7 +21,13 @@ void main([List<String> args]) {
 // custom <main>
 
   test('fn basics', () {
-    var f1 = fn('foo');
+    var f1 = fn(#foobar, [
+      parm(#a, mref(i32, 's'))..doc = 'The *i32* field called *a*',
+      parm(#b, f64),
+      parm(#c, string)
+    ])
+      ..doc = 'Function that does foobar';
+
     print(f1.code);
     f1..returns = i32;
 
