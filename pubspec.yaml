@@ -14,7 +14,7 @@ dependencies:
 #  ebisu:
 #    path: "../ebisu"
 
-  id: "^1.0.16"
+#  id: "^1.0.16"
 
   quiver: ">=0.21.0 <0.25.0"
 
@@ -33,6 +33,10 @@ dependency_overrides:
 
   ebisu:
     path: "../ebisu"
+      
+  id:
+    path: "../id"
+    #git: "git://github.com/patefacio/id"
 
 # end <ebisu_rs dependency overrides>
 

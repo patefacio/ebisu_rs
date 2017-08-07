@@ -5,6 +5,9 @@ import 'package:ebisu_rs/entity.dart';
 import 'package:ebisu_rs/generic.dart';
 import 'package:ebisu_rs/type.dart';
 
+export 'package:ebisu_rs/generic.dart';
+export 'package:ebisu_rs/type.dart';
+
 // custom <additional imports>
 // end <additional imports>
 
@@ -35,6 +38,12 @@ class Fn extends RsEntity with IsPub, Generic implements HasCode {
         '}',
       ]);
 
+  set returns(dynamic rt) => rt is String
+      ? new UserDefinedType(rt)
+      : rt is RsType
+          ? rt
+          : throw '*fn* returns setter requires [String] or [RsType]';
+
   String get name => id.snake;
 
   String get _parmsText => parms.map((p) => p.code).join(', ');
@@ -60,4 +69,7 @@ class Trait extends RsEntity with IsPub, Generic implements HasCode {
 }
 
 // custom <library trait>
+
+Fn fn(dynamic id) => new Fn(id);
+
 // end <library trait>

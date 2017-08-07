@@ -1,6 +1,5 @@
 #!/usr/bin/env dart
 import 'dart:io';
-import 'package:args/args.dart';
 import 'package:ebisu/ebisu.dart';
 import 'package:ebisu/ebisu_dart_meta.dart';
 import 'package:logging/logging.dart';
@@ -43,6 +42,7 @@ main(List<String> args) {
       library('test_repo')..imports = ['package:ebisu_rs/repo.dart'],
       library('test_crate')..imports = ['package:ebisu_rs/crate.dart'],
       library('test_module')..imports = ['package:ebisu_rs/module.dart'],
+      library('test_trait')..imports = ['package:ebisu_rs/trait.dart'],
       library('test_enumeration')
         ..imports = ['package:ebisu_rs/enumeration.dart'],
       library('test_ebisu_rs')..imports = ['package:ebisu_rs/ebisu_rs.dart'],
@@ -451,7 +451,7 @@ All rust named items are *RsEntity* instances.'''
       // trait library
       library('trait')
         ..imports = commonIncludes()
-        ..imports.addAll([
+        ..importAndExportAll([
           'package:ebisu_rs/generic.dart',
           'package:ebisu_rs/type.dart',
         ])
@@ -493,28 +493,9 @@ All rust named items are *RsEntity* instances.'''
           class_('rs_type')
             ..implement = ['HasCode']
             ..isAbstract = true,
-          class_('str')..extend = 'RsType',
           class_('built_in_type')
             ..extend = 'RsType'
             ..members = [member('type_name')..isFinal = true],
-          class_('rs_string')..extend = 'RsType',
-          class_('int')
-            ..extend = 'RsType'
-            ..members = [
-              member('size')
-                ..type = 'int'
-                ..isFinal = true,
-              member('is_signed')
-                ..type = 'bool'
-                ..isFinal = true,
-            ],
-          class_('float')
-            ..extend = 'RsType'
-            ..members = [
-              member('size')
-                ..type = 'int'
-                ..isFinal = true,
-            ],
           class_('user_defined_type')
             ..extend = 'RsType'
             ..members = [

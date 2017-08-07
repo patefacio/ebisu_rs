@@ -28,16 +28,6 @@ abstract class RsType implements HasCode {
 
 }
 
-class Str extends RsType {
-  // custom <class Str>
-
-  @override
-  String get code => 'String';
-
-  // end <class Str>
-
-}
-
 class BuiltInType extends RsType {
   final String typeName;
 
@@ -49,41 +39,6 @@ class BuiltInType extends RsType {
   String get code => typeName;
 
   // end <class BuiltInType>
-
-}
-
-class RsString extends RsType {
-  // custom <class RsString>
-  // end <class RsString>
-
-}
-
-class Int extends RsType {
-  final int size;
-  final bool isSigned;
-
-  // custom <class Int>
-
-  const Int(this.size, [this.isSigned = true]);
-
-  @override
-  get code => '${isSigned? "i":"u"}$size';
-
-  // end <class Int>
-
-}
-
-class Float extends RsType {
-  final int size;
-
-  // custom <class Float>
-
-  const Float(this.size);
-
-  @override
-  get code => 'f$size';
-
-  // end <class Float>
 
 }
 
@@ -167,18 +122,18 @@ const string = const BuiltInType('String');
 const str = const BuiltInType('str');
 const isize = const BuiltInType('isize');
 const usize = const BuiltInType('usize');
-const i8 = const Int(8);
-const i16 = const Int(16);
-const i32 = const Int(32);
-const i64 = const Int(64);
+const i8 = const BuiltInType('i8');
+const i16 = const BuiltInType('i16');
+const i32 = const BuiltInType('i32');
+const i64 = const BuiltInType('i864');
 
-const u8 = const Int(8, false);
-const u16 = const Int(16, false);
-const u32 = const Int(32, false);
-const u64 = const Int(64, false);
+const u8 = const BuiltInType('u8');
+const u16 = const BuiltInType('u16');
+const u32 = const BuiltInType('u32');
+const u64 = const BuiltInType('u64');
 
-const f32 = const Float(32);
-const f64 = const Float(64);
+const f32 = const BuiltInType('f32');
+const f64 = const BuiltInType('f64');
 
 Ref ref(RsType type, [String lifetime]) => new Ref(type, lifetime);
 
@@ -196,7 +151,6 @@ void main([List<String> args]) {
 // custom <main>
 
   print("DONE");
-
   print(ref(mref(ref(i8))));
 
 // end <main>
