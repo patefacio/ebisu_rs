@@ -470,7 +470,7 @@ All rust named items are *RsEntity* instances.'''
               member('parms')
                 ..type = 'List<Parm>'
                 ..init = [],
-              member('return_type')..type = 'RsType',
+              member('return_type')..type = 'RsType'..init = 'UnitType',
             ]),
           class_('trait')
             ..implement = ['HasCode']

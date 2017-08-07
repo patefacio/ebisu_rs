@@ -21,7 +21,9 @@ void main([List<String> args]) {
 // custom <main>
 
   test('fn basics', () {
-    var f1 = fn('foo')..returns = i32;
+    var f1 = fn('foo');
+    print(f1.code);
+    f1..returns = i32;
 
     print(f1.code);
   });

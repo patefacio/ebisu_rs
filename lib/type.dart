@@ -135,6 +135,8 @@ const u64 = const BuiltInType('u64');
 const f32 = const BuiltInType('f32');
 const f64 = const BuiltInType('f64');
 
+const UnitType = const BuiltInType('()');
+
 Ref ref(RsType type, [String lifetime]) => new Ref(type, lifetime);
 
 Mref mref(RsType type, [String lifetime]) => new Mref(type, lifetime);

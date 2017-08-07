@@ -27,7 +27,7 @@ class Parm extends RsEntity implements HasCode {
 
 class Fn extends RsEntity with IsPub, Generic implements HasCode {
   List<Parm> parms = [];
-  RsType returnType;
+  RsType returnType = UnitType;
 
   // custom <class Fn>
 
@@ -38,7 +38,7 @@ class Fn extends RsEntity with IsPub, Generic implements HasCode {
         '}',
       ]);
 
-  set returns(dynamic rt) => rt is String
+  set returns(dynamic rt) => returnType = rt is String
       ? new UserDefinedType(rt)
       : rt is RsType
           ? rt
