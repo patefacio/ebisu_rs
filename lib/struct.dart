@@ -35,10 +35,12 @@ class Struct extends RsEntity with IsPub, Derives, Generic implements HasCode {
     }
   }
 
+/*
   Iterable<String> get lifetimes => new Set<String>.from(concat(
           fields.map<Iterable<String>>((m) => m.lifetimes.map((lt) => "'$lt"))))
       .toList()
         ..sort();
+*/
 
   String get template {
     var contents = chomp(brCompact([

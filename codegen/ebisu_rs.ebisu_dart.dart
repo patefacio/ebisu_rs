@@ -43,6 +43,7 @@ main(List<String> args) {
       library('test_crate')..imports = ['package:ebisu_rs/crate.dart'],
       library('test_module')..imports = ['package:ebisu_rs/module.dart'],
       library('test_trait')..imports = ['package:ebisu_rs/trait.dart'],
+      library('test_generic')..imports = ['package:ebisu_rs/generic.dart'],
       library('test_enumeration')
         ..imports = ['package:ebisu_rs/enumeration.dart'],
       library('test_ebisu_rs')..imports = ['package:ebisu_rs/ebisu_rs.dart'],
@@ -104,21 +105,23 @@ All rust named items are *RsEntity* instances.'''
       library('generic')
         ..imports.addAll([
           'package:id/id.dart',
+          'package:ebisu/ebisu.dart',
           'package:ebisu_rs/entity.dart',
           'package:quiver/iterables.dart',
         ])
         ..classes = [
           class_('lifetime')
             ..withClass(commonFeatures)
-            ..members = [
-              member('id')..type = 'Id',
-            ],
+            ..defaultMemberAccess = RO
+            ..implement = ['HasCode']
+            ..members = [],
           class_('type_parm')
             ..withClass(commonFeatures)
-            ..members = [
-              member('id')..type = 'Id',
-            ],
+            ..defaultMemberAccess = RO
+            ..implement = ['HasCode']
+            ..members = [],
           class_('generic')
+            ..defaultMemberAccess = RO
             ..members = [
               member('lifetimes')
                 ..type = 'List<Lifetime>'
@@ -473,8 +476,9 @@ All rust named items are *RsEntity* instances.'''
                 ..type = 'List<Parm>'
                 ..init = [],
               member('return_type')
-              ..access = RO
-              ..type = 'RsType'..init = 'UnitType',
+                ..access = RO
+                ..type = 'RsType'
+                ..init = 'UnitType',
             ]),
           class_('trait')
             ..implement = ['HasCode']

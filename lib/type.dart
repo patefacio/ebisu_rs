@@ -71,7 +71,7 @@ abstract class RefType extends RsType {
 
   String get lifetimeDecl => "& $_lifetimeTag$_mutTag${referent.lifetimeDecl}";
 
-  Iterable<String> get lifetimes => lifetime.isNotEmpty
+  Iterable<String> get lifetimes => lifetime != null && lifetime.isNotEmpty
       ? concat(<Iterable<String>>[
           [lifetime],
           referent.lifetimes

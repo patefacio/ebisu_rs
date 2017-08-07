@@ -29,6 +29,8 @@ void main([List<String> args]) {
     expect(t.lifetimeDecl, "& 'a mut & 'y & 'x mut i32");
     expect(t.code, "& mut & & mut i32");
 
+    print(t.lifetimes);
+
     //expect(rsType('i32'))
   });
 
