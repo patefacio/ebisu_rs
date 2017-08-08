@@ -1,7 +1,12 @@
 library ebisu_rs.type;
 
 import 'package:ebisu_rs/entity.dart';
+import 'package:ebisu_rs/generic.dart';
 import 'package:quiver/iterables.dart';
+
+export 'package:ebisu_rs/entity.dart';
+export 'package:ebisu_rs/generic.dart';
+export 'package:quiver/iterables.dart';
 
 // custom <additional imports>
 // end <additional imports>
@@ -20,7 +25,7 @@ abstract class RsType implements HasCode {
   /// Returns type with lifetime attributes
   String get lifetimeDecl => toString();
 
-  Iterable<String> get lifetimes => new Iterable.empty();
+  Iterable<Lifetime> get lifetimes => new Iterable.empty();
 
   String toString() => code;
 
@@ -58,38 +63,42 @@ class UserDefinedType extends RsType {
 
 abstract class RefType extends RsType {
   final RsType referent;
-  String lifetime;
+  Lifetime get lifetime => _lifetime;
 
   // custom <class RefType>
 
-  RefType(this.referent, [this.lifetime]);
+  RefType(this.referent, [dynamic lifetime])
+      : _lifetime = lifetime is Lifetime ? lifetime : new Lifetime(lifetime);
 
   bool get isRefType => true;
 
-  get _lifetimeTag =>
-      lifetime != null && lifetime.isNotEmpty ? "'$lifetime " : "'a ";
+  String get lifetimeDecl => ['&', lifetime.code, mut, referent.lifetimeDecl]
+      .where((term) => term.isNotEmpty)
+      .join(' ');
 
-  String get lifetimeDecl => "& $_lifetimeTag$_mutTag${referent.lifetimeDecl}";
+  //"& $_lifetimeTag$_mutTag${referent.lifetimeDecl}";
 
-  Iterable<String> get lifetimes => lifetime != null && lifetime.isNotEmpty
-      ? concat(<Iterable<String>>[
+  Iterable<Lifetime> get lifetimes => lifetime != null
+      ? concat(<Iterable<Lifetime>>[
           [lifetime],
           referent.lifetimes
-        ]) as Iterable<String>
+        ])
       : referent.lifetimes;
-
-  String get _mutTag => isMutable ? 'mut ' : '';
 
   bool get isMutable => false;
 
+  get mut => '';
+
   // end <class RefType>
 
+  Lifetime _lifetime;
 }
 
 class Ref extends RefType {
   // custom <class Ref>
 
-  Ref(RsType referent, [String lifetime]) : super(referent, lifetime);
+  Ref(RsType referent, [dynamic lt])
+      : super(referent, lt is Lifetime ? lt : lifetime(lt));
 
   bool get isRef => true;
 
@@ -108,6 +117,8 @@ class Mref extends RefType {
   bool get isMutable => true;
 
   bool get isMref => true;
+
+  get mut => 'mut';
 
   @override
   get code => "& mut $referent";
@@ -141,11 +152,11 @@ Ref ref(RsType type, [String lifetime]) => new Ref(type, lifetime);
 
 Mref mref(RsType type, [String lifetime]) => new Mref(type, lifetime);
 
-RsType rsType(dynamic details) => details is RsType
-    ? details
-    : details is String
-        ? new UserDefinedType(details)
-        : throw 'Unsupported rstype ${details.runtimeType}';
+RsType rsType(dynamic type) => type is RsType
+    ? type
+    : type is String
+        ? new UserDefinedType(type)
+        : throw 'Unsupported rstype ${type.runtimeType}';
 
 // end <library type>
 

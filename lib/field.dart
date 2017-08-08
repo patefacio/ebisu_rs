@@ -13,6 +13,10 @@ class Field extends RsEntity with IsPub implements HasCode {
 
   // custom <class Field>
 
+  Field(dynamic id, [dynamic type])
+      : _type = type == null ? string : rsType(type),
+        super(id);
+
   get children => new Iterable.empty();
 
   onOwnershipEstablished() {
@@ -31,11 +35,9 @@ class Field extends RsEntity with IsPub implements HasCode {
         '$pubDecl$name: ${type.lifetimeDecl}',
       ]);
 
-  Iterable<String> get lifetimes => type.lifetimes;
+  Iterable<Lifetime> get lifetimes => type.lifetimes;
 
   // end <class Field>
-
-  Field(dynamic id) : super(id);
 
   RsType _type = string;
 }
@@ -59,6 +61,6 @@ class TupleField implements HasCode {
 
 // custom <library field>
 
-Field field(dynamic id) => new Field(id);
+Field field(dynamic id, [dynamic type]) => new Field(id, type);
 
 // end <library field>

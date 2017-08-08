@@ -21,7 +21,7 @@ class Struct extends RsEntity with IsPub, Derives, Generic implements HasCode {
 
   // custom <class Struct>
 
-  get children => new List<Field>.from(fields, growable: false);
+  get children => concat([lifetimes, typeParms, fields]);
 
   String toString() => 'struct($name)';
 
@@ -30,17 +30,16 @@ class Struct extends RsEntity with IsPub, Derives, Generic implements HasCode {
   @override
   onOwnershipEstablished() {
     _logger.info("Ownership of struct ${id}:${runtimeType}");
+    if (lifetimes.isEmpty) {
+      lifetimes = new Set<Lifetime>.from(concat(fields.map<Iterable<String>>(
+          (m) => m.lifetimes.map((lt) => "'$lt")))).toList()
+        ..sort();
+    }
+
     for (final field in fields) {
       if (field.type.isRef) {}
     }
   }
-
-/*
-  Iterable<String> get lifetimes => new Set<String>.from(concat(
-          fields.map<Iterable<String>>((m) => m.lifetimes.map((lt) => "'$lt"))))
-      .toList()
-        ..sort();
-*/
 
   String get template {
     var contents = chomp(brCompact([
@@ -52,7 +51,7 @@ class Struct extends RsEntity with IsPub, Derives, Generic implements HasCode {
   String get code => brCompact([
         tripleSlashComment(doc?.toString() ?? 'TODO: comment struct'),
         derives,
-        '${pubDecl}struct $name${template} {',
+        '${pubDecl}struct $name${genericDecl} {',
         indentBlock(br(fields.map((m) => m.code), ',\n')),
         '}'
       ]);

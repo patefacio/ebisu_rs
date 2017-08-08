@@ -7,6 +7,7 @@ import 'package:test/test.dart';
 // custom <additional imports>
 
 import 'package:ebisu_rs/struct.dart';
+import 'package:ebisu_rs/type.dart';
 
 // end <additional imports>
 
@@ -27,11 +28,14 @@ void main([List<String> args]) {
     expect(lifetime(#a).code, "'a");
     expect(typeParm(#t).code, 'T');
 
-    var s = struct('a')..generic(['a', 'b'], ['t1', typeParm('t2')]);
+    var s = struct('a')
+      ..fields = [field('x', i32)..doc = 'The x factor']
+      ..generic(['a', 'b'], ['t1', typeParm('t2')])
+      ..setAsRoot();
 
-    expect(
-        s.genericDecl,
-        "<'a, 'b, T1, T2>");
+    expect(s.genericDecl, "<'a, 'b, T1, T2>");
+
+    print(s.code);
   });
 
 // end <main>

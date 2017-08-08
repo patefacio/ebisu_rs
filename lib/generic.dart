@@ -1,9 +1,10 @@
 library ebisu_rs.generic;
 
-import 'package:ebisu/ebisu.dart';
 import 'package:ebisu_rs/entity.dart';
-import 'package:id/id.dart';
 import 'package:quiver/iterables.dart';
+
+export 'package:ebisu_rs/entity.dart';
+export 'package:quiver/iterables.dart';
 
 // custom <additional imports>
 // end <additional imports>
@@ -15,9 +16,10 @@ class Lifetime extends RsEntity implements HasCode {
   @override
   get code => "'${id.snake}";
 
+  Lifetime([dynamic id]) : super(id == null ? 'a' : id);
+
   // end <class Lifetime>
 
-  Lifetime(dynamic id) : super(id);
 }
 
 class TypeParm extends RsEntity implements HasCode {
@@ -34,15 +36,15 @@ class TypeParm extends RsEntity implements HasCode {
 }
 
 class Generic {
-  List<Lifetime> get lifetimes => _lifetimes;
-  List<TypeParm> get typeParms => _typeParms;
+  List<Lifetime> lifetimes = [];
+  List<TypeParm> typeParms = [];
 
   // custom <class Generic>
 
   generic(Iterable<dynamic> lifetimes, Iterable<dynamic> typeParms) {
-    _lifetimes =
+    this.lifetimes =
         lifetimes.map((lt) => lt is Lifetime ? lt : lifetime(lt)).toList();
-    _typeParms =
+    this.typeParms =
         typeParms.map((tp) => tp is TypeParm ? tp : typeParm(tp)).toList();
 
     print('lifetimes ${this.lifetimes}');
@@ -62,13 +64,11 @@ class Generic {
 
   // end <class Generic>
 
-  List<Lifetime> _lifetimes = [];
-  List<TypeParm> _typeParms = [];
 }
 
 // custom <library generic>
 
-Lifetime lifetime(dynamic id) => new Lifetime(id);
+Lifetime lifetime([dynamic id]) => new Lifetime(id);
 TypeParm typeParm(dynamic id) => new TypeParm(id);
 
 // end <library generic>

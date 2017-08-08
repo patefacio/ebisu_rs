@@ -103,15 +103,13 @@ All rust named items are *RsEntity* instances.'''
         ],
 
       library('generic')
-        ..imports.addAll([
-          'package:id/id.dart',
-          'package:ebisu/ebisu.dart',
+        ..importAndExportAll([
           'package:ebisu_rs/entity.dart',
           'package:quiver/iterables.dart',
         ])
         ..classes = [
           class_('lifetime')
-            ..withClass(commonFeatures)
+            ..extend = 'RsEntity'
             ..defaultMemberAccess = RO
             ..implement = ['HasCode']
             ..members = [],
@@ -121,7 +119,6 @@ All rust named items are *RsEntity* instances.'''
             ..implement = ['HasCode']
             ..members = [],
           class_('generic')
-            ..defaultMemberAccess = RO
             ..members = [
               member('lifetimes')
                 ..type = 'List<Lifetime>'
@@ -493,10 +490,11 @@ All rust named items are *RsEntity* instances.'''
 
       library('type')
         ..includesMain = true
-        ..imports = [
+        ..importAndExportAll([
           'package:quiver/iterables.dart',
           'package:ebisu_rs/entity.dart',
-        ]
+          'package:ebisu_rs/generic.dart',
+        ])
         ..classes = [
           class_('rs_type')
             ..implement = ['HasCode']
@@ -516,7 +514,7 @@ All rust named items are *RsEntity* instances.'''
               member('referent')
                 ..type = 'RsType'
                 ..isFinal = true,
-              member('lifetime'),
+              member('lifetime')..type = 'Lifetime'..access = RO,
             ],
           class_('ref')
             ..extend = 'RefType'
@@ -533,9 +531,9 @@ All rust named items are *RsEntity* instances.'''
         ])
         ..classes = [
           class_('field')
+            ..extend = 'RsEntity'
             ..implement = ['HasCode']
             ..mixins = ['IsPub']
-            ..withClass(commonFeatures)
             ..members = [
               member('type')
                 ..doc = 'Type of the field'
