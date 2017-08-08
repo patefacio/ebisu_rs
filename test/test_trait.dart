@@ -26,7 +26,9 @@ void main([List<String> args]) {
       parm(#b, f64),
       parm(#c, string)
     ])
-      ..doc = 'Function that does foobar';
+      ..typeParms = [#T1, #T2]
+      ..doc = 'Function that does foobar'
+      ..setAsRoot();
 
     print(f1.code);
     f1..returns = i32;

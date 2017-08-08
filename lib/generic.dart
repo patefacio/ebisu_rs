@@ -36,19 +36,25 @@ class TypeParm extends RsEntity implements HasCode {
 }
 
 class Generic {
-  List<Lifetime> lifetimes = [];
-  List<TypeParm> typeParms = [];
+  List<Lifetime> get lifetimes => _lifetimes;
+  List<TypeParm> get typeParms => _typeParms;
 
   // custom <class Generic>
 
   generic(Iterable<dynamic> lifetimes, Iterable<dynamic> typeParms) {
-    this.lifetimes =
+    this._lifetimes =
         lifetimes.map((lt) => lt is Lifetime ? lt : lifetime(lt)).toList();
-    this.typeParms =
+    this._typeParms =
         typeParms.map((tp) => tp is TypeParm ? tp : typeParm(tp)).toList();
 
     print('lifetimes ${this.lifetimes}');
   }
+
+  set lifetimes(Iterable<dynamic> lifetimes) =>
+      _lifetimes = new List.from(lifetimes.map(lifetime));
+
+  set typeParms(Iterable<dynamic> typeParms) =>
+      _typeParms = new List.from(typeParms.map(typeParm));
 
   get children =>
       new List<RsEntity>.from(concat([lifetimes, typeParms]), growable: false);
@@ -64,11 +70,13 @@ class Generic {
 
   // end <class Generic>
 
+  List<Lifetime> _lifetimes = [];
+  List<TypeParm> _typeParms = [];
 }
 
 // custom <library generic>
 
-Lifetime lifetime([dynamic id]) => new Lifetime(id);
-TypeParm typeParm(dynamic id) => new TypeParm(id);
+Lifetime lifetime([dynamic id]) => id is Lifetime ? id : new Lifetime(id);
+TypeParm typeParm(dynamic id) => id is TypeParm ? id : new TypeParm(id);
 
 // end <library generic>

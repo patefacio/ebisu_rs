@@ -119,6 +119,7 @@ All rust named items are *RsEntity* instances.'''
             ..implement = ['HasCode']
             ..members = [],
           class_('generic')
+            ..defaultMemberAccess = RO
             ..members = [
               member('lifetimes')
                 ..type = 'List<Lifetime>'

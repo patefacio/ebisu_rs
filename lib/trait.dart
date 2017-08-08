@@ -42,6 +42,16 @@ class Fn extends RsEntity with IsPub, Generic implements HasCode {
     }
   }
 
+  @override
+  onOwnershipEstablished() {
+    if (lifetimes.isEmpty) {
+      lifetimes = new Set<Lifetime>.from(
+              concat(parms.map<Iterable<Parm>>((parm) => parm.type.lifetimes)))
+          .toList()
+            ..sort();
+    }
+  }
+
   Iterable<Entity> get children => new List<Parm>.from(parms, growable: false);
 
   set parms(Iterable<Parm> parms) => _parms = new List.from(parms);
@@ -50,7 +60,7 @@ class Fn extends RsEntity with IsPub, Generic implements HasCode {
 
   String get code => brCompact([
         _docComment,
-        '${pubDecl}fn $name($_parmsText) -> $returnType {',
+        '${pubDecl}fn $name$genericDecl($_parmsText) -> $returnType {',
         '}',
       ]);
 
