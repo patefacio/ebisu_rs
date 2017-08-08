@@ -45,8 +45,7 @@ struct Bam<'a, T> {
 struct Bong;
 '''));
 
-    print((tstruct('tong')
-    ..doc = 'Tong struct').code);
+    print((tstruct('tong')..doc = 'Tong struct').code);
   });
 
 // end <main>

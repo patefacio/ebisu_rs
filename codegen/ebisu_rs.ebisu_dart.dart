@@ -10,7 +10,7 @@ final _logger = new Logger('ebisuRsDart');
 main(List<String> args) {
   Logger.root.onRecord.listen(
       (LogRecord r) => print("${r.loggerName} [${r.level}]:\t${r.message}"));
-  Logger.root.level = Level.INFO;
+  Logger.root.level = Level.OFF;
   useDartFormatter = true;
   String here = absolute(Platform.script.toFilePath());
 
@@ -65,9 +65,11 @@ main(List<String> args) {
 Support for rust entity *recursive entity graph*.
 
 All rust named items are *RsEntity* instances.'''
+        ..includesLogger = true
         ..imports = [
           'package:id/id.dart',
           'package:ebisu/ebisu.dart',
+          'package:glob/glob.dart',
           'dart:mirrors',
           'dart:io',
         ]
@@ -387,6 +389,7 @@ All rust named items are *RsEntity* instances.'''
           'package:ebisu_rs/struct.dart',
           'package:ebisu_rs/crate.dart',
           'package:quiver/iterables.dart',
+          'dart:io',
         ])
         ..includesLogger = true
         ..enums = [
@@ -535,6 +538,7 @@ All rust named items are *RsEntity* instances.'''
 
       library('field')
         ..imports = commonIncludes()
+        ..includesLogger = true
         ..imports.addAll([
           'package:ebisu_rs/type.dart',
         ])

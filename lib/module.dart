@@ -1,5 +1,6 @@
 library ebisu_rs.module;
 
+import 'dart:io';
 import 'package:ebisu/ebisu.dart';
 import 'package:ebisu_rs/crate.dart';
 import 'package:ebisu_rs/entity.dart';
@@ -130,8 +131,12 @@ class Module extends RsEntity with IsPub implements HasFilePath, HasCode {
         'Generating module $pubDecl$id:$filePath:${chomp(detailedPath.toString())}');
 
     if (isDeclaredModule) {
-      mergeWithFile(code, codePath);
-      formatRustFile(codePath);
+      final tempFile = new File('${codePath}.ebisu_rs.rs');
+      tempFile.writeAsStringSync(code);
+      formatRustFile(tempFile.path);
+      final formattedCode = tempFile.readAsStringSync();
+      mergeWithFile(formattedCode, codePath);
+      tempFile.delete();
     }
 
     modules.forEach((module) => module.generate());

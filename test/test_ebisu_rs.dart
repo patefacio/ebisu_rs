@@ -25,7 +25,7 @@ void main([List<String> args]) {
   }
 // custom <main>
 
-  Logger.root.level = Level.INFO;
+  Logger.root.level = Level.OFF;
   test('export test', () {
     var r = repo('sample_repo')
       ..crates = [
@@ -132,7 +132,7 @@ First struct in root module.
       ];
 
     r.rootPath = join(r.rootPath, 'sample_repo');
-    print(r);
+    _logger.info(r);
     r.generate();
     print(indentBlock(
         br(r.crates.last.rootModule.progeny.map((e) => e.detailedPath))));

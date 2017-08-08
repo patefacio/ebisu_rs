@@ -38,9 +38,10 @@ class Struct extends RsEntity with IsPub, Derives, Generic implements HasCode {
   onOwnershipEstablished() {
     _logger.info("Ownership of struct ${id}:${runtimeType}");
     if (lifetimes.isEmpty) {
-      lifetimes = new Set<Lifetime>.from(concat(fields.map<Iterable<Field>>(
-          (m) => m.lifetimes)).toList()).toList()
-        ..sort();
+      lifetimes = new Set<Lifetime>.from(
+              concat(fields.map<Iterable<Field>>((m) => m.lifetimes)).toList())
+          .toList()
+            ..sort();
     }
 
     for (final field in fields) {

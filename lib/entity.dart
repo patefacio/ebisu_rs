@@ -6,10 +6,14 @@ library ebisu_rs.entity;
 import 'dart:io';
 import 'dart:mirrors';
 import 'package:ebisu/ebisu.dart';
+import 'package:glob/glob.dart';
 import 'package:id/id.dart';
+import 'package:logging/logging.dart';
 
 // custom <additional imports>
 // end <additional imports>
+
+final Logger _logger = new Logger('entity');
 
 enum CrateType { libCrate, appCrate }
 
@@ -88,11 +92,19 @@ makeRsId(dynamic id) => makeId(id is Symbol ? MirrorSystem.getName(id) : id);
 String indent(String s) => indentBlock(s, '    ');
 
 ProcessResult formatRustFile(String filePath) {
+  _logger.info('Formatting rust file ${filePath}');
   final result = Process.runSync('rustfmt', ['--skip-children', filePath]);
   var backup = new File('$filePath.bk');
   if (backup.existsSync()) {
+    _logger.info('Deleting backup ${backup.path}');
     backup.deleteSync();
   }
+  var backups = new Glob('${filePath}.*~');
+  for (var backup in backups.listSync()) {
+    _logger.info('Deleting backup ${backup.path}');
+    backup.deleteSync();
+  }
+
   return result;
 }
 

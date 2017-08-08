@@ -3,9 +3,12 @@ library ebisu_rs.field;
 import 'package:ebisu/ebisu.dart';
 import 'package:ebisu_rs/entity.dart';
 import 'package:ebisu_rs/type.dart';
+import 'package:logging/logging.dart';
 
 // custom <additional imports>
 // end <additional imports>
+
+final Logger _logger = new Logger('field');
 
 class Field extends RsEntity with IsPub implements HasCode {
   /// Type of the field
@@ -20,7 +23,7 @@ class Field extends RsEntity with IsPub implements HasCode {
   get children => new Iterable.empty();
 
   onOwnershipEstablished() {
-    print("^^^^^^^^Ownership of ${id}:${runtimeType}");
+    _logger.info("Ownership of ${id}:${runtimeType}");
   }
 
   set type(dynamic type) => _type =
