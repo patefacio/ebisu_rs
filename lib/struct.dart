@@ -5,8 +5,15 @@ import 'package:ebisu_rs/entity.dart';
 import 'package:ebisu_rs/field.dart';
 import 'package:ebisu_rs/generic.dart';
 import 'package:ebisu_rs/macro.dart';
+import 'package:ebisu_rs/type.dart';
 import 'package:logging/logging.dart';
 import 'package:quiver/iterables.dart';
+
+export 'package:ebisu_rs/field.dart';
+export 'package:ebisu_rs/generic.dart';
+export 'package:ebisu_rs/macro.dart';
+export 'package:ebisu_rs/type.dart';
+export 'package:quiver/iterables.dart';
 
 // custom <additional imports>
 
@@ -31,8 +38,8 @@ class Struct extends RsEntity with IsPub, Derives, Generic implements HasCode {
   onOwnershipEstablished() {
     _logger.info("Ownership of struct ${id}:${runtimeType}");
     if (lifetimes.isEmpty) {
-      lifetimes = new Set<Lifetime>.from(concat(fields.map<Iterable<String>>(
-          (m) => m.lifetimes.map((lt) => "'$lt")))).toList()
+      lifetimes = new Set<Lifetime>.from(concat(fields.map<Iterable<Field>>(
+          (m) => m.lifetimes)).toList()).toList()
         ..sort();
     }
 

@@ -5,6 +5,7 @@ import 'package:logging/logging.dart';
 import 'package:test/test.dart';
 
 // custom <additional imports>
+import 'package:ebisu/ebisu.dart';
 // end <additional imports>
 
 final Logger _logger = new Logger('test_struct');
@@ -23,13 +24,29 @@ void main([List<String> args]) {
 
   test('struct creation', () {
     var s = struct('bam')
+      ..typeParms = [#T]
       ..doc = 'Bam struct'
-      ..fields = [field('foo')];
-    print(s.code);
+      ..fields = [field('foo'), field('goo', ref(ref(rsType('Vec<T>'))))]
+      ..setAsRoot();
 
-    print((ustruct('bong')..doc = 'Bong struct').code);
+    expect(darkMatter(s.code), darkMatter('''
+    /// Bam struct
+struct Bam<'a, T> {
+  /// TODO: comment field
+  foo: String,
+  /// TODO: comment field
+  goo: & 'a & 'a Vec<T>,
+}
+    '''));
 
-    print((tstruct('tong')..doc = 'Tong struct').code);
+    s = ustruct('bong')..doc = 'Bong struct';
+    expect(darkMatter(s.code), darkMatter('''
+/// Bong struct
+struct Bong;
+'''));
+
+    print((tstruct('tong')
+    ..doc = 'Tong struct').code);
   });
 
 // end <main>

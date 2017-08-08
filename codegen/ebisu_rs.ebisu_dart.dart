@@ -597,8 +597,9 @@ All rust named items are *RsEntity* instances.'''
       library('struct')
         ..imports = commonIncludes()
         ..includesLogger = true
-        ..imports.addAll([
+        ..importAndExportAll([
           'package:ebisu_rs/macro.dart',
+          'package:ebisu_rs/type.dart',
           'package:ebisu_rs/field.dart',
           'package:ebisu_rs/generic.dart',
           'package:quiver/iterables.dart',
