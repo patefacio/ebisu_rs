@@ -59,14 +59,16 @@ class Generic {
   get children =>
       new List<RsEntity>.from(concat([lifetimes, typeParms]), growable: false);
 
-  get genericDecl => [
-        '<',
-        concat([
-          lifetimes.map((lt) => lt.code),
-          typeParms.map((parm) => parm.code)
-        ]).join(', '),
-        '>'
-      ].join('');
+  get genericDecl => lifetimes.isEmpty && typeParms.isEmpty
+      ? ''
+      : [
+          '<',
+          concat([
+            lifetimes.map((lt) => lt.code),
+            typeParms.map((parm) => parm.code)
+          ]).join(', '),
+          '>'
+        ].join('');
 
   // end <class Generic>
 

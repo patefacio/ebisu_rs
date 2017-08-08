@@ -60,9 +60,12 @@ class Fn extends RsEntity with IsPub, Generic implements HasCode {
 
   String get code => brCompact([
         _docComment,
-        '${pubDecl}fn $name$genericDecl($_parmsText) -> $returnType {',
+        '$signature {',
         '}',
       ]);
+
+  String get signature =>
+      '${pubDecl}fn $name$genericDecl($_parmsText) -> $returnType';
 
   String get _docComment {
     var fnDoc = [descr == null ? 'TODO: comment fn $id' : descr];
@@ -99,7 +102,12 @@ class Trait extends RsEntity with IsPub, Generic implements HasCode {
   Iterable<Entity> get children =>
       new List<Fn>.from(functions, growable: false);
 
-  String get code => 'TODO';
+  String get code => brCompact([
+        tripleSlashComment(doc?.toString() ?? 'TODO: comment trait $id'),
+        'trait ${id.capCamel}${genericDecl} {',
+        indentBlock(brCompact([functions.map((fn) => fn.code)])),
+        '}'
+      ]);
 
   // end <class Trait>
 
@@ -112,5 +120,7 @@ Fn fn(dynamic id, [Iterable<dynamic> parms, dynamic returnType = UnitType]) =>
     new Fn(id, parms, returnType);
 
 Parm parm(dynamic id, dynamic type) => new Parm(id, type);
+
+Trait trait(dynamic id) => new Trait(id);
 
 // end <library trait>

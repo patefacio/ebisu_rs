@@ -36,5 +36,17 @@ void main([List<String> args]) {
     print(f1.code);
   });
 
+  test('trait basics', () {
+    var t1 = trait(#woker)
+      ..lifetimes = [#a]
+      ..typeParms = [#t]
+      ..functions = [
+        fn(#doWork, [parm(#unit, mref(i32))]),
+      ]
+      ..setAsRoot();
+
+    print(t1.code);
+  });
+
 // end <main>
 }
