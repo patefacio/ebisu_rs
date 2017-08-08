@@ -29,9 +29,12 @@ void main([List<String> args]) {
     expect(t.lifetimeDecl, "& 'a mut & 'y & 'x mut i32");
     expect(t.code, "& mut & & mut i32");
 
-    print(t.lifetimes.map((lt) => lt.code));
-
     //expect(rsType('i32'))
+  });
+
+  test('type alias', () {
+    var ta = typeAlias('foo', ref(mref(ref(i32)), 'c'))..setAsRoot();
+    expect(ta.code, "type Foo<'a, 'c> = & 'c & 'a mut & 'a i32;");
   });
 
 // end <main>

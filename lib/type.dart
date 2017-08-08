@@ -127,6 +127,30 @@ class Mref extends RefType {
 
 }
 
+/// Rust type alias
+class TypeAlias extends RsEntity with IsPub, Generic, HasCode {
+  RsType aliased;
+
+  // custom <class TypeAlias>
+
+  @override
+  onOwnershipEstablished() {
+    if (lifetimes.isEmpty) {
+      lifetimes = new Set<Lifetime>.from(aliased.lifetimes).toList()..sort();
+    }
+  }
+
+  TypeAlias(dynamic id, dynamic aliased)
+      : aliased = rsType(aliased),
+        super(id);
+
+  @override
+  get code => 'type ${id.capCamel}${genericDecl} = ${aliased.lifetimeDecl};';
+
+  // end <class TypeAlias>
+
+}
+
 // custom <library type>
 
 const string = const BuiltInType('String');
@@ -157,6 +181,9 @@ RsType rsType(dynamic type) => type is RsType
     : type is String
         ? new UserDefinedType(type)
         : throw 'Unsupported rstype ${type.runtimeType}';
+
+TypeAlias typeAlias(dynamic id, [dynamic aliased]) =>
+    new TypeAlias(id, aliased);
 
 // end <library type>
 

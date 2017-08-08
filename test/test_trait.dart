@@ -38,7 +38,7 @@ void main([List<String> args]) {
 
   test('trait basics', () {
     var t1 = trait(#woker)
-      ..lifetimes = [#a]
+      ..lifetimes = [#b]
       ..typeParms = [#t]
       ..functions = [
         fn(#doWork, [parm(#unit, mref(i32))]),

@@ -9,7 +9,7 @@ export 'package:quiver/iterables.dart';
 // custom <additional imports>
 // end <additional imports>
 
-class Lifetime extends RsEntity implements HasCode {
+class Lifetime extends RsEntity implements HasCode, Comparable<Lifetime> {
   // custom <class Lifetime>
   get children => new Iterable.empty();
 
@@ -17,6 +17,15 @@ class Lifetime extends RsEntity implements HasCode {
   get code => "'${id.snake}";
 
   Lifetime([dynamic id]) : super(id == null ? 'a' : id);
+
+  @override
+  bool operator ==(Lifetime other) =>
+      identical(this, other) || this.id == other.id;
+
+  @override
+  int get hashCode => id.hashCode;
+
+  int compareTo(Lifetime other) => id.compareTo(other.id);
 
   // end <class Lifetime>
 

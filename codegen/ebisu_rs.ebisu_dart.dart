@@ -111,8 +111,9 @@ All rust named items are *RsEntity* instances.'''
           class_('lifetime')
             ..extend = 'RsEntity'
             ..defaultMemberAccess = RO
-            ..implement = ['HasCode']
-            ..members = [],
+            ..implement = ['HasCode', 'Comparable<Lifetime>']
+            ..members = [
+            ],
           class_('type_parm')
             ..withClass(commonFeatures)
             ..defaultMemberAccess = RO
@@ -523,6 +524,13 @@ All rust named items are *RsEntity* instances.'''
           class_('mref')
             ..extend = 'RefType'
             ..members = [],
+          class_('type_alias')
+          ..doc = 'Rust type alias'
+          ..extend = 'RsEntity'
+          ..mixins = ['IsPub', 'Generic', 'HasCode']
+          ..members = [
+            member('aliased')..type = 'RsType'
+          ]
         ],
 
       library('field')
