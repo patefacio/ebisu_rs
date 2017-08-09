@@ -11,6 +11,9 @@ abstract class Attr {
 
   String get attr;
 
+  String get internalAttr => '#![$attr]';
+  String get externalAttr => '#[$attr]';
+
   // end <class Attr>
 
 }
@@ -24,7 +27,7 @@ class IdAttr extends Attr {
   IdAttr(dynamic value) : value = makeRsId(value);
 
   @override
-  String get attr => '[$value]';
+  String get attr => '$value';
 
   // end <class IdAttr>
 
@@ -42,7 +45,7 @@ class KeyValueAttr extends Attr {
   KeyValueAttr(dynamic key, this.value) : key = makeRsId(key);
 
   @override
-  get attr => '[${key.snake}=$value]';
+  get attr => '${key.snake}=$value';
 
   // end <class KeyValueAttr>
 
@@ -55,9 +58,21 @@ class And extends Attr {
 
   And(this.attrs);
 
-  get attr => '[and(${attrs.map((a) => a.attr)})]';
+  get attr => 'and(${attrs.map((a) => a.attr).join(", ")})';
 
   // end <class And>
+
+}
+
+abstract class HasAttributes {
+  List<Attr> attrs = [];
+
+  // custom <class HasAttributes>
+
+  String get internalAttrs => attrs.map((attr) => attr.internalAttr).join('\n');
+  String get externalAttrs => attrs.map((attr) => attr.externalAttr).join('\n');
+
+  // end <class HasAttributes>
 
 }
 

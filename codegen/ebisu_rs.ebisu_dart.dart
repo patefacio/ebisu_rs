@@ -54,6 +54,13 @@ main(List<String> args) {
     ..libraries = [
       library('ebisu_rs')
         ..exports.addAll([
+          'package:ebisu_rs/attribute.dart',
+          'package:ebisu_rs/dependency.dart',
+          'package:ebisu_rs/enumeration.dart',
+          'package:ebisu_rs/field.dart',
+          'package:ebisu_rs/generic.dart',
+          'package:ebisu_rs/macro.dart',
+          'package:ebisu_rs/type.dart',
           'package:ebisu_rs/repo.dart',
           'package:ebisu_rs/crate.dart',
           'package:ebisu_rs/module.dart',
@@ -385,7 +392,10 @@ All rust named items are *RsEntity* instances.'''
       library('attribute')
         ..imports = ['package:id/id.dart', 'package:ebisu_rs/entity.dart']
         ..classes = [
-          class_('attr')..isAbstract = true,
+          class_('attr')
+            ..isAbstract = true
+            ..members = [
+            ],
           class_('id_attr')
             ..extend = 'Attr'
             ..members = [
@@ -408,6 +418,13 @@ All rust named items are *RsEntity* instances.'''
                 ..type = 'List<Attr>'
                 ..init = [],
             ],
+          class_('has_attributes')
+            ..isAbstract = true
+            ..members = [
+              member('attrs')
+                ..type = 'List<Attr>'
+                ..init = [],
+            ]
         ],
       library('module')
         ..imports = commonIncludes()
@@ -453,7 +470,7 @@ All rust named items are *RsEntity* instances.'''
           class_('module')
             ..extend = 'RsEntity'
             ..implement = ['HasFilePath', 'HasCode']
-            ..mixins = ['IsPub']
+            ..mixins = ['IsPub', 'HasAttributes']
             ..members.addAll([
               member('file_path')..access = RO,
               member('module_type')
@@ -489,6 +506,7 @@ All rust named items are *RsEntity* instances.'''
       library('trait')
         ..imports = commonIncludes()
         ..importAndExportAll([
+          'package:ebisu_rs/attribute.dart',
           'package:ebisu_rs/generic.dart',
           'package:ebisu_rs/type.dart',
         ])
@@ -502,7 +520,7 @@ All rust named items are *RsEntity* instances.'''
           class_('fn')
             ..extend = 'RsEntity'
             ..implement = ['HasCode']
-            ..mixins = ['IsPub', 'Generic']
+            ..mixins = ['IsPub', 'Generic', 'HasAttributes']
             ..members.addAll([
               member('parms')
                 ..access = RO
@@ -515,7 +533,7 @@ All rust named items are *RsEntity* instances.'''
             ]),
           class_('trait')
             ..implement = ['HasCode']
-            ..mixins = ['IsPub', 'Generic']
+            ..mixins = ['IsPub', 'Generic', 'HasAttributes']
             ..withClass(commonFeatures)
             ..members.addAll([
               member('functions')
@@ -571,13 +589,14 @@ All rust named items are *RsEntity* instances.'''
         ..imports = commonIncludes()
         ..includesLogger = true
         ..imports.addAll([
+          'package:ebisu_rs/attribute.dart',
           'package:ebisu_rs/type.dart',
         ])
         ..classes = [
           class_('field')
             ..extend = 'RsEntity'
             ..implement = ['HasCode']
-            ..mixins = ['IsPub']
+            ..mixins = ['IsPub', 'HasAttributes']
             ..members = [
               member('type')
                 ..doc = 'Type of the field'

@@ -39,6 +39,7 @@ void main([List<String> args]) {
             ]
             ..buildDeps = [dependency('log', '0.3')])
           ..withRootModule((rootModule) => rootModule
+            ..attrs.add(idAttr(#bam))
             ..doc = 'The root module'
             ..structs = [
               struct('rm_s1')
@@ -52,6 +53,7 @@ First struct in root module.
                   field('rm_s1_m1')
                     ..doc = 'First field'
                     ..type = 'i32'
+                    ..attrs.add(idAttr(#bam))
                 ],
               struct('rm_s2')
                 ..doc = 'Second struct in root module'

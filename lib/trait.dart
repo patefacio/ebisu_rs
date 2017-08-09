@@ -1,10 +1,12 @@
 library ebisu_rs.trait;
 
 import 'package:ebisu/ebisu.dart';
+import 'package:ebisu_rs/attribute.dart';
 import 'package:ebisu_rs/entity.dart';
 import 'package:ebisu_rs/generic.dart';
 import 'package:ebisu_rs/type.dart';
 
+export 'package:ebisu_rs/attribute.dart';
 export 'package:ebisu_rs/generic.dart';
 export 'package:ebisu_rs/type.dart';
 
@@ -28,7 +30,9 @@ class Parm extends RsEntity implements HasCode {
 
 }
 
-class Fn extends RsEntity with IsPub, Generic implements HasCode {
+class Fn extends RsEntity
+    with IsPub, Generic, HasAttributes
+    implements HasCode {
   List<Parm> get parms => _parms;
   RsType get returnType => _returnType;
 
@@ -60,6 +64,7 @@ class Fn extends RsEntity with IsPub, Generic implements HasCode {
 
   String get code => brCompact([
         _docComment,
+        externalAttrs,
         '$signature {',
         '}',
       ]);
@@ -94,7 +99,9 @@ class Fn extends RsEntity with IsPub, Generic implements HasCode {
   RsType _returnType = UnitType;
 }
 
-class Trait extends RsEntity with IsPub, Generic implements HasCode {
+class Trait extends RsEntity
+    with IsPub, Generic, HasAttributes
+    implements HasCode {
   List<Fn> functions = [];
 
   // custom <class Trait>
@@ -104,6 +111,7 @@ class Trait extends RsEntity with IsPub, Generic implements HasCode {
 
   String get code => brCompact([
         tripleSlashComment(doc?.toString() ?? 'TODO: comment trait $id'),
+        externalAttrs,
         'trait ${id.capCamel}${genericDecl} {',
         indentBlock(brCompact([functions.map((fn) => fn.code)])),
         '}'

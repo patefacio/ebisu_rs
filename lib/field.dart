@@ -1,6 +1,7 @@
 library ebisu_rs.field;
 
 import 'package:ebisu/ebisu.dart';
+import 'package:ebisu_rs/attribute.dart';
 import 'package:ebisu_rs/entity.dart';
 import 'package:ebisu_rs/type.dart';
 import 'package:logging/logging.dart';
@@ -10,7 +11,7 @@ import 'package:logging/logging.dart';
 
 final Logger _logger = new Logger('field');
 
-class Field extends RsEntity with IsPub implements HasCode {
+class Field extends RsEntity with IsPub, HasAttributes implements HasCode {
   /// Type of the field
   RsType get type => _type;
 
@@ -35,6 +36,7 @@ class Field extends RsEntity with IsPub implements HasCode {
 
   String get code => brCompact([
         tripleSlashComment(doc?.toString() ?? 'TODO: comment field'),
+        externalAttrs,
         '$pubDecl$name: ${type.lifetimeDecl}',
       ]);
 

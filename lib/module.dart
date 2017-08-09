@@ -81,7 +81,9 @@ class Import {
   final String _import;
 }
 
-class Module extends RsEntity with IsPub implements HasFilePath, HasCode {
+class Module extends RsEntity
+    with IsPub, HasAttributes
+    implements HasFilePath, HasCode {
   String get filePath => _filePath;
   ModuleType get moduleType => _moduleType;
   List<Module> modules = [];
@@ -207,6 +209,8 @@ class Module extends RsEntity with IsPub implements HasFilePath, HasCode {
   String get _imports => brCompact(imports.map((i) => i.code));
 
   String get code => brCompact([
+        tripleSlashComment(doc == null ? 'TODO: comment module $id' : doc),
+        internalAttrs,
         _imports,
         brCompact(declaredMods
             .map((module) => '${module.pubDecl}mod ${module.name};')),

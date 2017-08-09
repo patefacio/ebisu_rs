@@ -21,9 +21,9 @@ void main([List<String> args]) {
 // custom <main>
 
   test('identifier attribute', () {
-    print(idAttr(#test).attr);
-    print(attr(#abc, 'one_two_three').attr);
-    print(and([idAttr(#linux), idAttr(#windows)]).attr);
+    print(idAttr(#test).internalAttr);
+    print(attr(#abc, 'one_two_three').externalAttr);
+    print(and([idAttr(#linux), idAttr(#windows)]).externalAttr);
   });
 
 // end <main>
