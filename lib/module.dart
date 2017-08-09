@@ -2,12 +2,20 @@ library ebisu_rs.module;
 
 import 'dart:io';
 import 'package:ebisu/ebisu.dart';
+import 'package:ebisu_rs/attribute.dart';
 import 'package:ebisu_rs/crate.dart';
 import 'package:ebisu_rs/entity.dart';
 import 'package:ebisu_rs/struct.dart';
 import 'package:logging/logging.dart';
 import 'package:path/path.dart';
 import 'package:quiver/iterables.dart';
+
+export 'dart:io';
+export 'package:ebisu_rs/attribute.dart';
+export 'package:ebisu_rs/crate.dart';
+export 'package:ebisu_rs/struct.dart';
+export 'package:path/path.dart';
+export 'package:quiver/iterables.dart';
 
 // custom <additional imports>
 // end <additional imports>
@@ -82,6 +90,9 @@ class Module extends RsEntity with IsPub implements HasFilePath, HasCode {
   List<Struct> structs = [];
   Map<ModuleCodeBlock, CodeBlock> get moduleCodeBlocks => _moduleCodeBlocks;
   Map<MainCodeBlock, CodeBlock> get mainCodeBlocks => _mainCodeBlocks;
+
+  /// Include *clippy* support
+  bool useClippy = true;
 
   // custom <class Module>
 

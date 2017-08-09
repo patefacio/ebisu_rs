@@ -1,4 +1,5 @@
 import 'package:logging/logging.dart';
+import 'test_attribute.dart' as test_attribute;
 import 'test_type.dart' as test_type;
 import 'test_struct.dart' as test_struct;
 import 'test_repo.dart' as test_repo;
@@ -16,6 +17,7 @@ void main() {
     print('${rec.level.name}: ${rec.time}: ${rec.message}');
   });
 
+  test_attribute.main(null);
   test_type.main(null);
   test_struct.main(null);
   test_repo.main(null);

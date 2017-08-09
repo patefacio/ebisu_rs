@@ -37,6 +37,7 @@ main(List<String> args) {
     ..doc = purpose
     ..scripts = []
     ..testLibraries = [
+      library('test_attribute')..imports = ['package:ebisu_rs/attribute.dart'],
       library('test_type')..imports = ['package:ebisu_rs/type.dart'],
       library('test_struct')..imports = ['package:ebisu_rs/struct.dart'],
       library('test_repo')..imports = ['package:ebisu_rs/repo.dart'],
@@ -114,8 +115,7 @@ All rust named items are *RsEntity* instances.'''
             ..extend = 'RsEntity'
             ..defaultMemberAccess = RO
             ..implement = ['HasCode', 'Comparable<Lifetime>']
-            ..members = [
-            ],
+            ..members = [],
           class_('type_parm')
             ..withClass(commonFeatures)
             ..defaultMemberAccess = RO
@@ -382,10 +382,38 @@ All rust named items are *RsEntity* instances.'''
                 ..access = RO
             ],
         ],
+      library('attribute')
+        ..imports = ['package:id/id.dart', 'package:ebisu_rs/entity.dart']
+        ..classes = [
+          class_('attr')..isAbstract = true,
+          class_('id_attr')
+            ..extend = 'Attr'
+            ..members = [
+              member('value')
+                ..doc = 'Value of attribute'
+                ..type = 'Id',
+            ],
+          class_('key_value_attr')
+            ..extend = 'Attr'
+            ..members = [
+              member('key')
+                ..type = 'Id'
+                ..doc = 'Key if form is key/value',
+              member('value')..doc = 'Value of attribute'
+            ],
+          class_('and')
+            ..extend = 'Attr'
+            ..members = [
+              member('attrs')
+                ..type = 'List<Attr>'
+                ..init = [],
+            ],
+        ],
       library('module')
         ..imports = commonIncludes()
-        ..imports.addAll([
+        ..importAndExportAll([
           'package:path/path.dart',
+          'package:ebisu_rs/attribute.dart',
           'package:ebisu_rs/struct.dart',
           'package:ebisu_rs/crate.dart',
           'package:quiver/iterables.dart',
@@ -451,6 +479,9 @@ All rust named items are *RsEntity* instances.'''
                 ..type = 'Map<MainCodeBlock, CodeBlock>'
                 ..init = {}
                 ..access = RO,
+              member('use_clippy')
+                ..doc = 'Include *clippy* support'
+                ..init = true
             ])
         ],
 
@@ -519,7 +550,9 @@ All rust named items are *RsEntity* instances.'''
               member('referent')
                 ..type = 'RsType'
                 ..isFinal = true,
-              member('lifetime')..type = 'Lifetime'..access = RO,
+              member('lifetime')
+                ..type = 'Lifetime'
+                ..access = RO,
             ],
           class_('ref')
             ..extend = 'RefType'
@@ -528,12 +561,10 @@ All rust named items are *RsEntity* instances.'''
             ..extend = 'RefType'
             ..members = [],
           class_('type_alias')
-          ..doc = 'Rust type alias'
-          ..extend = 'RsEntity'
-          ..mixins = ['IsPub', 'Generic', 'HasCode']
-          ..members = [
-            member('aliased')..type = 'RsType'
-          ]
+            ..doc = 'Rust type alias'
+            ..extend = 'RsEntity'
+            ..mixins = ['IsPub', 'Generic', 'HasCode']
+            ..members = [member('aliased')..type = 'RsType']
         ],
 
       library('field')
