@@ -137,7 +137,7 @@ class Enum extends RsEntity with IsPub, Derives implements HasCode {
 
 // custom <library enumeration>
 
-Enum enum_(dynamic id, List<dynamic> variants) => new Enum(id)
+Enum enum_(dynamic id, Iterable<dynamic> variants) => new Enum(id)
   ..variants = variants.map((v) => v is String ? uv(v) : v as Variant);
 
 UnitVariant uv(dynamic id, [dynamic value]) => new UnitVariant(id, value);

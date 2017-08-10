@@ -153,6 +153,7 @@ class TypeAlias extends RsEntity with IsPub, Generic, HasCode {
 
 // custom <library type>
 
+const char = const BuiltInType('char');
 const string = const BuiltInType('String');
 const str = const BuiltInType('str');
 const isize = const BuiltInType('isize');
@@ -160,7 +161,7 @@ const usize = const BuiltInType('usize');
 const i8 = const BuiltInType('i8');
 const i16 = const BuiltInType('i16');
 const i32 = const BuiltInType('i32');
-const i64 = const BuiltInType('i864');
+const i64 = const BuiltInType('i64');
 
 const u8 = const BuiltInType('u8');
 const u16 = const BuiltInType('u16');
@@ -169,6 +170,7 @@ const u64 = const BuiltInType('u64');
 
 const f32 = const BuiltInType('f32');
 const f64 = const BuiltInType('f64');
+const bool_ = const BuiltInType('bool');
 
 const UnitType = const BuiltInType('()');
 
