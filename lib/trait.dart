@@ -100,7 +100,7 @@ class Fn extends RsEntity
 }
 
 class Trait extends RsEntity
-    with IsPub, Generic, HasAttributes
+    with IsPub, Generic, HasAttributes, HasAssociatedTypes
     implements HasCode {
   List<Fn> functions = [];
 
@@ -113,6 +113,7 @@ class Trait extends RsEntity
         tripleSlashComment(doc?.toString() ?? 'TODO: comment trait $id'),
         externalAttrs,
         'trait ${id.capCamel}${genericDecl} {',
+        indentBlock(associatedTypeDecls),
         indentBlock(brCompact([functions.map((fn) => fn.code)])),
         '}'
       ]);

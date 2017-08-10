@@ -82,7 +82,7 @@ class Import {
 }
 
 class Module extends RsEntity
-    with IsPub, HasAttributes
+    with IsPub, HasAttributes, HasTypeAliases
     implements HasFilePath, HasCode {
   String get filePath => _filePath;
   ModuleType get moduleType => _moduleType;
@@ -214,8 +214,9 @@ class Module extends RsEntity
         _imports,
         brCompact(declaredMods
             .map((module) => '${module.pubDecl}mod ${module.name};')),
-        isDeclaredModule ? _structDecls : indent(_structDecls),
+        typeAliasDecls,
         isDeclaredModule ? _enumDecls : indent(_enumDecls),
+        isDeclaredModule ? _structDecls : indent(_structDecls),
         _inlineCode,
         _main,
       ]);

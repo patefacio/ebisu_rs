@@ -394,8 +394,7 @@ All rust named items are *RsEntity* instances.'''
         ..classes = [
           class_('attr')
             ..isAbstract = true
-            ..members = [
-            ],
+            ..members = [],
           class_('id_attr')
             ..extend = 'Attr'
             ..members = [
@@ -470,7 +469,7 @@ All rust named items are *RsEntity* instances.'''
           class_('module')
             ..extend = 'RsEntity'
             ..implement = ['HasFilePath', 'HasCode']
-            ..mixins = ['IsPub', 'HasAttributes']
+            ..mixins = ['IsPub', 'HasAttributes', 'HasTypeAliases']
             ..members.addAll([
               member('file_path')..access = RO,
               member('module_type')
@@ -533,7 +532,7 @@ All rust named items are *RsEntity* instances.'''
             ]),
           class_('trait')
             ..implement = ['HasCode']
-            ..mixins = ['IsPub', 'Generic', 'HasAttributes']
+            ..mixins = ['IsPub', 'Generic', 'HasAttributes', 'HasAssociatedTypes']
             ..withClass(commonFeatures)
             ..members.addAll([
               member('functions')
@@ -582,7 +581,26 @@ All rust named items are *RsEntity* instances.'''
             ..doc = 'Rust type alias'
             ..extend = 'RsEntity'
             ..mixins = ['IsPub', 'Generic', 'HasCode']
-            ..members = [member('aliased')..type = 'RsType']
+            ..members = [member('aliased')..type = 'RsType'],
+          class_('has_type_aliases')
+            ..isAbstract = true
+            ..members = [
+              member('type_aliases')
+                ..type = 'List<TypeAlias>'
+                ..init = [],
+            ],
+          class_('associated_type')
+            ..doc = 'Rust type alias'
+            ..extend = 'RsEntity'
+            ..mixins = ['IsPub', 'Generic', 'HasCode'],
+          class_('has_associated_types')
+            ..isAbstract = true
+            ..members = [
+              member('associated_types')
+                ..access = RO
+                ..type = 'List<AssociatedType>'
+                ..init = [],
+            ]
         ],
 
       library('field')

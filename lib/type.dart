@@ -151,6 +151,47 @@ class TypeAlias extends RsEntity with IsPub, Generic, HasCode {
 
 }
 
+abstract class HasTypeAliases {
+  List<TypeAlias> typeAliases = [];
+
+  // custom <class HasTypeAliases>
+
+  String get typeAliasDecls => typeAliases.map((ta) => ta.code).join('\n');
+
+  // end <class HasTypeAliases>
+
+}
+
+/// Rust type alias
+class AssociatedType extends RsEntity with IsPub, Generic, HasCode {
+  // custom <class AssociatedType>
+
+  AssociatedType(dynamic id) : super(id);
+
+  @override
+  get code => 'type ${id.capCamel};';
+
+  // end <class AssociatedType>
+
+}
+
+abstract class HasAssociatedTypes {
+  List<AssociatedType> get associatedTypes => _associatedTypes;
+
+  // custom <class HasAssociatedTypes>
+
+  set associatedTypes(Iterable<dynamic> associatedTypes) =>
+      this._associatedTypes =
+          new List.from(associatedTypes.map((t) => associatedType(t)));
+
+  String get associatedTypeDecls =>
+      _associatedTypes.map((t) => t.code).join('\n');
+
+  // end <class HasAssociatedTypes>
+
+  List<AssociatedType> _associatedTypes = [];
+}
+
 // custom <library type>
 
 const char = const BuiltInType('char');
@@ -186,6 +227,8 @@ RsType rsType(dynamic type) => type is RsType
 
 TypeAlias typeAlias(dynamic id, [dynamic aliased]) =>
     new TypeAlias(id, aliased);
+
+AssociatedType associatedType(dynamic id) => new AssociatedType(id);
 
 // end <library type>
 

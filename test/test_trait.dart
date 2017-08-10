@@ -64,6 +64,7 @@ fn foobar<'s, T1, T2>(a : & 's mut i32, b : f64, c : String) -> i32 {
   test('trait basics', () {
     var t1 = trait(#woker)
       ..attrs.add(idAttr(#bam))
+      ..associatedTypes = ['assoc_1', 'assoc_2']
       ..lifetimes = [#b]
       ..typeParms = [#t]
       ..functions = [
@@ -71,10 +72,14 @@ fn foobar<'s, T1, T2>(a : & 's mut i32, b : f64, c : String) -> i32 {
       ]
       ..setAsRoot();
 
+    _logger.info(t1.code);
+
     expect(darkMatter(t1.code), darkMatter('''
 /// TODO: comment trait woker
 #[bam]
 trait Woker<'b, T> {
+  type Assoc1;
+  type Assoc2; 
   /// TODO: comment fn doWork
   ///
   ///  * `unit` - TODO: comment parm
