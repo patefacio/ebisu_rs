@@ -565,6 +565,9 @@ All rust named items are *RsEntity* instances.'''
               member('type')
                 ..type = 'RsType'
                 ..access = RO,
+              member('functions')
+                ..type = 'List<Fn>'
+                ..init = [],
             ]
         ],
 

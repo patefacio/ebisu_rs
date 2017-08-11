@@ -68,14 +68,18 @@ class Fn extends RsEntity
         externalAttrs,
         body == null
             ? '$signature;'
-            : indentBlock(brCompact(['$signature {', body, '}']))
+            : brCompact(['$signature {', indentBlock(body.toString()), '}'])
       ]);
 
   String get signature =>
       '${pubDecl}fn $name$genericDecl($_parmsText) -> $returnType';
 
   String get _docComment {
-    var fnDoc = [descr == null ? 'TODO: comment fn $id' : descr];
+    var fnDoc = [
+      descr == null
+          ? 'TODO: comment fn ${id.snake}:${body!=null? body.tag : "no-body-tag"}'
+          : descr
+    ];
     return tripleSlashComment(chomp(br([
       fnDoc,
       brCompact(parms.map((p) =>
@@ -98,9 +102,7 @@ class Fn extends RsEntity
   copy() => new Fn._copy(this);
 
   Fn._copy(Fn other)
-      : _parms = other._parms == null
-            ? null
-            : (new List.from(other._parms.map((e) => e?.copy()))),
+      : _parms = other._parms == null ? null : (new List.from(other._parms)),
         _returnType = other._returnType?.copy(),
         body = other.body?.copy(),
         super(other.id);
@@ -122,7 +124,8 @@ class Trait extends RsEntity
       new List<Fn>.from(functions, growable: false);
 
   String get code => brCompact([
-        tripleSlashComment(doc?.toString() ?? 'TODO: comment trait $id'),
+        tripleSlashComment(
+            doc?.toString() ?? 'TODO: comment trait ${id.capCamel}'),
         externalAttrs,
         'trait $name${genericDecl} {',
         indentBlock(associatedTypeDecls),

@@ -12,6 +12,7 @@ export 'package:ebisu_rs/trait.dart';
 class Impl extends RsEntity with HasCode, HasTypeAliases {
   Trait get trait => _trait;
   RsType get type => _type;
+  List<Fn> functions = [];
 
   // custom <class Impl>
 
@@ -19,12 +20,26 @@ class Impl extends RsEntity with HasCode, HasTypeAliases {
       : super(_trait == null
             ? makeGenericId(_type.code)
             : makeRsId(
-                _trait.id.snake + '_' + makeGenericId(_type.code).snake));
+                _trait.id.snake + '_' + makeGenericId(_type.code).snake)) {
+    if (_trait != null) {
+      functions = _trait.functions
+          .map(
+              (fn) => fn.copy()..body = codeBlock(id.snake + '_' + fn.id.snake))
+          .toList();
+    }
+  }
+
+  Iterable<Entity> get children =>
+      new List<Fn>.from(functions, growable: false);
 
   @override
   String get code => brCompact([
+        tripleSlashComment(doc?.toString() ?? 'TODO: comment impl ${id.snake}'),
         '$_implHeader {',
-        _trait != null ? _trait.functions.map((fn) => fn.signature) : null,
+        indentBlock(brCompact([
+          typeAliasDecls,
+          functions.map((fn) => fn.code),
+        ])),
         '}',
       ]);
 

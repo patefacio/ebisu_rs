@@ -24,13 +24,16 @@ void main([List<String> args]) {
     var t1 = trait(#woker)
       ..attrs.add(idAttr(#bam))
       ..associatedTypes = ['assoc_1', 'assoc_2']
-      ..lifetimes = [#b]
       ..typeParms = [#t]
       ..functions = [
-        fn(#doWork, [parm(#unit, mref(i32))]),
-      ];
+        fn(#doWork, [parm(#unit, mref(i32)), parm(#t, 'T')]),
+      ]..setAsRoot();
 
-    var i1 = impl(t1, rsType('Vec<i32>'));
+    var i1 = impl(t1, rsType('Vec<Vec<T>>'))
+    //..typeParms = [#t]
+    ..typeAliases.addAll([typeAlias(#assoc_1, i32), typeAlias(#assoc_2, i64)])
+    ..setAsRoot();
+    print(t1.code);
     print(i1.code);
   });
 
