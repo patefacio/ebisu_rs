@@ -18,17 +18,19 @@ class Impl extends RsEntity with HasCode, HasTypeAliases {
   Impl(this._trait, this._type)
       : super(_trait == null
             ? makeGenericId(_type.code)
-            : makeRsId(_trait.id.snake + '_' + makeGenericId(_type.code).snake));
+            : makeRsId(
+                _trait.id.snake + '_' + makeGenericId(_type.code).snake));
 
   @override
   String get code => brCompact([
-    '$_implHeader {',
-    _trait != null? _trait.functions.map((fn) => fn.signature) : null,
-    '}',
-    ]);
+        '$_implHeader {',
+        _trait != null ? _trait.functions.map((fn) => fn.signature) : null,
+        '}',
+      ]);
 
-  get _implHeader => _trait == null? 'impl ${_type}' :
-  'impl ${_trait.name} for ${_type.code}';
+  get _implHeader => _trait == null
+      ? 'impl ${_type}'
+      : 'impl ${_trait.name} for ${_type.code}';
 
   // end <class Impl>
 

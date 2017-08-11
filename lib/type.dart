@@ -14,6 +14,8 @@ export 'package:quiver/iterables.dart';
 abstract class RsType implements HasCode {
   // custom <class RsType>
 
+  RsType copy();
+
   const RsType();
 
   bool get isRef => false;
@@ -34,6 +36,8 @@ abstract class RsType implements HasCode {
 }
 
 class BuiltInType extends RsType {
+  copy() => new BuiltInType._copy(this);
+
   final String typeName;
 
   // custom <class BuiltInType>
@@ -45,9 +49,12 @@ class BuiltInType extends RsType {
 
   // end <class BuiltInType>
 
+  BuiltInType._copy(BuiltInType other) : typeName = other.typeName;
 }
 
 class UserDefinedType extends RsType {
+  copy() => new UserDefinedType._copy(this);
+
   final String name;
 
   // custom <class UserDefinedType>
@@ -59,9 +66,12 @@ class UserDefinedType extends RsType {
 
   // end <class UserDefinedType>
 
+  UserDefinedType._copy(UserDefinedType other) : name = other.name;
 }
 
-abstract class RefType extends RsType {
+class RefType extends RsType {
+  copy() => new RefType._copy(this);
+
   final RsType referent;
   Lifetime get lifetime => _lifetime;
 
@@ -76,8 +86,6 @@ abstract class RefType extends RsType {
       .where((term) => term.isNotEmpty)
       .join(' ');
 
-  //"& $_lifetimeTag$_mutTag${referent.lifetimeDecl}";
-
   Iterable<Lifetime> get lifetimes => lifetime != null
       ? concat(<Iterable<Lifetime>>[
           [lifetime],
@@ -89,7 +97,14 @@ abstract class RefType extends RsType {
 
   get mut => '';
 
+  @override
+  get code => "& $referent";
+
   // end <class RefType>
+
+  RefType._copy(RefType other)
+      : referent = other.referent?.copy(),
+        _lifetime = other._lifetime?.copy();
 
   Lifetime _lifetime;
 }
@@ -101,9 +116,6 @@ class Ref extends RefType {
       : super(referent, lt is Lifetime ? lt : lifetime(lt));
 
   bool get isRef => true;
-
-  @override
-  get code => "& $referent";
 
   // end <class Ref>
 

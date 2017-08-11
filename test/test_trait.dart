@@ -42,8 +42,7 @@ void main([List<String> args]) {
 ///  * `c` - TODO: comment parm
 ///
 #[bam]
-fn foobar<'s, T1, T2>(a : & 's mut i32, b : f64, c : String) -> () {
-}    
+fn foobar<'s, T1, T2>(a : & 's mut i32, b : f64, c : String) -> ();
     '''));
 
     f1..returns = i32;
@@ -56,8 +55,7 @@ fn foobar<'s, T1, T2>(a : & 's mut i32, b : f64, c : String) -> () {
 ///  * `c` - TODO: comment parm
 ///
 #[bam]
-fn foobar<'s, T1, T2>(a : & 's mut i32, b : f64, c : String) -> i32 {
-}    
+fn foobar<'s, T1, T2>(a : & 's mut i32, b : f64, c : String) -> i32;
     '''));
   });
 
@@ -84,8 +82,7 @@ trait Woker<'b, T> {
   ///
   ///  * `unit` - TODO: comment parm
   ///
-  fn do_work<'a>(unit : & 'a mut i32) -> () {
-  }
+  fn do_work<'a>(unit : & 'a mut i32) -> ();
 }    
     '''));
   });

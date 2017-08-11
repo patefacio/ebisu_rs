@@ -52,6 +52,9 @@ abstract class RsEntity extends Object with Entity {
 
   RsEntity(dynamic id) : this.id = makeRsId(id);
 
+  @override
+  Iterable<RsEntity> get children => new Iterable.empty();
+
   // end <class RsEntity>
 
 }
@@ -89,7 +92,7 @@ class IsPub {
 
 makeRsId(dynamic id) => makeId(id is Symbol ? MirrorSystem.getName(id) : id);
 
-makeGenericId(String s) => makeId(s.replaceAll('<','_').replaceAll('>',''));
+makeGenericId(String s) => makeId(s.replaceAll('<', '_').replaceAll('>', ''));
 
 String indent(String s) => indentBlock(s, '    ');
 

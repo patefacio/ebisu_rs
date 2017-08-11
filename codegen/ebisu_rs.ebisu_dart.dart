@@ -516,7 +516,7 @@ All rust named items are *RsEntity* instances.'''
             ..extend = 'RsEntity'
             ..implement = ['HasCode']
             ..members.addAll([
-              member('type')..type = 'RsType',
+              member('type')..type = 'RsType'..isFinal = true,
             ]),
           class_('fn')
             ..extend = 'RsEntity'
@@ -531,6 +531,7 @@ All rust named items are *RsEntity* instances.'''
                 ..access = RO
                 ..type = 'RsType'
                 ..init = 'UnitType',
+              member('body')..type = 'CodeBlock',
             ]),
           class_('trait')
             ..implement = ['HasCode']
@@ -555,11 +556,15 @@ All rust named items are *RsEntity* instances.'''
         ])
         ..classes = [
           class_('impl')
-          ..extend = 'RsEntity'
+            ..extend = 'RsEntity'
             ..mixins = ['HasCode', 'HasTypeAliases']
             ..members = [
-              member('trait')..type = 'Trait'..access = RO,
-              member('type')..type = 'RsType'..access = RO,
+              member('trait')
+                ..type = 'Trait'
+                ..access = RO,
+              member('type')
+                ..type = 'RsType'
+                ..access = RO,
             ]
         ],
 
@@ -576,15 +581,18 @@ All rust named items are *RsEntity* instances.'''
             ..isAbstract = true,
           class_('built_in_type')
             ..extend = 'RsType'
-            ..members = [member('type_name')..isFinal = true],
+            ..isCopyable = true
+            ..members = [
+              member('type_name')..isFinal = true],
           class_('user_defined_type')
             ..extend = 'RsType'
+            ..isCopyable = true
             ..members = [
               member('name')..isFinal = true,
             ],
           class_('ref_type')
             ..extend = 'RsType'
-            ..isAbstract = true
+            ..isCopyable = true
             ..members = [
               member('referent')
                 ..type = 'RsType'

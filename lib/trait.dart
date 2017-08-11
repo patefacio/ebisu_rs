@@ -14,12 +14,12 @@ export 'package:ebisu_rs/type.dart';
 // end <additional imports>
 
 class Parm extends RsEntity implements HasCode {
-  RsType type;
+  final RsType type;
 
   // custom <class Parm>
 
-  Parm(dynamic id, [dynamic type])
-      : type = type != null ? rsType(type) : type,
+  Parm(dynamic id, dynamic type)
+      : type = rsType(type),
         super(id);
 
   get children => new Iterable<Parm>.generate(0);
@@ -35,6 +35,7 @@ class Fn extends RsEntity
     implements HasCode {
   List<Parm> get parms => _parms;
   RsType get returnType => _returnType;
+  CodeBlock body;
 
   // custom <class Fn>
 
@@ -65,8 +66,9 @@ class Fn extends RsEntity
   String get code => brCompact([
         _docComment,
         externalAttrs,
-        '$signature {',
-        '}',
+        body == null
+            ? '$signature;'
+            : indentBlock(brCompact(['$signature {', body, '}']))
       ]);
 
   String get signature =>
@@ -92,6 +94,16 @@ class Fn extends RsEntity
   String get _parmsText => parms.map((p) => p.code).join(', ');
 
   addParm(dynamic id, [dynamic type]) => _parms.add(new Parm(id, type));
+
+  copy() => new Fn._copy(this);
+
+  Fn._copy(Fn other)
+      : _parms = other._parms == null
+            ? null
+            : (new List.from(other._parms.map((e) => e?.copy()))),
+        _returnType = other._returnType?.copy(),
+        body = other.body?.copy(),
+        super(other.id);
 
   // end <class Fn>
 
