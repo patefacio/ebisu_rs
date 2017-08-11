@@ -7,6 +7,7 @@ export 'package:ebisu_rs/entity.dart';
 export 'package:ebisu_rs/enumeration.dart';
 export 'package:ebisu_rs/field.dart';
 export 'package:ebisu_rs/generic.dart';
+export 'package:ebisu_rs/impl.dart';
 export 'package:ebisu_rs/macro.dart';
 export 'package:ebisu_rs/module.dart';
 export 'package:ebisu_rs/repo.dart';

@@ -44,6 +44,7 @@ main(List<String> args) {
       library('test_crate')..imports = ['package:ebisu_rs/crate.dart'],
       library('test_module')..imports = ['package:ebisu_rs/module.dart'],
       library('test_trait')..imports = ['package:ebisu_rs/trait.dart'],
+      library('test_impl')..imports = ['package:ebisu_rs/impl.dart'],
       library('test_generic')..imports = ['package:ebisu_rs/generic.dart'],
       library('test_enumeration')
         ..imports = ['package:ebisu_rs/enumeration.dart'],
@@ -67,6 +68,7 @@ main(List<String> args) {
           'package:ebisu_rs/struct.dart',
           'package:ebisu_rs/entity.dart',
           'package:ebisu_rs/trait.dart',
+          'package:ebisu_rs/impl.dart',
         ]),
       library('entity')
         ..doc = '''
@@ -532,13 +534,33 @@ All rust named items are *RsEntity* instances.'''
             ]),
           class_('trait')
             ..implement = ['HasCode']
-            ..mixins = ['IsPub', 'Generic', 'HasAttributes', 'HasAssociatedTypes']
+            ..mixins = [
+              'IsPub',
+              'Generic',
+              'HasAttributes',
+              'HasAssociatedTypes'
+            ]
             ..withClass(commonFeatures)
             ..members.addAll([
               member('functions')
                 ..type = 'List<Fn>'
                 ..init = [],
             ])
+        ],
+
+      library('impl')
+        ..imports = commonIncludes()
+        ..importAndExportAll([
+          'package:ebisu_rs/trait.dart',
+        ])
+        ..classes = [
+          class_('impl')
+          ..extend = 'RsEntity'
+            ..mixins = ['HasCode', 'HasTypeAliases']
+            ..members = [
+              member('trait')..type = 'Trait'..access = RO,
+              member('type')..type = 'RsType'..access = RO,
+            ]
         ],
 
       library('type')

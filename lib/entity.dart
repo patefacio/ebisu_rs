@@ -89,6 +89,8 @@ class IsPub {
 
 makeRsId(dynamic id) => makeId(id is Symbol ? MirrorSystem.getName(id) : id);
 
+makeGenericId(String s) => makeId(s.replaceAll('<','_').replaceAll('>',''));
+
 String indent(String s) => indentBlock(s, '    ');
 
 ProcessResult formatRustFile(String filePath) {

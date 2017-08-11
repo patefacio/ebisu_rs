@@ -112,11 +112,13 @@ class Trait extends RsEntity
   String get code => brCompact([
         tripleSlashComment(doc?.toString() ?? 'TODO: comment trait $id'),
         externalAttrs,
-        'trait ${id.capCamel}${genericDecl} {',
+        'trait $name${genericDecl} {',
         indentBlock(associatedTypeDecls),
         indentBlock(brCompact([functions.map((fn) => fn.code)])),
         '}'
       ]);
+
+  String get name => id.capCamel;
 
   // end <class Trait>
 
