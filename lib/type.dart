@@ -1,5 +1,6 @@
 library ebisu_rs.type;
 
+import 'dart:mirrors';
 import 'package:ebisu_rs/entity.dart';
 import 'package:ebisu_rs/generic.dart';
 import 'package:quiver/iterables.dart';
@@ -77,8 +78,9 @@ class RefType extends RsType {
 
   // custom <class RefType>
 
-  RefType(this.referent, [dynamic lifetime])
-      : _lifetime = lifetime is Lifetime ? lifetime : new Lifetime(lifetime);
+  RefType(dynamic referent, [dynamic lifetime])
+      : referent = rsType(referent),
+        _lifetime = lifetime is Lifetime ? lifetime : new Lifetime(lifetime);
 
   bool get isRefType => true;
 
@@ -112,8 +114,7 @@ class RefType extends RsType {
 class Ref extends RefType {
   // custom <class Ref>
 
-  Ref(RsType referent, [dynamic lt])
-      : super(referent, lt is Lifetime ? lt : lifetime(lt));
+  Ref(dynamic referent, [dynamic lifetime]) : super(referent, lifetime);
 
   bool get isRef => true;
 
@@ -124,7 +125,7 @@ class Ref extends RefType {
 class Mref extends RefType {
   // custom <class Mref>
 
-  Mref(RsType referent, [String lifetime]) : super(referent, lifetime);
+  Mref(dynamic referent, [dynamic lifetime]) : super(referent, lifetime);
 
   bool get isMutable => true;
 
@@ -227,15 +228,17 @@ const bool_ = const BuiltInType('bool');
 
 const UnitType = const BuiltInType('()');
 
-Ref ref(RsType type, [String lifetime]) => new Ref(type, lifetime);
+Ref ref(dynamic type, [dynamic lifetime]) => new Ref(type, lifetime);
 
-Mref mref(RsType type, [String lifetime]) => new Mref(type, lifetime);
+Mref mref(dynamic type, [dynamic lifetime]) => new Mref(type, lifetime);
 
-RsType rsType(dynamic type) => type is RsType
-    ? type
-    : type is String
-        ? new UserDefinedType(type)
-        : throw 'Unsupported rstype ${type.runtimeType}';
+RsType rsType(dynamic type) => type is Symbol
+    ? rsType(MirrorSystem.getName(type))
+    : type is RsType
+        ? type
+        : type is String
+            ? new UserDefinedType(type)
+            : throw 'Unsupported rstype ${type.runtimeType}';
 
 TypeAlias typeAlias(dynamic id, [dynamic aliased]) =>
     new TypeAlias(id, aliased);

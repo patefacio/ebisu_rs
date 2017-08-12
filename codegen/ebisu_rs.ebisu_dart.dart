@@ -118,6 +118,7 @@ All rust named items are *RsEntity* instances.'''
         ..importAndExportAll([
           'package:ebisu_rs/entity.dart',
           'package:ebisu_rs/generic.dart',
+          'package:ebisu_rs/type.dart',
           'package:quiver/iterables.dart',
         ])
         ..classes = [
@@ -140,7 +141,20 @@ All rust named items are *RsEntity* instances.'''
               member('type_parms')
                 ..type = 'List<TypeParm>'
                 ..init = [],
-            ]
+            ],
+          class_('generic_type')
+            ..extend = 'RsType'
+            ..members = [
+              member('type')..type = 'RsType',
+              member('lifetimes')
+                ..type = 'List<Lifetime>'
+                ..access = RO
+                ..init = [],
+              member('type_args')
+                ..type = 'List<RsType>'
+                ..access = RO
+                ..init = [],
+            ],
         ],
 
       library('enumeration')
@@ -517,7 +531,9 @@ All rust named items are *RsEntity* instances.'''
             ..extend = 'RsEntity'
             ..implement = ['HasCode']
             ..members.addAll([
-              member('type')..type = 'RsType'..isFinal = true,
+              member('type')
+                ..type = 'RsType'
+                ..isFinal = true,
             ]),
           class_('fn')
             ..extend = 'RsEntity'
@@ -574,6 +590,7 @@ All rust named items are *RsEntity* instances.'''
 
       library('type')
         ..includesMain = true
+        ..imports = ['dart:mirrors']
         ..importAndExportAll([
           'package:quiver/iterables.dart',
           'package:ebisu_rs/entity.dart',
@@ -586,8 +603,7 @@ All rust named items are *RsEntity* instances.'''
           class_('built_in_type')
             ..extend = 'RsType'
             ..isCopyable = true
-            ..members = [
-              member('type_name')..isFinal = true],
+            ..members = [member('type_name')..isFinal = true],
           class_('user_defined_type')
             ..extend = 'RsType'
             ..isCopyable = true

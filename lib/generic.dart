@@ -2,10 +2,12 @@ library ebisu_rs.generic;
 
 import 'package:ebisu_rs/entity.dart';
 import 'package:ebisu_rs/generic.dart';
+import 'package:ebisu_rs/type.dart';
 import 'package:quiver/iterables.dart';
 
 export 'package:ebisu_rs/entity.dart';
 export 'package:ebisu_rs/generic.dart';
+export 'package:ebisu_rs/type.dart';
 export 'package:quiver/iterables.dart';
 
 // custom <additional imports>
@@ -87,6 +89,42 @@ class Generic {
 
   List<Lifetime> _lifetimes = [];
   List<TypeParm> _typeParms = [];
+}
+
+class GenericType extends RsType {
+  RsType type;
+  List<Lifetime> get lifetimes => _lifetimes;
+  List<RsType> get typeArgs => _typeArgs;
+
+  // custom <class GenericType>
+
+  GenericType(this.type, dynamic lifetimes, dynamic typeArgs) {
+    _lifetimes = lifetimes;
+    _typeArgs = typeArgs;
+  }
+
+  set lifetimes(Iterable<dynamic> lifetimes) =>
+      _lifetimes = new List.from(lifetimes.map((lt) => lifetime(lt)));
+  set typeArgs(Iterable<dynamic> typeArgs) =>
+      _typeArgs = new List.from(typeArgs.map((ta) => rsType(ta)));
+
+  copy() => new GenericType(this.type.copy(), new List.from(lifetimes),
+      new List.from(typeArgs.map((t) => t.copy())));
+
+  @override
+  get code => [
+        '<',
+        concat([
+          lifetimes.map((lt) => lt.code),
+          typeArgs.map((parm) => parm.code)
+        ]).join(', '),
+        '>'
+      ].join('');
+
+  // end <class GenericType>
+
+  List<Lifetime> _lifetimes = [];
+  List<RsType> _typeArgs = [];
 }
 
 // custom <library generic>
