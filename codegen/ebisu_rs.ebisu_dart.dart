@@ -147,7 +147,7 @@ All rust named items are *RsEntity* instances.'''
             ..extend = 'RsType'
             ..members = [
               member('type')..type = 'RsType',
-              member('lt_args')
+              member('lifetimes')
                 ..type = 'List<Id>'
                 ..access = RO
                 ..init = [],

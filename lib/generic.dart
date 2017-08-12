@@ -63,8 +63,6 @@ class Generic {
         lifetimes.map((lt) => lt is Lifetime ? lt : lifetime(lt)).toList();
     this._typeParms =
         typeParms.map((tp) => tp is TypeParm ? tp : typeParm(tp)).toList();
-
-    print('lifetimes ${this.lifetimes}');
   }
 
   set lifetimes(Iterable<dynamic> lifetimes) =>
@@ -95,7 +93,7 @@ class Generic {
 
 class GenericType extends RsType {
   RsType type;
-  List<Id> get ltArgs => _ltArgs;
+  List<Id> get lifetimes => _lifetimes;
   List<RsType> get typeArgs => _typeArgs;
 
   // custom <class GenericType>
@@ -105,7 +103,7 @@ class GenericType extends RsType {
     this.typeArgs = typeArgs;
   }
 
-  set lifetimes(dynamic lifetimes) => _ltArgs = lifetimes is Iterable
+  set lifetimes(dynamic lifetimes) => _lifetimes = lifetimes is Iterable
       ? new List.from(lifetimes.map(makeRsId))
       : [makeRsId(lifetimes)];
 
@@ -120,14 +118,16 @@ class GenericType extends RsType {
   get code => [
         type.code,
         '<',
-        concat([ltArgs.map((lt) => "'${lt.snake}"), typeArgs.map((ta) => ta.code)])
-            .join(', '),
+        concat([
+          lifetimes.map((lt) => "'${lt.snake}"),
+          typeArgs.map((ta) => ta.code)
+        ]).join(', '),
         '>'
       ].join('');
 
   // end <class GenericType>
 
-  List<Id> _ltArgs = [];
+  List<Id> _lifetimes = [];
   List<RsType> _typeArgs = [];
 }
 
