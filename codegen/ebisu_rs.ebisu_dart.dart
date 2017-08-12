@@ -117,6 +117,7 @@ All rust named items are *RsEntity* instances.'''
       library('generic')
         ..importAndExportAll([
           'package:ebisu_rs/entity.dart',
+          'package:ebisu_rs/generic.dart',
           'package:quiver/iterables.dart',
         ])
         ..classes = [

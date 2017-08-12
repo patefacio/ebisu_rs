@@ -1,9 +1,11 @@
 library ebisu_rs.generic;
 
 import 'package:ebisu_rs/entity.dart';
+import 'package:ebisu_rs/generic.dart';
 import 'package:quiver/iterables.dart';
 
 export 'package:ebisu_rs/entity.dart';
+export 'package:ebisu_rs/generic.dart';
 export 'package:quiver/iterables.dart';
 
 // custom <additional imports>

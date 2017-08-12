@@ -60,7 +60,7 @@ fn foobar<'s, T1, T2>(a : & 's mut i32, b : f64, c : String) -> i32;
   });
 
   test('trait basics', () {
-    var t1 = trait(#woker)
+    var t1 = trait(#worker)
       ..attrs.add(idAttr(#bam))
       ..associatedTypes = ['assoc_1', 'assoc_2']
       ..lifetimes = [#b]
@@ -73,17 +73,17 @@ fn foobar<'s, T1, T2>(a : & 's mut i32, b : f64, c : String) -> i32;
     _logger.info(t1.code);
 
     expect(darkMatter(t1.code), darkMatter('''
-/// TODO: comment trait woker
+/// TODO: comment trait Worker
 #[bam]
-trait Woker<'b, T> {
+trait Worker<'b, T> {
   type Assoc1;
-  type Assoc2; 
-  /// TODO: comment fn doWork
+  type Assoc2;
+  /// TODO: comment fn do_work:no-body-tag
   ///
   ///  * `unit` - TODO: comment parm
   ///
   fn do_work<'a>(unit : & 'a mut i32) -> ();
-}    
+} 
     '''));
   });
 
