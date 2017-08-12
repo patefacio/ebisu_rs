@@ -3,11 +3,13 @@ library ebisu_rs.generic;
 import 'package:ebisu_rs/entity.dart';
 import 'package:ebisu_rs/generic.dart';
 import 'package:ebisu_rs/type.dart';
+import 'package:id/id.dart';
 import 'package:quiver/iterables.dart';
 
 export 'package:ebisu_rs/entity.dart';
 export 'package:ebisu_rs/generic.dart';
 export 'package:ebisu_rs/type.dart';
+export 'package:id/id.dart';
 export 'package:quiver/iterables.dart';
 
 // custom <additional imports>
@@ -93,37 +95,39 @@ class Generic {
 
 class GenericType extends RsType {
   RsType type;
-  List<Lifetime> get lifetimes => _lifetimes;
+  List<Id> get ltArgs => _ltArgs;
   List<RsType> get typeArgs => _typeArgs;
 
   // custom <class GenericType>
 
-  GenericType(this.type, dynamic lifetimes, dynamic typeArgs) {
-    _lifetimes = lifetimes;
-    _typeArgs = typeArgs;
+  GenericType(type, dynamic lifetimes, dynamic typeArgs) : type = rsType(type) {
+    this.lifetimes = lifetimes;
+    this.typeArgs = typeArgs;
   }
 
-  set lifetimes(Iterable<dynamic> lifetimes) =>
-      _lifetimes = new List.from(lifetimes.map((lt) => lifetime(lt)));
-  set typeArgs(Iterable<dynamic> typeArgs) =>
-      _typeArgs = new List.from(typeArgs.map((ta) => rsType(ta)));
+  set lifetimes(dynamic lifetimes) => _ltArgs = lifetimes is Iterable
+      ? new List.from(lifetimes.map(makeRsId))
+      : [makeRsId(lifetimes)];
+
+  set typeArgs(dynamic typeArgs) => _typeArgs = typeArgs is Iterable
+      ? new List.from(typeArgs.map((ta) => rsType(ta)))
+      : [rsType(typeArgs)];
 
   copy() => new GenericType(this.type.copy(), new List.from(lifetimes),
       new List.from(typeArgs.map((t) => t.copy())));
 
   @override
   get code => [
+        type.code,
         '<',
-        concat([
-          lifetimes.map((lt) => lt.code),
-          typeArgs.map((parm) => parm.code)
-        ]).join(', '),
+        concat([ltArgs.map((lt) => "'${lt.snake}"), typeArgs.map((ta) => ta.code)])
+            .join(', '),
         '>'
       ].join('');
 
   // end <class GenericType>
 
-  List<Lifetime> _lifetimes = [];
+  List<Id> _ltArgs = [];
   List<RsType> _typeArgs = [];
 }
 
@@ -131,5 +135,14 @@ class GenericType extends RsType {
 
 Lifetime lifetime([dynamic id]) => id is Lifetime ? id : new Lifetime(id);
 TypeParm typeParm(dynamic id) => id is TypeParm ? id : new TypeParm(id);
+GenericType genericType(type, dynamic lifetimes, dynamic typeArgs) =>
+    new GenericType(type, lifetimes, typeArgs);
+
+/// Generic with one or more lifetimes
+const lgt = genericType;
+
+/// Most common generic types have no lifetimes
+GenericType gt(type, dynamic typeArgs) =>
+    new GenericType(type, const [], typeArgs);
 
 // end <library generic>

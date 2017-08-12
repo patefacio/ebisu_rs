@@ -116,6 +116,7 @@ All rust named items are *RsEntity* instances.'''
 
       library('generic')
         ..importAndExportAll([
+          'package:id/id.dart',
           'package:ebisu_rs/entity.dart',
           'package:ebisu_rs/generic.dart',
           'package:ebisu_rs/type.dart',
@@ -146,8 +147,8 @@ All rust named items are *RsEntity* instances.'''
             ..extend = 'RsType'
             ..members = [
               member('type')..type = 'RsType',
-              member('lifetimes')
-                ..type = 'List<Lifetime>'
+              member('lt_args')
+                ..type = 'List<Id>'
                 ..access = RO
                 ..init = [],
               member('type_args')
