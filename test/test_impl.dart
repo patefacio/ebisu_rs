@@ -21,18 +21,19 @@ void main([List<String> args]) {
 // custom <main>
 
   test('impl', () {
-    var t1 = trait(#woker)
+    var t1 = trait(#worker)
       ..attrs.add(idAttr(#bam))
       ..associatedTypes = ['assoc_1', 'assoc_2']
       ..typeParms = [#t]
       ..functions = [
         fn(#doWork, [parm(#unit, mref(i32)), parm(#t, 'T')]),
-      ]..setAsRoot();
+      ]
+      ..setAsRoot();
 
     var i1 = impl(t1, rsType('Vec<Vec<T>>'))
-    //..typeParms = [#t]
-    ..typeAliases.addAll([typeAlias(#assoc_1, i32), typeAlias(#assoc_2, i64)])
-    ..setAsRoot();
+      ..typeParms = [#t]
+      ..typeAliases.addAll([typeAlias(#assoc_1, i32), typeAlias(#assoc_2, i64)])
+      ..setAsRoot();
     print(t1.code);
     print(i1.code);
   });

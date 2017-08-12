@@ -557,7 +557,7 @@ All rust named items are *RsEntity* instances.'''
         ..classes = [
           class_('impl')
             ..extend = 'RsEntity'
-            ..mixins = ['HasCode', 'HasTypeAliases']
+            ..mixins = ['HasCode', 'Generic', 'HasTypeAliases']
             ..members = [
               member('trait')
                 ..type = 'Trait'

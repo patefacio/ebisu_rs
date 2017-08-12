@@ -9,7 +9,7 @@ export 'package:ebisu_rs/trait.dart';
 // custom <additional imports>
 // end <additional imports>
 
-class Impl extends RsEntity with HasCode, HasTypeAliases {
+class Impl extends RsEntity with HasCode, Generic, HasTypeAliases {
   Trait get trait => _trait;
   RsType get type => _type;
   List<Fn> functions = [];
@@ -44,8 +44,8 @@ class Impl extends RsEntity with HasCode, HasTypeAliases {
       ]);
 
   get _implHeader => _trait == null
-      ? 'impl ${_type}'
-      : 'impl ${_trait.name} for ${_type.code}';
+      ? 'impl$genericDecl ${_type}'
+      : 'impl$genericDecl ${_trait.name} for ${_type.code}';
 
   // end <class Impl>
 
