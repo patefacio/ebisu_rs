@@ -94,7 +94,7 @@ class Module extends RsEntity
   Map<MainCodeBlock, CodeBlock> get mainCodeBlocks => _mainCodeBlocks;
 
   /// Include *clippy* support
-  bool useClippy = true;
+  bool useClippy = false;
 
   // custom <class Module>
 
@@ -123,6 +123,13 @@ class Module extends RsEntity
 
     if (owner is Crate) {
       ownerPath = join(ownerPath, 'src');
+    }
+
+    if (useClippy) {
+      attrs.addAll([
+        strAttr('cfg_attr(feature="clippy", feature(plugin))'),
+        strAttr('cfg_attr(feature="clippy", plugin(clippy))')
+      ]);
     }
 
     _filePath = (isDirectoryModule || isInlineModule)

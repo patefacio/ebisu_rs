@@ -1,5 +1,6 @@
 library ebisu_rs.dependency;
 
+import 'package:ebisu/ebisu.dart';
 import 'package:logging/logging.dart';
 
 // custom <additional imports>
@@ -171,6 +172,7 @@ class Dependency {
   String crate;
   VersionSpec get version => _version;
   String path;
+  bool optional = false;
   bool isBuildDependency = false;
 
   // custom <class Dependency>
@@ -183,8 +185,13 @@ class Dependency {
       ? new VersionSpec.fromString(versionSpec)
       : versionSpec as VersionSpec;
 
-  String get _decl =>
-      path != null ? '{ version = "$version", path = "$path" }' : '"$version"';
+  String get _decl => path != null || optional
+      ? '{' + br([
+          'version = "$version"',
+          path != null ? 'path = "$path"' : null,
+          optional ? 'optional = true' : null
+        ], ', ') + '}'
+      : '"$version"';
 
   toString() => '${crate} = $_decl';
 

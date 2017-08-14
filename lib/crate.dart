@@ -236,6 +236,10 @@ class Clap {
   String _defineStruct(dynamic id, List<Arg> args) {
     Struct structDecl = struct(id)
       ..derive = <Derivable>[Debug]
+      ..lifetimes =
+          args.any((arg) => arg.type == ArgType.argString || arg.isMultiple)
+              ? [lifetime(#a)]
+              : []
       ..fields.addAll(args.map((arg) => field(arg.id)
         ..doc = arg.doc
         ..type = arg.type));
@@ -415,6 +419,10 @@ class Crate extends RsEntity implements HasFilePath {
     _addLogSupport();
     if (_requiresSerde) {
       _crateToml._addIfMissing(new Dependency('serde', '^1.0.11'));
+    }
+    if (modules.any((Module m) => m.useClippy)) {
+      _crateToml
+          ._addIfMissing(new Dependency('clippy', '^0.0.150')..optional = true);
     }
   }
 

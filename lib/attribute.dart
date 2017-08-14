@@ -18,6 +18,19 @@ abstract class Attr {
 
 }
 
+class StrAttr extends Attr {
+  /// Value of attribute
+  String get attr => _attr;
+
+  // custom <class StrAttr>
+
+  StrAttr(this._attr);
+
+  // end <class StrAttr>
+
+  String _attr;
+}
+
 class IdAttr extends Attr {
   /// Value of attribute
   Id value;
@@ -81,5 +94,6 @@ abstract class HasAttributes {
 Attr attr(dynamic key, String value) => new KeyValueAttr(key, value);
 Attr idAttr(dynamic id) => new IdAttr(id);
 Attr and(Iterable<Attr> attrs) => new And(attrs);
+Attr strAttr(String attr) => new StrAttr(attr);
 
 // end <library attribute>

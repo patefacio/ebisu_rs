@@ -39,6 +39,7 @@ void main([List<String> args]) {
             ]
             ..buildDeps = [dependency('log', '0.3')])
           ..withRootModule((rootModule) => rootModule
+            ..useClippy = true
             ..attrs.add(idAttr(#bam))
             ..doc = 'The root module'
             ..structs = [
@@ -119,7 +120,7 @@ First struct in root module.
                     ..modules = [
                       module('sub_module_3_dot_1_dot_1', inlineModule)
                         ..modules = [
-                          module('nested'),
+                          module('nested')..structs = [ ustruct(#a) ],
                         ]
                     ]
                 ],

@@ -36,7 +36,8 @@ void main([List<String> args]) {
         field(#a, ref(#i64)),
         field(#b, ref(#i32, #b))
       ]
-      ..generic(['a', 'b'], ['t1', typeParm('t2')])
+      // lifetimes inferred
+      ..typeParms = [#t1, typeParm('t2')]
       ..setAsRoot();
 
     expect(s.genericDecl, "<'a, 'b, T1, T2>");

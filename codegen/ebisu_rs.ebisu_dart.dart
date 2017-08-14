@@ -232,6 +232,7 @@ All rust named items are *RsEntity* instances.'''
 
       // dependency library
       library('dependency')
+        ..imports = ['package:ebisu/ebisu.dart']
         ..includesLogger = true
         ..enums = [
           enum_('compare_op')
@@ -268,6 +269,7 @@ All rust named items are *RsEntity* instances.'''
                 ..type = 'VersionSpec'
                 ..access = RO,
               member('path'),
+              member('optional')..init = false,
               member('is_build_dependency')..init = false,
             ],
         ],
@@ -413,6 +415,13 @@ All rust named items are *RsEntity* instances.'''
           class_('attr')
             ..isAbstract = true
             ..members = [],
+          class_('str_attr')
+            ..extend = 'Attr'
+            ..members = [
+              member('attr')
+                ..access = RO
+                ..doc = 'Value of attribute',
+            ],
           class_('id_attr')
             ..extend = 'Attr'
             ..members = [
@@ -515,7 +524,7 @@ All rust named items are *RsEntity* instances.'''
                 ..access = RO,
               member('use_clippy')
                 ..doc = 'Include *clippy* support'
-                ..init = true
+                ..init = false
             ])
         ],
 
