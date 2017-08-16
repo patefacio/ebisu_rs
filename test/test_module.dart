@@ -21,9 +21,23 @@ void main([List<String> args]) {
   }
 // custom <main>
 
-  test('create module', () {
-    var m = module('foo');
-    print(m);
+  test('create module uses clippy', () {
+    var r = repo('r')
+      ..crates = [
+        crate('c')..rootModule = (module('sub_mod_2')..useClippy = true)
+      ]
+      ..setAsRoot();
+
+    final subMod2 = r.crates.first.modules
+        .firstWhere((Module m) => m.id.snake == 'sub_mod_2');
+
+    expect(
+        subMod2.code
+            .contains('#![cfg_attr(feature="clippy", feature(plugin))]'),
+        true);
+    expect(
+        subMod2.code.contains('#![cfg_attr(feature="clippy", plugin(clippy))]'),
+        true);
   });
 
 // end <main>
