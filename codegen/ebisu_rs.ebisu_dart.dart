@@ -548,6 +548,7 @@ All rust named items are *RsEntity* instances.'''
               member('type')
                 ..type = 'RsType'
                 ..isFinal = true,
+              member('is_mutable')..init = false,
             ]),
           class_('self_parm')
           ..extend = 'Parm',

@@ -26,7 +26,7 @@ void main([List<String> args]) {
   test('fn basics', () {
     var f1 = fn(#foobar, [
       parm(#a, mref(i32, 's'))..doc = 'The *i32* field called *a*',
-      parm(#b, f64),
+      parm(#b, f64, true),
       parm(#c, string)
     ])
       ..returns = ref(i32)
@@ -43,7 +43,7 @@ void main([List<String> args]) {
 ///  * `c` - TODO: comment parm
 ///
 #[bam]
-fn foobar<'s, T1, T2>(a : & 's mut i32, b : f64, c : String) -> &'a i32;
+fn foobar<'s, T1, T2>(a : & 's mut i32, mut b : f64, c : String) -> &'a i32;
     '''));
 
     f1..returns = i32;
@@ -56,7 +56,7 @@ fn foobar<'s, T1, T2>(a : & 's mut i32, b : f64, c : String) -> &'a i32;
 ///  * `c` - TODO: comment parm
 ///
 #[bam]
-fn foobar<'s, T1, T2>(a : & 's mut i32, b : f64, c : String) -> i32;
+fn foobar<'s, T1, T2>(a : & 's mut i32, mut b : f64, c : String) -> i32;
     '''));
   });
 

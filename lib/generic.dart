@@ -89,9 +89,7 @@ class Generic {
       ? ''
       : [
           '<',
-          concat([
-            typeParms.map((parm) => parm.code)
-          ]).join(', '),
+          concat([typeParms.map((parm) => parm.code)]).join(', '),
           '>'
         ].join('');
 

@@ -15,16 +15,19 @@ export 'package:ebisu_rs/type.dart';
 
 class Parm extends RsEntity implements HasCode {
   final RsType type;
+  bool isMutable = false;
 
   // custom <class Parm>
 
-  Parm(dynamic id, dynamic type)
+  Parm(dynamic id, dynamic type, [bool this.isMutable = false])
       : type = rsType(type),
         super(id);
 
   get children => new Iterable<Parm>.generate(0);
 
-  get code => '${id.snake} : ${type.lifetimeDecl}';
+  get code => isMutable ? 'mut $_decl' : _decl;
+
+  get _decl => '${id.snake} : ${type.lifetimeDecl}';
 
   // end <class Parm>
 
@@ -104,7 +107,7 @@ class Fn extends RsEntity
             : brCompact(['$signature {', indentBlock(body.toString()), '}'])
       ]);
 
-String get signature =>
+  String get signature =>
       '${pubDecl}fn $name$genericDecl($_parmsText) -> ${_returnType.lifetimeDecl}';
 
 /* TODO: revisit if possible to elide lifetimes in sane way
@@ -184,7 +187,8 @@ class Trait extends RsEntity
 Fn fn(dynamic id, [Iterable<dynamic> parms, dynamic returnType = UnitType]) =>
     new Fn(id, parms, returnType);
 
-Parm parm(dynamic id, dynamic type) => new Parm(id, type);
+Parm parm(dynamic id, dynamic type, [bool isMutable = false]) =>
+    new Parm(id, type, isMutable);
 
 Trait trait(dynamic id) => new Trait(id);
 
