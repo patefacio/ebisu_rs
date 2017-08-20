@@ -30,6 +30,39 @@ class Parm extends RsEntity implements HasCode {
 
 }
 
+class SelfParm extends Parm {
+  // custom <class SelfParm>
+
+  SelfParm() : super('self', 'Self');
+
+  get code => 'self';
+
+  // end <class SelfParm>
+
+}
+
+class SelfRefParm extends Parm {
+  // custom <class SelfRefParm>
+
+  SelfRefParm() : super('self', ref('Self'));
+
+  get code => '& self';
+
+  // end <class SelfRefParm>
+
+}
+
+class SelfRefMutableParm extends Parm {
+  // custom <class SelfRefMutableParm>
+
+  SelfRefMutableParm() : super('self', mref('Self'));
+
+  get code => '& mut self';
+
+  // end <class SelfRefMutableParm>
+
+}
+
 class Fn extends RsEntity
     with IsPub, Generic, HasAttributes
     implements HasCode {
@@ -71,8 +104,14 @@ class Fn extends RsEntity
             : brCompact(['$signature {', indentBlock(body.toString()), '}'])
       ]);
 
-  String get signature =>
-      '${pubDecl}fn $name$genericDecl($_parmsText) -> $returnType';
+String get signature =>
+      '${pubDecl}fn $name$genericDecl($_parmsText) -> ${_returnType.lifetimeDecl}';
+
+/* TODO: revisit if possible to elide lifetimes in sane way
+  String get signature => _returnType.lifetimes.isNotEmpty?
+      '${pubDecl}fn $name$genericDecl($_parmsText) -> ${_returnType.lifetimeDecl}' :
+      '${pubDecl}fn $name$genericDeclNoLifetimes($_parmsText) -> ${returnType.lifetimeDecl}';
+*/
 
   String get _docComment {
     var fnDoc = [
@@ -148,5 +187,9 @@ Fn fn(dynamic id, [Iterable<dynamic> parms, dynamic returnType = UnitType]) =>
 Parm parm(dynamic id, dynamic type) => new Parm(id, type);
 
 Trait trait(dynamic id) => new Trait(id);
+
+final Parm self = new SelfParm();
+final Parm selfRef = new SelfRefParm();
+final Parm selfRefMutable = new SelfRefMutableParm();
 
 // end <library trait>

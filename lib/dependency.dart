@@ -186,11 +186,13 @@ class Dependency {
       : versionSpec as VersionSpec;
 
   String get _decl => path != null || optional
-      ? '{' + br([
-          'version = "$version"',
-          path != null ? 'path = "$path"' : null,
-          optional ? 'optional = true' : null
-        ], ', ') + '}'
+      ? '{' +
+          br([
+            'version = "$version"',
+            path != null ? 'path = "$path"' : null,
+            optional ? 'optional = true' : null
+          ], ', ') +
+          '}'
       : '"$version"';
 
   toString() => '${crate} = $_decl';

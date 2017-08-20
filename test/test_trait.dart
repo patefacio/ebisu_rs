@@ -29,6 +29,7 @@ void main([List<String> args]) {
       parm(#b, f64),
       parm(#c, string)
     ])
+      ..returns = ref(i32)
       ..attrs = [idAttr(#bam)]
       ..typeParms = [#T1, #T2]
       ..doc = 'Function that does foobar'
@@ -42,7 +43,7 @@ void main([List<String> args]) {
 ///  * `c` - TODO: comment parm
 ///
 #[bam]
-fn foobar<'s, T1, T2>(a : & 's mut i32, b : f64, c : String) -> ();
+fn foobar<'s, T1, T2>(a : & 's mut i32, b : f64, c : String) -> &'a i32;
     '''));
 
     f1..returns = i32;
@@ -85,6 +86,22 @@ trait Worker<'b, T> {
   fn do_work<'a>(unit : & 'a mut i32) -> ();
 } 
     '''));
+  });
+
+  test('trait self', () {
+    var t1 = trait(#worker)
+      ..functions = [
+        fn(#doWorkSelf, [self, parm(#unit, i32)]),
+        fn(#doWorkSelfRef, [selfRef, parm(#unit, i32)]),
+        fn(#doWorkSelfRefMutable, [selfRefMutable, parm(#unit, i32)]),
+      ]
+      ..setAsRoot();
+    final t1Code = darkMatter(t1.code);
+    [
+      "fn do_work_self(self, unit : i32) -> ();",
+      "fn do_work_self_ref<'a>(& self, unit : i32) -> ();",
+      "fn do_work_self_ref_mutable<'a>(& mut self, unit : i32) -> ();"
+    ].forEach((sig) => expect(t1Code.contains(darkMatter(sig)), true));
   });
 
 // end <main>

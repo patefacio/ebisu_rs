@@ -85,6 +85,16 @@ class Generic {
           '>'
         ].join('');
 
+  get genericDeclNoLifetimes => typeParms.isEmpty
+      ? ''
+      : [
+          '<',
+          concat([
+            typeParms.map((parm) => parm.code)
+          ]).join(', '),
+          '>'
+        ].join('');
+
   // end <class Generic>
 
   List<Lifetime> _lifetimes = [];

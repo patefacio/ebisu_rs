@@ -120,7 +120,7 @@ First struct in root module.
                     ..modules = [
                       module('sub_module_3_dot_1_dot_1', inlineModule)
                         ..modules = [
-                          module('nested')..structs = [ ustruct(#a) ],
+                          module('nested')..structs = [ustruct(#a)],
                         ]
                     ]
                 ],

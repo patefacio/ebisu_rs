@@ -459,6 +459,7 @@ All rust named items are *RsEntity* instances.'''
           'package:ebisu_rs/attribute.dart',
           'package:ebisu_rs/struct.dart',
           'package:ebisu_rs/crate.dart',
+          'package:ebisu_rs/trait.dart',
           'package:quiver/iterables.dart',
           'dart:io',
         ])
@@ -514,6 +515,9 @@ All rust named items are *RsEntity* instances.'''
               member('structs')
                 ..type = 'List<Struct>'
                 ..init = [],
+              member('traits')
+                ..type = 'List<Trait>'
+                ..init = [],
               member('module_code_blocks')
                 ..type = 'Map<ModuleCodeBlock, CodeBlock>'
                 ..init = {}
@@ -545,6 +549,12 @@ All rust named items are *RsEntity* instances.'''
                 ..type = 'RsType'
                 ..isFinal = true,
             ]),
+          class_('self_parm')
+          ..extend = 'Parm',
+          class_('self_ref_parm')
+          ..extend = 'Parm',
+          class_('self_ref_mutable_parm')
+          ..extend = 'Parm',
           class_('fn')
             ..extend = 'RsEntity'
             ..implement = ['HasCode']
