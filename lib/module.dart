@@ -89,7 +89,7 @@ class Module extends RsEntity
     with IsPub, HasAttributes, HasTypeAliases
     implements HasFilePath, HasCode {
   String get filePath => _filePath;
-  ModuleType get moduleType => _moduleType;
+  ModuleType moduleType;
   List<Module> modules = [];
   List<Import> imports = [];
   List<Enum> enums = [];
@@ -104,9 +104,7 @@ class Module extends RsEntity
 
   // custom <class Module>
 
-  Module(dynamic id, [ModuleType moduleType = fileModule])
-      : _moduleType = moduleType,
-        super(id);
+  Module(dynamic id, [this.moduleType]) : super(id);
 
   @override
   Iterable<Entity> get children =>
@@ -255,7 +253,6 @@ class Module extends RsEntity
   // end <class Module>
 
   String _filePath;
-  ModuleType _moduleType;
   Map<ModuleCodeBlock, CodeBlock> _moduleCodeBlocks = {};
   Map<MainCodeBlock, CodeBlock> _mainCodeBlocks = {};
 }

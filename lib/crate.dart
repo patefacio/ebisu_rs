@@ -379,7 +379,7 @@ ${buildDeps.join("\n")}
 
 class Crate extends RsEntity implements HasFilePath {
   CrateType crateType;
-  Module rootModule;
+  Module get rootModule => _rootModule;
   String get filePath => _filePath;
   LoggerType loggerType;
 
@@ -390,10 +390,13 @@ class Crate extends RsEntity implements HasFilePath {
 
   Crate(dynamic id, [CrateType crateType = libCrate])
       : crateType = crateType,
-        rootModule = new Module(id, ModuleType.rootModule),
+        _rootModule = new Module(id, ModuleType.rootModule),
         super(id) {
     _crateToml = new CrateToml(this);
   }
+
+  set rootModule(Module rootModule) =>
+      _rootModule = rootModule..moduleType = ModuleType.rootModule;
 
   void withRootModule(void f(Module module)) => f(rootModule);
   void withCrateToml(void f(CrateToml crateToml)) => f(_crateToml);
@@ -485,6 +488,7 @@ env_logger::init().expect("Successful init of env_logger");
 
   // end <class Crate>
 
+  Module _rootModule;
   String _filePath;
   CrateToml _crateToml;
   Clap _clap;

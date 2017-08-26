@@ -397,7 +397,7 @@ All rust named items are *RsEntity* instances.'''
             ..implement = ['HasFilePath']
             ..members = [
               member('crate_type')..type = 'CrateType',
-              member('root_module')..type = 'Module',
+              member('root_module')..type = 'Module'..access = RO,
               member('file_path')..access = RO,
               member('logger_type')..type = 'LoggerType',
               member('crate_toml')
@@ -502,8 +502,7 @@ All rust named items are *RsEntity* instances.'''
             ..members.addAll([
               member('file_path')..access = RO,
               member('module_type')
-                ..type = 'ModuleType'
-                ..access = RO,
+                ..type = 'ModuleType',
               member('modules')
                 ..type = 'List<Module>'
                 ..init = [],
