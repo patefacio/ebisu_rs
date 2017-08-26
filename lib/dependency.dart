@@ -187,11 +187,11 @@ class Dependency {
 
   String get _decl => path != null || optional
       ? '{' +
-          br([
+          [
             'version = "$version"',
             path != null ? 'path = "$path"' : null,
             optional ? 'optional = true' : null
-          ], ', ') +
+          ].where((s) => s != null).join(', ') +
           '}'
       : '"$version"';
 

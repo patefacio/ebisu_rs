@@ -118,4 +118,10 @@ ProcessResult formatRustFile(String filePath) {
   return result;
 }
 
+/// Return a new string with [text] wrapped in `//!` doc comment block
+String innerDocComment(String text, [String indent = ' ']) {
+  String guts = text..trimRight().split('\n').join("\n//!$indent");
+  return "//!$indent$guts";
+}
+
 // end <library entity>

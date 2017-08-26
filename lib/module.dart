@@ -222,7 +222,7 @@ class Module extends RsEntity
   String get _imports => brCompact(imports.map((i) => i.code));
 
   String get code => brCompact([
-        tripleSlashComment(doc == null ? 'TODO: comment module $id' : doc),
+        innerDocComment(doc == null ? 'TODO: comment module $id' : doc),
         internalAttrs,
         _imports,
         brCompact(declaredMods
