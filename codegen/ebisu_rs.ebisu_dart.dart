@@ -508,7 +508,8 @@ All rust named items are *RsEntity* instances.'''
                 ..init = [],
               member('imports')
                 ..type = 'List<Import>'
-                ..init = [],
+                ..init = []
+                ..access = RO,
               member('enums')
                 ..type = 'List<Enum>'
                 ..init = [],

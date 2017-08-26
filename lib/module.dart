@@ -91,7 +91,7 @@ class Module extends RsEntity
   String get filePath => _filePath;
   ModuleType moduleType;
   List<Module> modules = [];
-  List<Import> imports = [];
+  List<Import> get imports => _imports;
   List<Enum> enums = [];
   List<Struct> structs = [];
   List<Trait> traits = [];
@@ -142,6 +142,9 @@ class Module extends RsEntity
 
     _logger.info("Ownership of module($id) established in   $filePath");
   }
+
+  set imports(Iterable<dynamic> imports) =>
+      _imports = imports.map((i) => new Import(i)).toList();
 
   void import(dynamic import) => import is Iterable
       ? import.forEach((dynamic i) => this.import(i))
@@ -219,12 +222,12 @@ class Module extends RsEntity
   String get _structDecls => br(structs.map((s) => s.code));
   String get _traitDecls => br(traits.map((t) => t.code));
   String get _implDecls => br(impls.map((i) => i.code));
-  String get _imports => brCompact(imports.map((i) => i.code));
+  String get _importsDecls => brCompact(imports.map((i) => i.code));
 
   String get code => brCompact([
         innerDocComment(doc == null ? 'TODO: comment module $id' : doc),
         internalAttrs,
-        _imports,
+        _importsDecls,
         brCompact(declaredMods
             .map((module) => '${module.pubDecl}mod ${module.name};')),
         typeAliasDecls,
@@ -253,6 +256,7 @@ class Module extends RsEntity
   // end <class Module>
 
   String _filePath;
+  List<Import> _imports = [];
   Map<ModuleCodeBlock, CodeBlock> _moduleCodeBlocks = {};
   Map<MainCodeBlock, CodeBlock> _mainCodeBlocks = {};
 }

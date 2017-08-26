@@ -322,7 +322,7 @@ class CrateToml {
 
   // custom <class CrateToml>
 
-  CrateToml(Crate crate) : crate = crate;
+  CrateToml(this.crate);
 
   void generate() {
     _logger.info('Generating crate toml $crate');
