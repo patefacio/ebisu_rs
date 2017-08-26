@@ -5,6 +5,7 @@ import 'package:ebisu/ebisu.dart';
 import 'package:ebisu_rs/attribute.dart';
 import 'package:ebisu_rs/crate.dart';
 import 'package:ebisu_rs/entity.dart';
+import 'package:ebisu_rs/impl.dart';
 import 'package:ebisu_rs/struct.dart';
 import 'package:ebisu_rs/trait.dart';
 import 'package:logging/logging.dart';
@@ -14,6 +15,7 @@ import 'package:quiver/iterables.dart';
 export 'dart:io';
 export 'package:ebisu_rs/attribute.dart';
 export 'package:ebisu_rs/crate.dart';
+export 'package:ebisu_rs/impl.dart';
 export 'package:ebisu_rs/struct.dart';
 export 'package:ebisu_rs/trait.dart';
 export 'package:path/path.dart';
@@ -93,6 +95,7 @@ class Module extends RsEntity
   List<Enum> enums = [];
   List<Struct> structs = [];
   List<Trait> traits = [];
+  List<Impl> impls = [];
   Map<ModuleCodeBlock, CodeBlock> get moduleCodeBlocks => _moduleCodeBlocks;
   Map<MainCodeBlock, CodeBlock> get mainCodeBlocks => _mainCodeBlocks;
 
@@ -217,6 +220,7 @@ class Module extends RsEntity
   String get _enumDecls => br(enums.map((e) => e.code));
   String get _structDecls => br(structs.map((s) => s.code));
   String get _traitDecls => br(traits.map((t) => t.code));
+  String get _implDecls => br(impls.map((i) => i.code));
   String get _imports => brCompact(imports.map((i) => i.code));
 
   String get code => brCompact([
@@ -229,6 +233,7 @@ class Module extends RsEntity
         isDeclaredModule ? _enumDecls : indent(_enumDecls),
         isDeclaredModule ? _structDecls : indent(_structDecls),
         isDeclaredModule ? _traitDecls : indent(_traitDecls),
+        isDeclaredModule ? _implDecls : indent(_implDecls),
         _inlineCode,
         _main,
       ]);
