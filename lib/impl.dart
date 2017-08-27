@@ -23,8 +23,8 @@ class Impl extends RsEntity with HasCode, Generic, HasTypeAliases {
                 _trait.id.snake + '_' + makeGenericId(_type.code).snake)) {
     if (_trait != null) {
       functions = _trait.functions
-          .map(
-              (fn) => fn.copy()..body = codeBlock(id.snake + '_' + fn.id.snake))
+          .map((fn) =>
+              fn.copy()..codeBlock = codeBlock(id.snake + '_' + fn.id.snake))
           .toList();
     }
   }

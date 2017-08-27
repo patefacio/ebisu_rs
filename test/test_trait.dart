@@ -41,6 +41,7 @@ void main([List<String> args]) {
 ///  * `a` - The *i32* field called *a*
 ///  * `b` - TODO: comment parm
 ///  * `c` - TODO: comment parm
+///  * return - TODO: document return
 ///
 #[bam]
 fn foobar<'s, T1, T2>(a : & 's mut i32, mut b : f64, c : String) -> &'a i32;
@@ -54,6 +55,7 @@ fn foobar<'s, T1, T2>(a : & 's mut i32, mut b : f64, c : String) -> &'a i32;
 ///  * `a` - The *i32* field called *a*
 ///  * `b` - TODO: comment parm
 ///  * `c` - TODO: comment parm
+///  * return - TODO: document return
 ///
 #[bam]
 fn foobar<'s, T1, T2>(a : & 's mut i32, mut b : f64, c : String) -> i32;
@@ -82,8 +84,11 @@ trait Worker<'b, T> {
   /// TODO: comment fn do_work:no-body-tag
   ///
   ///  * `unit` - TODO: comment parm
+  ///  * return - TODO: document return
   ///
   fn do_work<'a>(unit : & 'a mut i32) -> ();
+  // custom <trait_worker>
+  // end <trait_worker>
 } 
     '''));
   });

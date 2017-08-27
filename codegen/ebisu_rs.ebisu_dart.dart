@@ -111,7 +111,10 @@ All rust named items are *RsEntity* instances.'''
           class_('is_pub')
             ..members = [
               member('is_pub')..init = false,
-            ]
+            ],
+          class_('has_code_block')
+            ..isAbstract = true
+            ..members = [member('code_block')..type = 'CodeBlock']
         ],
 
       library('generic')
@@ -539,8 +542,9 @@ All rust named items are *RsEntity* instances.'''
 
       // trait library
       library('trait')
-        ..imports = commonIncludes()
+        ..imports.add('"package:ebisu/ebisu.dart" hide codeBlock')
         ..importAndExportAll([
+          'package:ebisu_rs/entity.dart',
           'package:ebisu_rs/attribute.dart',
           'package:ebisu_rs/generic.dart',
           'package:ebisu_rs/type.dart',
@@ -561,7 +565,7 @@ All rust named items are *RsEntity* instances.'''
           class_('fn')
             ..extend = 'RsEntity'
             ..implement = ['HasCode']
-            ..mixins = ['IsPub', 'Generic', 'HasAttributes']
+            ..mixins = ['IsPub', 'Generic', 'HasAttributes', 'HasCodeBlock']
             ..members.addAll([
               member('parms')
                 ..access = RO
@@ -572,17 +576,17 @@ All rust named items are *RsEntity* instances.'''
                 ..type = 'RsType'
                 ..init = 'UnitType',
               member('return_doc')..doc = 'Document return type',
-              member('body')..type = 'CodeBlock',
             ]),
           class_('trait')
+            ..extend = 'RsEntity'
             ..implement = ['HasCode']
             ..mixins = [
               'IsPub',
               'Generic',
               'HasAttributes',
-              'HasAssociatedTypes'
+              'HasAssociatedTypes',
+              'HasCodeBlock'
             ]
-            ..withClass(commonFeatures)
             ..members.addAll([
               member('functions')
                 ..type = 'List<Fn>'

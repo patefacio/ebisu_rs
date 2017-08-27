@@ -1,12 +1,13 @@
 library ebisu_rs.trait;
 
-import 'package:ebisu/ebisu.dart';
+import 'package:ebisu/ebisu.dart' hide codeBlock;
 import 'package:ebisu_rs/attribute.dart';
 import 'package:ebisu_rs/entity.dart';
 import 'package:ebisu_rs/generic.dart';
 import 'package:ebisu_rs/type.dart';
 
 export 'package:ebisu_rs/attribute.dart';
+export 'package:ebisu_rs/entity.dart';
 export 'package:ebisu_rs/generic.dart';
 export 'package:ebisu_rs/type.dart';
 
@@ -67,14 +68,13 @@ class SelfRefMutableParm extends Parm {
 }
 
 class Fn extends RsEntity
-    with IsPub, Generic, HasAttributes
+    with IsPub, Generic, HasAttributes, HasCodeBlock
     implements HasCode {
   List<Parm> get parms => _parms;
   RsType get returnType => _returnType;
 
   /// Document return type
   String returnDoc;
-  CodeBlock body;
 
   // custom <class Fn>
 
@@ -105,9 +105,10 @@ class Fn extends RsEntity
   String get code => brCompact([
         _docComment,
         externalAttrs,
-        body == null
+        codeBlock == null
             ? '$signature;'
-            : brCompact(['$signature {', indentBlock(body.toString()), '}'])
+            : brCompact(
+                ['$signature {', indentBlock(codeBlock.toString()), '}'])
       ]);
 
   String get signature =>
@@ -122,16 +123,20 @@ class Fn extends RsEntity
   String get _docComment {
     var fnDoc = [
       descr == null
-          ? 'TODO: comment fn ${id.snake}:${body!=null? body.tag : "no-body-tag"}'
+          ? 'TODO: comment fn ${id.snake}:${codeBlock!=null? codeBlock.tag : "no-body-tag"}'
           : descr
     ];
     return tripleSlashComment(chomp(br([
       fnDoc,
       brCompact(concat([
         parms.where((p) => p.id.snake != 'self').map((p) =>
-              ' * `${p.id.snake}` - ${p.doc == null? "TODO: comment parm" : p.doc}'),
-        [_returnType != null
-          ? ' * return - ${returnDoc ?? "TODO: document return"}':null]]))
+            ' * `${p.id.snake}` - ${p.doc == null? "TODO: comment parm" : p.doc}'),
+        [
+          _returnType != null
+              ? ' * return - ${returnDoc ?? "TODO: document return"}'
+              : null
+        ]
+      ]))
     ])));
   }
 
@@ -152,8 +157,9 @@ class Fn extends RsEntity
   Fn._copy(Fn other)
       : _parms = other._parms == null ? null : (new List.from(other._parms)),
         _returnType = other._returnType?.copy(),
-        body = other.body?.copy(),
-        super(other.id);
+        super(other.id) {
+    codeBlock = other.codeBlock?.copy();
+  }
 
   // end <class Fn>
 
@@ -162,11 +168,18 @@ class Fn extends RsEntity
 }
 
 class Trait extends RsEntity
-    with IsPub, Generic, HasAttributes, HasAssociatedTypes
+    with IsPub, Generic, HasAttributes, HasAssociatedTypes, HasCodeBlock
     implements HasCode {
   List<Fn> functions = [];
 
   // custom <class Trait>
+
+  Trait(dynamic id) : super(id) {
+    codeBlock = new CodeBlock('trait_${this.id.snake}');
+  }
+
+  @override
+  onOwnershipEstablished() {}
 
   Iterable<Entity> get children =>
       new List<Fn>.from(functions, growable: false);
@@ -176,8 +189,11 @@ class Trait extends RsEntity
             doc?.toString() ?? 'TODO: comment trait ${id.capCamel}'),
         externalAttrs,
         'trait $name${genericDecl} {',
-        indentBlock(associatedTypeDecls),
-        indentBlock(brCompact([functions.map((fn) => fn.code)])),
+        indentBlock(br([
+            associatedTypeDecls,
+            br([functions.map((fn) => fn.code)]),
+            codeBlock?.toString()
+        ])),
         '}'
       ]);
 
@@ -185,7 +201,6 @@ class Trait extends RsEntity
 
   // end <class Trait>
 
-  Trait(dynamic id) : super(id);
 }
 
 // custom <library trait>

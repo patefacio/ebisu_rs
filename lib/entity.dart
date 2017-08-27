@@ -88,6 +88,14 @@ class IsPub {
 
 }
 
+abstract class HasCodeBlock {
+  CodeBlock codeBlock;
+
+  // custom <class HasCodeBlock>
+  // end <class HasCodeBlock>
+
+}
+
 // custom <library entity>
 
 makeRsId(dynamic id) => makeId(id is Symbol ? MirrorSystem.getName(id) : id);
