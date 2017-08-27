@@ -24,7 +24,7 @@ class Lifetime extends RsEntity implements HasCode, Comparable<Lifetime> {
 
   Lifetime([dynamic id]) : super(id == null ? 'a' : id);
 
-  Lifetime copy(Lifetime other) => new Lifetime(other.id);
+  Lifetime copy() => new Lifetime(id);
 
   @override
   bool operator ==(Lifetime other) =>

@@ -397,7 +397,9 @@ All rust named items are *RsEntity* instances.'''
             ..implement = ['HasFilePath']
             ..members = [
               member('crate_type')..type = 'CrateType',
-              member('root_module')..type = 'Module'..access = RO,
+              member('root_module')
+                ..type = 'Module'
+                ..access = RO,
               member('file_path')..access = RO,
               member('logger_type')..type = 'LoggerType',
               member('crate_toml')
@@ -501,8 +503,7 @@ All rust named items are *RsEntity* instances.'''
             ..mixins = ['IsPub', 'HasAttributes', 'HasTypeAliases']
             ..members.addAll([
               member('file_path')..access = RO,
-              member('module_type')
-                ..type = 'ModuleType',
+              member('module_type')..type = 'ModuleType',
               member('modules')
                 ..type = 'List<Module>'
                 ..init = [],
@@ -570,6 +571,7 @@ All rust named items are *RsEntity* instances.'''
                 ..access = RO
                 ..type = 'RsType'
                 ..init = 'UnitType',
+              member('return_doc')..doc = 'Document return type',
               member('body')..type = 'CodeBlock',
             ]),
           class_('trait')

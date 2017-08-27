@@ -71,6 +71,9 @@ class Fn extends RsEntity
     implements HasCode {
   List<Parm> get parms => _parms;
   RsType get returnType => _returnType;
+
+  /// Document return type
+  String returnDoc;
   CodeBlock body;
 
   // custom <class Fn>
@@ -124,8 +127,11 @@ class Fn extends RsEntity
     ];
     return tripleSlashComment(chomp(br([
       fnDoc,
-      brCompact(parms.map((p) =>
-          ' * `${p.id.snake}` - ${p.doc == null? "TODO: comment parm" : p.doc}'))
+      brCompact(concat([
+        parms.where((p) => p.id.snake != 'self').map((p) =>
+              ' * `${p.id.snake}` - ${p.doc == null? "TODO: comment parm" : p.doc}'),
+        [_returnType != null
+          ? ' * return - ${returnDoc ?? "TODO: document return"}':null]]))
     ])));
   }
 
