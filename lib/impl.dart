@@ -25,8 +25,8 @@ class Impl extends RsEntity
                 _trait.id.snake + '_' + makeGenericId(_type.code).snake)) {
     if (_trait != null) {
       functions = _trait.functions
-          .map((fn) =>
-              fn.copy()..codeBlock = new CodeBlock(id.snake + '_' + fn.id.snake))
+          .map((fn) => fn.copy()
+            ..codeBlock = new CodeBlock(id.snake + '_' + fn.id.snake))
           .toList();
 
       codeBlock = new CodeBlock('impl ${_trait.name} for $_type');

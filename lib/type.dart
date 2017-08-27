@@ -1,6 +1,7 @@
 library ebisu_rs.type;
 
 import 'dart:mirrors';
+import 'package:ebisu/ebisu.dart';
 import 'package:ebisu_rs/entity.dart';
 import 'package:ebisu_rs/generic.dart';
 import 'package:quiver/iterables.dart';
@@ -182,7 +183,11 @@ class AssociatedType extends RsEntity with IsPub, Generic, HasCode {
   AssociatedType(dynamic id) : super(id);
 
   @override
-  get code => 'type ${id.capCamel};';
+  get code => brCompact([
+        tripleSlashComment(
+            doc?.toString() ?? 'TODO: comment associated type ${id.snake}'),
+        'type ${id.capCamel};'
+      ]);
 
   // end <class AssociatedType>
 
@@ -243,7 +248,8 @@ RsType rsType(dynamic type) => type is Symbol
 TypeAlias typeAlias(dynamic id, [dynamic aliased]) =>
     new TypeAlias(id, aliased);
 
-AssociatedType associatedType(dynamic id) => new AssociatedType(id);
+AssociatedType associatedType(dynamic id) =>
+    id is AssociatedType ? id : new AssociatedType(id);
 
 // end <library type>
 

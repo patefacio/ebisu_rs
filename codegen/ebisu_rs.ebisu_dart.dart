@@ -619,7 +619,10 @@ All rust named items are *RsEntity* instances.'''
 
       library('type')
         ..includesMain = true
-        ..imports = ['dart:mirrors']
+        ..imports = [
+          'dart:mirrors',
+          'package:ebisu/ebisu.dart'
+          ]
         ..importAndExportAll([
           'package:quiver/iterables.dart',
           'package:ebisu_rs/entity.dart',

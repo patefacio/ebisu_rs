@@ -79,7 +79,9 @@ fn foobar<'s, T1, T2>(a : & 's mut i32, mut b : f64, c : String) -> i32;
 /// TODO: comment trait Worker
 #[bam]
 trait Worker<'b, T> {
+  /// TODO: comment associated type assoc_1
   type Assoc1;
+  /// TODO: comment associated type assoc_2
   type Assoc2;
   /// TODO: comment fn do_work:no-body-tag
   ///
