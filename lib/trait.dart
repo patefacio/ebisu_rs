@@ -190,9 +190,9 @@ class Trait extends RsEntity
         externalAttrs,
         'trait $name${genericDecl} {',
         indentBlock(br([
-            associatedTypeDecls,
-            br([functions.map((fn) => fn.code)]),
-            codeBlock?.toString()
+          associatedTypeDecls,
+          br([functions.map((fn) => fn.code)]),
+          codeBlock?.toString()
         ])),
         '}'
       ]);

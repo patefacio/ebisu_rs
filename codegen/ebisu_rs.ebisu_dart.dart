@@ -595,14 +595,15 @@ All rust named items are *RsEntity* instances.'''
         ],
 
       library('impl')
-        ..imports = commonIncludes()
+        ..imports.add('"package:ebisu/ebisu.dart" hide codeBlock')
         ..importAndExportAll([
+          'package:ebisu_rs/entity.dart',
           'package:ebisu_rs/trait.dart',
         ])
         ..classes = [
           class_('impl')
             ..extend = 'RsEntity'
-            ..mixins = ['HasCode', 'Generic', 'HasTypeAliases']
+            ..mixins = ['HasCode', 'Generic', 'HasTypeAliases', 'HasCodeBlock']
             ..members = [
               member('trait')
                 ..type = 'Trait'
