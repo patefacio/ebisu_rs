@@ -172,6 +172,9 @@ class Trait extends RsEntity
     implements HasCode {
   List<Fn> functions = [];
 
+  /// List of subtraits - either as String or modeled Trait
+  List<dynamic> subTraits = [];
+
   // custom <class Trait>
 
   Trait(dynamic id) : super(id) {
@@ -188,7 +191,7 @@ class Trait extends RsEntity
         tripleSlashComment(
             doc?.toString() ?? 'TODO: comment trait ${id.capCamel}'),
         externalAttrs,
-        'trait $name${genericDecl} {',
+        '$_traitDecl {',
         indentBlock(br([
           associatedTypeDecls,
           br([functions.map((fn) => fn.code)]),
@@ -196,6 +199,14 @@ class Trait extends RsEntity
         ])),
         '}'
       ]);
+
+  _getSubtrateName(s) => s is String ? s : s.name;
+
+  String get _traitDecl =>
+      'trait $name${genericDecl}' +
+      (subTraits.isNotEmpty
+          ? ': ' + subTraits.map((st) => _getSubtrateName(st)).join(' + ')
+          : '');
 
   String get name => id.capCamel;
 
