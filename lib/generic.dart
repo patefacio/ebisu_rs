@@ -1,13 +1,12 @@
 library ebisu_rs.generic;
 
 import 'package:ebisu_rs/entity.dart';
-import 'package:ebisu_rs/generic.dart';
+import 'package:ebisu_rs/trait.dart';
 import 'package:ebisu_rs/type.dart';
 import 'package:id/id.dart';
 import 'package:quiver/iterables.dart';
 
 export 'package:ebisu_rs/entity.dart';
-export 'package:ebisu_rs/generic.dart';
 export 'package:ebisu_rs/type.dart';
 export 'package:id/id.dart';
 export 'package:quiver/iterables.dart';
@@ -40,6 +39,8 @@ class Lifetime extends RsEntity implements HasCode, Comparable<Lifetime> {
 }
 
 class TypeParm extends RsEntity implements HasCode {
+  List<dynamic> get bounds => _bounds;
+
   // custom <class TypeParm>
 
   get children => new Iterable.empty();
@@ -47,9 +48,27 @@ class TypeParm extends RsEntity implements HasCode {
   @override
   get code => "${id.capCamel}";
 
+  get boundsDecl => '$code : $_boundsDecl';
+
+  get _boundsDecl =>
+      bounds.map((bound) => bound is String ? bound : bound.name).join(' + ');
+
+  set bounds(Iterable<dynamic> bounds) => _bounds = new List
+      .from(bounds.map((bound) => bound
+          is Id
+      ? bound.capCamel
+      : bound is Trait || bound is String
+          ? bound
+          : throw new ArgumentError(
+              'Bounds must be Id, String or Trait not ${bound.runtimeType}')));
+
+  bool get hasBounds => bounds.isNotEmpty;
+
   // end <class TypeParm>
 
   TypeParm(dynamic id) : super(id);
+
+  List<dynamic> _bounds = [];
 }
 
 class Generic {
@@ -74,6 +93,18 @@ class Generic {
   get children =>
       new List<RsEntity>.from(concat([lifetimes, typeParms]), growable: false);
 
+  get hasBounds => _typeParms.any((tp) => tp.hasBounds);
+
+  get boundsDecl => hasBounds
+      ? [
+          ' where ',
+          typeParms
+              .where((tp) => tp.hasBounds)
+              .map((tp) => tp.boundsDecl)
+              .join(', '),
+        ].join('')
+      : null;
+
   get genericDecl => lifetimes.isEmpty && typeParms.isEmpty
       ? ''
       : [
@@ -82,8 +113,8 @@ class Generic {
             lifetimes.map((lt) => lt.code),
             typeParms.map((parm) => parm.code)
           ]).join(', '),
-          '>'
-        ].join('');
+          '>',
+        ].where((term) => term != null).join('');
 
   get genericDeclNoLifetimes => typeParms.isEmpty
       ? ''

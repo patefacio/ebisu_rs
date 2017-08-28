@@ -191,7 +191,7 @@ class Trait extends RsEntity
         tripleSlashComment(
             doc?.toString() ?? 'TODO: comment trait ${id.capCamel}'),
         externalAttrs,
-        '$_traitDecl {',
+        '$_traitDecl$boundsDecl {',
         indentBlock(br([
           associatedTypeDecls,
           br([functions.map((fn) => fn.code)]),

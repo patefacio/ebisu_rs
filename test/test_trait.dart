@@ -65,10 +65,12 @@ fn foobar<'s, T1, T2>(a : & 's mut i32, mut b : f64, c : String) -> i32;
   test('trait basics', () {
     var t1 = trait(#worker)
       ..attrs.add(idAttr(#bam))
-      ..subTraits = [ 'Add', 'Mul', 'Div', 'Sized' ]
+      ..subTraits = ['Add', 'Mul', 'Div', 'Sized']
       ..associatedTypes = ['assoc_1', 'assoc_2']
       ..lifetimes = [#b]
-      ..typeParms = [#t]
+      ..typeParms = [
+         typeParm(#t)..bounds = ['Copy', 'std::fmt::Debug']
+      ]
       ..functions = [
         fn(#doWork, [parm(#unit, mref(i32))]),
       ]
@@ -79,7 +81,7 @@ fn foobar<'s, T1, T2>(a : & 's mut i32, mut b : f64, c : String) -> i32;
     expect(darkMatter(t1.code), darkMatter('''
 /// TODO: comment trait Worker
 #[bam]
-trait Worker<'b, T>: Add + Mul + Div + Sized {
+trait Worker<'b, T>: Add + Mul + Div + Sized where T : Copy + std::fmt::Debug {
   /// TODO: comment associated type assoc_1
   type Assoc1;
   /// TODO: comment associated type assoc_2

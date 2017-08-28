@@ -118,10 +118,12 @@ All rust named items are *RsEntity* instances.'''
         ],
 
       library('generic')
+        ..imports = [
+          'package:ebisu_rs/trait.dart',
+        ]
         ..importAndExportAll([
           'package:id/id.dart',
           'package:ebisu_rs/entity.dart',
-          'package:ebisu_rs/generic.dart',
           'package:ebisu_rs/type.dart',
           'package:quiver/iterables.dart',
         ])
@@ -133,9 +135,13 @@ All rust named items are *RsEntity* instances.'''
             ..members = [],
           class_('type_parm')
             ..withClass(commonFeatures)
-            ..defaultMemberAccess = RO
             ..implement = ['HasCode']
-            ..members = [],
+            ..members = [
+              member('bounds')
+                ..type = 'List<dynamic>'
+                ..init = []
+                ..access = RO,
+            ],
           class_('generic')
             ..defaultMemberAccess = RO
             ..members = [
