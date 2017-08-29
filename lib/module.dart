@@ -108,7 +108,7 @@ class Module extends RsEntity
 
   @override
   Iterable<Entity> get children =>
-      concat(<List<Entity>>[enums, structs, modules]) as Iterable<Entity>;
+      concat(<List<Entity>>[enums, structs, modules, traits, impls]) as Iterable<Entity>;
 
   String toString() => 'mod($name:$moduleType)';
 
