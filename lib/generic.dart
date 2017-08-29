@@ -103,7 +103,7 @@ class Generic {
               .map((tp) => tp.boundsDecl)
               .join(', '),
         ].join('')
-      : null;
+      : '';
 
   get genericDecl => lifetimes.isEmpty && typeParms.isEmpty
       ? ''
