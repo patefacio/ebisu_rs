@@ -49,8 +49,8 @@ class Impl extends RsEntity
       ]);
 
   get _implHeader => _trait == null
-      ? 'impl$genericDecl ${_type}'
-      : 'impl$genericDecl ${_trait.name} for ${_type.code}';
+      ? 'impl$genericDecl ${_type}$boundsDecl'
+      : 'impl$genericDecl ${_trait.name} for ${_type.code}$boundsDecl';
 
   // end <class Impl>
 
