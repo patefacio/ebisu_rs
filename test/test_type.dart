@@ -35,6 +35,9 @@ void main([List<String> args]) {
   test('type alias', () {
     var ta = typeAlias('foo', ref(mref(ref(i32)), 'c'))..setAsRoot();
     expect(ta.code, "type Foo<'a, 'c> = & 'c & 'a mut & 'a i32;");
+
+    ta.isPub = true;
+    expect(ta.code, "pub type Foo<'a, 'c> = & 'c & 'a mut & 'a i32;");
   });
 
 // end <main>

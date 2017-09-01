@@ -159,7 +159,7 @@ class TypeAlias extends RsEntity with IsPub, Generic, HasCode {
         super(id);
 
   @override
-  get code => 'type ${id.capCamel}${genericDecl} = ${aliased.lifetimeDecl};';
+  get code => '${pubDecl}type ${id.capCamel}${genericDecl} = ${aliased.lifetimeDecl};';
 
   // end <class TypeAlias>
 
@@ -186,7 +186,7 @@ class AssociatedType extends RsEntity with IsPub, Generic, HasCode {
   get code => brCompact([
         tripleSlashComment(
             doc?.toString() ?? 'TODO: comment associated type ${id.snake}'),
-        'type ${id.capCamel};'
+        '${pubDecl}type ${id.capCamel};'
       ]);
 
   // end <class AssociatedType>
