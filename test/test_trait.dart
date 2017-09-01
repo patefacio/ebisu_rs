@@ -72,7 +72,7 @@ fn foobar<'s, T1, T2>(a : & 's mut i32, mut b : f64, c : String) -> i32;
         typeParm(#t)..bounds = ['Copy', 'std::fmt::Debug']
       ]
       ..functions = [
-        fn(#doWork, [parm(#unit, mref(i32))]),
+        fn(#doWork, [parm(#unit, mref(i32))])..doc = 'Does work of course',
       ]
       ..setAsRoot();
 
@@ -86,7 +86,7 @@ trait Worker<'b, T>: Add + Mul + Div + Sized where T : Copy + std::fmt::Debug {
   type Assoc1;
   /// TODO: comment associated type assoc_2
   type Assoc2;
-  /// TODO: comment fn do_work:no-body-tag
+  /// Does work of course
   ///
   ///  * `unit` - TODO: comment parm
   ///  * return - TODO: document return

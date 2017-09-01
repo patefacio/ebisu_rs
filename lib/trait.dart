@@ -159,6 +159,7 @@ class Fn extends RsEntity
         _returnType = other._returnType?.copy(),
         returnDoc = other.returnDoc,
         super(other.id) {
+    doc = other.doc;
     codeBlock = other.codeBlock?.copy();
   }
 

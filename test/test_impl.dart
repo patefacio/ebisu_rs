@@ -5,6 +5,9 @@ import 'package:logging/logging.dart';
 import 'package:test/test.dart';
 
 // custom <additional imports>
+
+import 'package:ebisu/ebisu.dart';
+
 // end <additional imports>
 
 final Logger _logger = new Logger('test_impl');
@@ -26,7 +29,8 @@ void main([List<String> args]) {
       ..associatedTypes = ['assoc_1', 'assoc_2']
       ..typeParms = [#t]
       ..functions = [
-        fn(#doWork, [parm(#unit, mref(i32)), parm(#t, 'T')]),
+        fn(#doWork, [parm(#unit, mref(i32)), parm(#t, 'T')])
+          ..doc = 'Does work of course',
       ]
       ..setAsRoot();
 
@@ -34,8 +38,26 @@ void main([List<String> args]) {
       ..typeParms = [#t]
       ..typeAliases.addAll([typeAlias(#assoc_1, i32), typeAlias(#assoc_2, i64)])
       ..setAsRoot();
-    print(t1.code);
-    print(i1.code);
+
+    expect(darkMatter(i1.code), darkMatter('''
+/// TODO: comment impl worker_vec_vec_t
+impl<T> Worker for Vec<Vec<T>> {
+  type Assoc1 = i32;
+  type Assoc2 = i64;
+  /// Does work of course
+  ///
+  ///  * `unit` - TODO: comment parm
+  ///  * `t` - TODO: comment parm
+  ///  * return - TODO: document return
+  ///
+  fn do_work<'a>(unit : & 'a mut i32, t : T) -> () {
+    // custom <worker_vec_vec_t_do_work>
+    // end <worker_vec_vec_t_do_work>
+  }
+  // custom <impl Worker for Vec<Vec<T>>>
+  // end <impl Worker for Vec<Vec<T>>>
+}
+    '''));
   });
 
 // end <main>
