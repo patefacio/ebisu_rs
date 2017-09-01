@@ -157,6 +157,7 @@ class Fn extends RsEntity
   Fn._copy(Fn other)
       : _parms = other._parms == null ? null : (new List.from(other._parms)),
         _returnType = other._returnType?.copy(),
+        returnDoc = other.returnDoc,
         super(other.id) {
     codeBlock = other.codeBlock?.copy();
   }
