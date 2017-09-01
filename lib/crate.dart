@@ -343,7 +343,7 @@ class CrateToml {
   String get contents => brCompact(<String>[
         '[package]',
         // name
-        'name = "${crate.id}"',
+        'name = "${crate.id.snake}"',
         // version
         'version = "$version"',
         // authors
