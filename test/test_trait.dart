@@ -69,7 +69,7 @@ fn foobar<'s, T1, T2>(a : & 's mut i32, mut b : f64, c : String) -> i32;
       ..associatedTypes = ['assoc_1', 'assoc_2']
       ..lifetimes = [#b]
       ..typeParms = [
-         typeParm(#t)..bounds = ['Copy', 'std::fmt::Debug']
+        typeParm(#t)..bounds = ['Copy', 'std::fmt::Debug']
       ]
       ..functions = [
         fn(#doWork, [parm(#unit, mref(i32))]),

@@ -24,7 +24,10 @@ void main([List<String> args]) {
   test('create module uses clippy', () {
     var r = repo('r')
       ..crates = [
-        crate('c')..rootModule = (module('sub_mod_2')..useClippy = true)
+        crate('c')
+          ..rootModule = (module('sub_mod_2')
+            ..uses = ['someType']
+            ..useClippy = true)
       ]
       ..setAsRoot();
 
@@ -35,6 +38,7 @@ void main([List<String> args]) {
         subMod2.code
             .contains('#![cfg_attr(feature="clippy", feature(plugin))]'),
         true);
+    expect(subMod2.code.contains('use someType;'), true);
     expect(
         subMod2.code.contains('#![cfg_attr(feature="clippy", plugin(clippy))]'),
         true);

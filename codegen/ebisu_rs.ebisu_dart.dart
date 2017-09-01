@@ -542,7 +542,10 @@ All rust named items are *RsEntity* instances.'''
                 ..access = RO,
               member('use_clippy')
                 ..doc = 'Include *clippy* support'
-                ..init = false
+                ..init = false,
+              member('uses')
+                ..doc = 'List of use symbols for module'
+                ..init = [],
             ])
         ],
 

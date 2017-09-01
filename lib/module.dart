@@ -102,13 +102,17 @@ class Module extends RsEntity
   /// Include *clippy* support
   bool useClippy = false;
 
+  /// List of use symbols for module
+  List uses = [];
+
   // custom <class Module>
 
   Module(dynamic id, [this.moduleType]) : super(id);
 
   @override
   Iterable<Entity> get children =>
-      concat(<List<Entity>>[enums, structs, modules, traits, impls]) as Iterable<Entity>;
+      concat(<List<Entity>>[enums, structs, modules, traits, impls])
+          as Iterable<Entity>;
 
   String toString() => 'mod($name:$moduleType)';
 
@@ -224,17 +228,60 @@ class Module extends RsEntity
   String get _implDecls => br(impls.map((i) => i.code));
   String get _importsDecls => brCompact(imports.map((i) => i.code));
 
-  String get code => brCompact([
+  _announce(section, [bool hasContents = true]) =>
+      hasContents ? '// --- module $section ---\n\n' : null;
+
+  String get code => br([
         innerDocComment(doc == null ? 'TODO: comment module $id' : doc),
         internalAttrs,
-        _importsDecls,
+
+        // imports
+        br([
+          _announce('imports', imports.isNotEmpty),
+          brCompact(_importsDecls),
+        ]),
+
+        // use statements
+        br([
+          _announce('use statements', uses.isNotEmpty),
+          brCompact(uses.map((i) => 'use $i;')),
+        ]),
+
+        // declared mods
         brCompact(declaredMods
             .map((module) => '${module.pubDecl}mod ${module.name};')),
-        typeAliasDecls,
-        isDeclaredModule ? _enumDecls : indent(_enumDecls),
-        isDeclaredModule ? _structDecls : indent(_structDecls),
-        isDeclaredModule ? _traitDecls : indent(_traitDecls),
-        isDeclaredModule ? _implDecls : indent(_implDecls),
+
+        // type aliases
+        br([
+          _announce('type aliases', hasTypeAliases),
+          brCompact(typeAliasDecls),
+        ]),
+
+        // enums
+        br([
+          _announce('enum definitions', enums.isNotEmpty),
+          isDeclaredModule ? _enumDecls : indent(_enumDecls),
+        ]),
+
+        // structs
+        br([
+          _announce('struct definitinos', structs.isNotEmpty),
+          isDeclaredModule ? _structDecls : indent(_structDecls),
+        ]),
+
+        // traits
+        br([
+          _announce('trait definitions', traits.isNotEmpty),
+          isDeclaredModule ? _traitDecls : indent(_traitDecls),
+        ]),
+
+        // impls
+        br([
+          _announce('impl definitions', impls.isNotEmpty),
+          isDeclaredModule ? _implDecls : indent(_implDecls),
+        ]),
+
+        // inline code
         _inlineCode,
         _main,
       ]);

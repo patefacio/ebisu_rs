@@ -159,7 +159,8 @@ class TypeAlias extends RsEntity with IsPub, Generic, HasCode {
         super(id);
 
   @override
-  get code => '${pubDecl}type ${id.capCamel}${genericDecl} = ${aliased.lifetimeDecl};';
+  get code =>
+      '${pubDecl}type ${id.capCamel}${genericDecl} = ${aliased.lifetimeDecl};';
 
   // end <class TypeAlias>
 
@@ -169,6 +170,8 @@ abstract class HasTypeAliases {
   List<TypeAlias> typeAliases = [];
 
   // custom <class HasTypeAliases>
+
+  bool get hasTypeAliases => typeAliases.isNotEmpty;
 
   String get typeAliasDecls => typeAliases.map((ta) => ta.code).join('\n');
 
