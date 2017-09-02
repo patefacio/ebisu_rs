@@ -573,7 +573,7 @@ All rust named items are *RsEntity* instances.'''
           class_('self_ref_mutable_parm')..extend = 'Parm',
           class_('fn')
             ..extend = 'RsEntity'
-            ..implement = ['HasCode']
+            ..implement = []
             ..mixins = ['IsPub', 'Generic', 'HasAttributes', 'HasCodeBlock']
             ..members.addAll([
               member('parms')
@@ -585,6 +585,7 @@ All rust named items are *RsEntity* instances.'''
                 ..type = 'RsType'
                 ..init = 'UnitType',
               member('return_doc')..doc = 'Document return type',
+              member('code_block')..type = 'CodeBlock'..access = WO,
               member('elide_lifetimes')
               ..doc = 'If true lifetimes are elided, indicating rust has similar defaults'
               ..init = false

@@ -60,6 +60,10 @@ class Impl extends RsEntity
 
 // custom <library impl>
 
-Impl impl(Trait trait, RsType type) => new Impl(trait, type);
+/// Creates an impl
+///
+/// *trait* - The trait being implemented
+/// *type* - The type this impl applies to
+Impl impl(Trait trait, dynamic type) => new Impl(trait, rsType(type));
 
 // end <library impl>

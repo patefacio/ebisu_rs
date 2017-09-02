@@ -46,11 +46,7 @@ void main([List<String> args]) {
 #[bam]
 fn foobar<'s, T1, T2>(a : & 's mut i32, mut b : f64, c : String) -> &'a i32;
     '''));
-/*
-    final f1NoLifetimes = f1.copy();
-    f1NoLifetimes.elideLifetimes = true;
-    print(f1NoLifetimes.code);
-*/
+
     f1..returns = i32;
 
     expect(darkMatter(f1.code), darkMatter('''

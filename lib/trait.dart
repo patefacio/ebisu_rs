@@ -77,14 +77,13 @@ class SelfRefMutableParm extends Parm {
 
 }
 
-class Fn extends RsEntity
-    with IsPub, Generic, HasAttributes, HasCodeBlock
-    implements HasCode {
+class Fn extends RsEntity with IsPub, Generic, HasAttributes, HasCodeBlock {
   List<Parm> get parms => _parms;
   RsType get returnType => _returnType;
 
   /// Document return type
   String returnDoc;
+  set codeBlock(CodeBlock codeBlock) => _codeBlock = codeBlock;
 
   /// If true lifetimes are elided, indicating rust has similar defaults
   bool elideLifetimes = false;
@@ -98,6 +97,10 @@ class Fn extends RsEntity
       this.parms = parms;
     }
   }
+
+  get codeBlock => _codeBlock ?? (_codeBlock = new CodeBlock(id.snake));
+
+  withCodeBlock(void codeBlock(CodeBlock)) => codeBlock(this.codeBlock);
 
   @override
   onOwnershipEstablished() {
@@ -118,10 +121,10 @@ class Fn extends RsEntity
   String get code => brCompact([
         _docComment,
         externalAttrs,
-        codeBlock == null
+        _codeBlock == null
             ? '$signature;'
             : brCompact(
-                ['$signature {', indentBlock(codeBlock.toString()), '}'])
+                ['$signature {', indentBlock(_codeBlock.toString()), '}'])
       ]);
 
   String get signature => elideLifetimes
@@ -140,7 +143,7 @@ class Fn extends RsEntity
   String get _docComment {
     var fnDoc = [
       descr == null
-          ? 'TODO: comment fn ${id.snake}:${codeBlock!=null? codeBlock.tag : "no-body-tag"}'
+          ? 'TODO: comment fn ${id.snake}:${_codeBlock!=null? _codeBlock.tag : "no-body-tag"}'
           : descr
     ];
     return tripleSlashComment(chomp(br([
@@ -180,13 +183,14 @@ class Fn extends RsEntity
         elideLifetimes = other.elideLifetimes,
         super(other.id) {
     doc = other.doc;
-    codeBlock = other.codeBlock?.copy();
+    _codeBlock = other._codeBlock?.copy();
   }
 
   // end <class Fn>
 
   List<Parm> _parms = [];
   RsType _returnType = UnitType;
+  CodeBlock _codeBlock;
 }
 
 class Trait extends RsEntity
