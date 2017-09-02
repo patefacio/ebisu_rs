@@ -46,7 +46,11 @@ void main([List<String> args]) {
 #[bam]
 fn foobar<'s, T1, T2>(a : & 's mut i32, mut b : f64, c : String) -> &'a i32;
     '''));
-
+/*
+    final f1NoLifetimes = f1.copy();
+    f1NoLifetimes.elideLifetimes = true;
+    print(f1NoLifetimes.code);
+*/
     f1..returns = i32;
 
     expect(darkMatter(f1.code), darkMatter('''
@@ -106,12 +110,19 @@ trait Worker<'b, T>: Add + Mul + Div + Sized where T : Copy + std::fmt::Debug {
         fn(#doWorkSelfRefMutable, [selfRefMutable, parm(#unit, i32)]),
       ]
       ..setAsRoot();
+
     final t1Code = darkMatter(t1.code);
     [
       "fn do_work_self(self, unit : i32) -> ();",
-      "fn do_work_self_ref<'a>(& self, unit : i32) -> ();",
-      "fn do_work_self_ref_mutable<'a>(& mut self, unit : i32) -> ();"
+      "fn do_work_self_ref<'a>(& 'a self, unit : i32) -> ();",
+      "fn do_work_self_ref_mutable<'a>(& 'a mut self, unit : i32) -> ();"
     ].forEach((sig) => expect(t1Code.contains(darkMatter(sig)), true));
+
+    t1.functions.last.elideLifetimes = true;
+    expect(
+        t1.functions.last.code.contains(
+            'fn do_work_self_ref_mutable(& mut self, unit : i32) -> ();'),
+        true);
   });
 
 // end <main>

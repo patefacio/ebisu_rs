@@ -26,9 +26,13 @@ class Parm extends RsEntity implements HasCode {
 
   get children => new Iterable<Parm>.generate(0);
 
+  get lifetimeDecl => isMutable ? 'mut $_lifetimeDecl' : _lifetimeDecl;
+
+  get _lifetimeDecl => '${id.snake} : ${type.lifetimeDecl}';
+
   get code => isMutable ? 'mut $_decl' : _decl;
 
-  get _decl => '${id.snake} : ${type.lifetimeDecl}';
+  get _decl => '${id.snake} : ${type.code}';
 
   // end <class Parm>
 
@@ -38,6 +42,8 @@ class SelfParm extends Parm {
   // custom <class SelfParm>
 
   SelfParm() : super('self', 'Self');
+
+  get lifetimeDecl => "self";
 
   get code => 'self';
 
@@ -50,6 +56,8 @@ class SelfRefParm extends Parm {
 
   SelfRefParm() : super('self', ref('Self'));
 
+  get lifetimeDecl => "&'a self";
+
   get code => '& self';
 
   // end <class SelfRefParm>
@@ -60,6 +68,8 @@ class SelfRefMutableParm extends Parm {
   // custom <class SelfRefMutableParm>
 
   SelfRefMutableParm() : super('self', mref('Self'));
+
+  get lifetimeDecl => "&'a mut self";
 
   get code => '& mut self';
 
@@ -75,6 +85,9 @@ class Fn extends RsEntity
 
   /// Document return type
   String returnDoc;
+
+  /// If true lifetimes are elided, indicating rust has similar defaults
+  bool elideLifetimes = false;
 
   // custom <class Fn>
 
@@ -111,8 +124,12 @@ class Fn extends RsEntity
                 ['$signature {', indentBlock(codeBlock.toString()), '}'])
       ]);
 
-  String get signature =>
-      '${pubDecl}fn $name$genericDecl($_parmsText) -> ${_returnType.lifetimeDecl}';
+  String get signature => elideLifetimes
+      ? signatureNoLifetimes
+      : '${pubDecl}fn $name$genericDecl($_parmsText) -> ${_returnType.lifetimeDecl}';
+
+  String get signatureNoLifetimes =>
+      '${pubDecl}fn $name$genericDeclNoLifetimes($_parmsTextNoLifetimes) -> ${_returnType.code}';
 
 /* TODO: revisit if possible to elide lifetimes in sane way
   String get signature => _returnType.lifetimes.isNotEmpty?
@@ -148,7 +165,9 @@ class Fn extends RsEntity
 
   String get name => id.snake;
 
-  String get _parmsText => parms.map((p) => p.code).join(', ');
+  String get _parmsText => parms.map((p) => p.lifetimeDecl).join(', ');
+
+  String get _parmsTextNoLifetimes => parms.map((p) => p.code).join(', ');
 
   addParm(dynamic id, [dynamic type]) => _parms.add(new Parm(id, type));
 
@@ -158,6 +177,7 @@ class Fn extends RsEntity
       : _parms = other._parms == null ? null : (new List.from(other._parms)),
         _returnType = other._returnType?.copy(),
         returnDoc = other.returnDoc,
+        elideLifetimes = other.elideLifetimes,
         super(other.id) {
     doc = other.doc;
     codeBlock = other.codeBlock?.copy();

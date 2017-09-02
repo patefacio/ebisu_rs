@@ -585,6 +585,9 @@ All rust named items are *RsEntity* instances.'''
                 ..type = 'RsType'
                 ..init = 'UnitType',
               member('return_doc')..doc = 'Document return type',
+              member('elide_lifetimes')
+              ..doc = 'If true lifetimes are elided, indicating rust has similar defaults'
+              ..init = false
             ]),
           class_('trait')
             ..extend = 'RsEntity'
