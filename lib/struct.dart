@@ -59,7 +59,7 @@ class Struct extends RsEntity with IsPub, Derives, Generic implements HasCode {
   String get code => brCompact([
         tripleSlashComment(doc?.toString() ?? 'TODO: comment struct $id'),
         derives,
-        '${pubDecl}struct $name${genericDecl} {',
+        '${pubDecl}struct $name${genericDecl}$boundsDecl {',
         indentBlock(br(fields.map((m) => m.code), ',\n')),
         '}'
       ]);
@@ -79,7 +79,7 @@ class TupleStruct extends RsEntity
 
   String get code => brCompact([
         tripleSlashComment(doc?.toString() ?? 'TODO: Comment TupleStruct($id)'),
-        'struct $name {',
+        'struct $name$boundsDecl {',
         '}',
       ]);
 
