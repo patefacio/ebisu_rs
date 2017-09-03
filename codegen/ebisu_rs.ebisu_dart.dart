@@ -585,10 +585,13 @@ All rust named items are *RsEntity* instances.'''
                 ..type = 'RsType'
                 ..init = 'UnitType',
               member('return_doc')..doc = 'Document return type',
-              member('code_block')..type = 'CodeBlock'..access = WO,
+              member('code_block')
+                ..type = 'CodeBlock'
+                ..access = WO,
               member('elide_lifetimes')
-              ..doc = 'If true lifetimes are elided, indicating rust has similar defaults'
-              ..init = false
+                ..doc =
+                    'If true lifetimes are elided, indicating rust has similar defaults'
+                ..init = false
             ]),
           class_('trait')
             ..extend = 'RsEntity'
@@ -619,12 +622,26 @@ All rust named items are *RsEntity* instances.'''
         ])
         ..classes = [
           class_('impl')
-            ..extend = 'RsEntity'
-            ..mixins = ['HasCode', 'Generic', 'HasTypeAliases', 'HasCodeBlock']
+          ..isAbstract = true
+          ..extend = 'RsEntity'
+          ..mixins = ['HasCode', 'Generic', 'HasCodeBlock'],
+          class_('trait_impl')
+            ..extend = 'Impl'
+            ..mixins = ['HasTypeAliases']
             ..members = [
               member('trait')
                 ..type = 'Trait'
                 ..access = RO,
+              member('type')
+                ..type = 'RsType'
+                ..access = RO,
+              member('functions')
+                ..type = 'List<Fn>'
+                ..init = [],
+            ],
+          class_('type_impl')
+            ..extend = 'Impl'
+            ..members = [
               member('type')
                 ..type = 'RsType'
                 ..access = RO,
