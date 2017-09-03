@@ -111,6 +111,7 @@ class TypeImpl extends Impl {
 /// Creates a trait impl
 ///
 /// *trait* - The trait being implemented
+///
 /// *type* - The type this impl applies to
 TraitImpl traitImpl(Trait trait, dynamic type) =>
     new TraitImpl(trait, rsType(type));

@@ -90,6 +90,13 @@ class Fn extends RsEntity with IsPub, Generic, HasAttributes, HasCodeBlock {
 
   // custom <class Fn>
 
+  /// Construct a Fn.
+  ///
+  /// *id* - Symbol or String identifying function
+  ///
+  /// *parms* - Parameters to the function
+  ///
+  /// *returnType* - Type function returns - default is ()
   Fn(dynamic id, [Iterable<Parm> parms, dynamic returnType = UnitType])
       : _returnType = returnType,
         super(id) {
@@ -242,6 +249,13 @@ class Trait extends RsEntity
 
 // custom <library trait>
 
+/// Create a Fn.
+///
+/// *id* - Symbol or String identifying function
+///
+/// *parms* - Parameters to the function
+///
+/// *returnType* - Type function returns - default is ()
 Fn fn(dynamic id, [Iterable<dynamic> parms, dynamic returnType = UnitType]) =>
     new Fn(id, parms, returnType);
 

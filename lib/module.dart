@@ -241,6 +241,8 @@ class Module extends RsEntity
           brCompact(_importsDecls),
         ]),
 
+        moduleCodeBlocks[moduleTop],
+
         // use statements
         br([
           _announce('use statements', uses.isNotEmpty),
@@ -283,6 +285,9 @@ class Module extends RsEntity
 
         // inline code
         _inlineCode,
+
+        moduleCodeBlocks[moduleBottom],
+
         _main,
       ]);
 
