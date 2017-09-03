@@ -21,7 +21,7 @@ class Derivable implements Comparable<Derivable> {
 
   static const Derivable HASH = const Derivable._(6);
 
-  static const Derivable DEFAULT_VALUE = const Derivable._(7);
+  static const Derivable DEFAULT = const Derivable._(7);
 
   static const Derivable ZERO = const Derivable._(8);
 
@@ -39,7 +39,7 @@ class Derivable implements Comparable<Derivable> {
         CLONE,
         COPY,
         HASH,
-        DEFAULT_VALUE,
+        DEFAULT,
         ZERO,
         DEBUG,
         SERIALIZE,
@@ -72,8 +72,8 @@ class Derivable implements Comparable<Derivable> {
         return "Copy";
       case HASH:
         return "Hash";
-      case DEFAULT_VALUE:
-        return "DefaultValue";
+      case DEFAULT:
+        return "Default";
       case ZERO:
         return "Zero";
       case DEBUG:
@@ -103,8 +103,8 @@ class Derivable implements Comparable<Derivable> {
         return COPY;
       case "Hash":
         return HASH;
-      case "DefaultValue":
-        return DEFAULT_VALUE;
+      case "Default":
+        return DEFAULT;
       case "Zero":
         return ZERO;
       case "Debug":
@@ -155,9 +155,9 @@ const Derivable Copy = Derivable.COPY;
 ///
 const Derivable Hash = Derivable.HASH;
 
-/// Convenient access to Derivable.DEFAULT_VALUE with *DEFAULT_VALUE* see [Derivable].
+/// Convenient access to Derivable.DEFAULT with *DEFAULT* see [Derivable].
 ///
-const Derivable DefaultValue = Derivable.DEFAULT_VALUE;
+const Derivable Default = Derivable.DEFAULT;
 
 /// Convenient access to Derivable.ZERO with *ZERO* see [Derivable].
 ///

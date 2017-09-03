@@ -744,7 +744,7 @@ All rust named items are *RsEntity* instances.'''
               'clone',
               'copy',
               'hash',
-              'default_value',
+              'default',
               'zero',
               'debug',
 
