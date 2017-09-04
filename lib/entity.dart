@@ -77,31 +77,23 @@ abstract class HasCode {
 
 }
 
-class IsPub {
+abstract class IsPub {
   bool isPub = false;
 
   // custom <class IsPub>
 
-  String get pubDecl => isPub ? 'pub ' : '';
-
+ String get pubDecl => isPub ? 'pub ' : '';
+ 
   // end <class IsPub>
 
 }
 
 abstract class HasCodeBlock {
   CodeBlock codeBlock;
-
-  // custom <class HasCodeBlock>
-  // end <class HasCodeBlock>
-
 }
 
 class IsUnitTestable {
   bool isUnitTestable = false;
-
-  // custom <class IsUnitTestable>
-  // end <class IsUnitTestable>
-
 }
 
 // custom <library entity>

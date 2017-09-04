@@ -109,13 +109,16 @@ All rust named items are *RsEntity* instances.'''
           class_('has_file_path')..isAbstract = true,
           class_('has_code')..isAbstract = true,
           class_('is_pub')
+            ..isAbstract = true
             ..members = [
               member('is_pub')..init = false,
             ],
           class_('has_code_block')
             ..isAbstract = true
+            ..includesProtectBlock = false
             ..members = [member('code_block')..type = 'CodeBlock'],
           class_('is_unit_testable')
+            ..includesProtectBlock = false
             ..members = [
               member('is_unit_testable')..init = false,
             ],
@@ -559,8 +562,9 @@ All rust named items are *RsEntity* instances.'''
                 ..type = 'UnitTestModule'
                 ..access = IA,
             ]),
-            class_('unit_test_module')
-            ..doc = 'Unit test modules are internal modules for testing contents of module'
+          class_('unit_test_module')
+            ..doc =
+                'Unit test modules are internal modules for testing contents of module'
             ..extend = 'Module',
         ],
 
@@ -589,7 +593,13 @@ All rust named items are *RsEntity* instances.'''
           class_('fn')
             ..extend = 'RsEntity'
             ..implement = []
-            ..mixins = ['IsPub', 'Generic', 'HasAttributes', 'HasCodeBlock', 'IsUnitTestable']
+            ..mixins = [
+              'IsPub',
+              'Generic',
+              'HasAttributes',
+              'HasCodeBlock',
+              'IsUnitTestable'
+            ]
             ..members.addAll([
               member('parms')
                 ..access = RO
