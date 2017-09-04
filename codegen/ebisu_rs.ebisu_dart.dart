@@ -105,13 +105,18 @@ All rust named items are *RsEntity* instances.'''
               member('id')
                 ..doc = 'Id for the [RsEntity]'
                 ..type = 'Id',
+              member('no_comment')
+                ..doc = 'Indicates that general docComment should be suppresed'
+                ..init = false,
             ],
           class_('has_file_path')..isAbstract = true,
           class_('has_code')..isAbstract = true,
           class_('is_pub')
             ..isAbstract = true
             ..members = [
-              member('is_pub')..init = false,
+              member('is_pub')
+                ..doc = 'True indicates entity is public'
+                ..init = false,
             ],
           class_('has_code_block')
             ..isAbstract = true

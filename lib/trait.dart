@@ -127,7 +127,7 @@ class Fn extends RsEntity
   set returnType(dynamic type) => _returnType = rsType(type);
 
   String get code => brCompact([
-        _docComment,
+        !noComment ? _docComment : null,
         externalAttrs,
         _codeBlock == null
             ? '$signature;'
@@ -192,6 +192,7 @@ class Fn extends RsEntity
         super(other.id) {
     doc = other.doc;
     _codeBlock = other._codeBlock?.copy();
+    noComment = other.noComment;
     isUnitTestable = other.isUnitTestable;
   }
 
@@ -223,8 +224,10 @@ class Trait extends RsEntity
       new List<Fn>.from(functions, growable: false);
 
   String get code => brCompact([
-        tripleSlashComment(
-            doc?.toString() ?? 'TODO: comment trait ${id.capCamel}'),
+        !noComment
+            ? tripleSlashComment(
+                doc?.toString() ?? 'TODO: comment trait ${id.capCamel}')
+            : null,
         externalAttrs,
         '$_traitDecl$boundsDecl {',
         indentBlock(br([

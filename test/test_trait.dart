@@ -24,7 +24,7 @@ void main([List<String> args]) {
 // custom <main>
 
   test('fn basics', () {
-    var f1 = fn(#foobar, [
+    Fn f1 = fn(#foobar, [
       parm(#a, mref(i32, 's'))..doc = 'The *i32* field called *a*',
       parm(#b, f64, true),
       parm(#c, string)
@@ -46,6 +46,10 @@ void main([List<String> args]) {
 #[bam]
 fn foobar<'s, T1, T2>(a : & 's mut i32, mut b : f64, c : String) -> &'a i32;
     '''));
+
+    f1.noComment = true;
+    expect(f1.code.contains('Function that does foobar'), false);
+    f1.noComment = false;
 
     f1..returns = i32;
 

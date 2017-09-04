@@ -44,7 +44,10 @@ class TraitImpl extends Impl with HasTypeAliases {
 
   @override
   String get code => brCompact([
-        tripleSlashComment(doc?.toString() ?? 'TODO: comment impl ${id.snake}'),
+        !noComment
+            ? tripleSlashComment(
+                doc?.toString() ?? 'TODO: comment impl ${id.snake}')
+            : null,
         '$_implHeader {',
         indentBlock(br([
           typeAliasDecls,
@@ -91,7 +94,10 @@ class TypeImpl extends Impl {
 
   @override
   String get code => brCompact([
-        tripleSlashComment(doc?.toString() ?? 'TODO: comment impl ${id.snake}'),
+        !noComment
+            ? tripleSlashComment(
+                doc?.toString() ?? 'TODO: comment impl ${id.snake}')
+            : null,
         '$_implHeader {',
         indentBlock(
             br([functions.map((fn) => fn.code), codeBlock?.toString()])),

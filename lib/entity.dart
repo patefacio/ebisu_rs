@@ -48,6 +48,9 @@ abstract class RsEntity extends Object with Entity {
   /// Id for the [RsEntity]
   Id id;
 
+  /// Indicates that general docComment should be suppresed
+  bool noComment = false;
+
   // custom <class RsEntity>
 
   RsEntity(dynamic id) : this.id = makeRsId(id);
@@ -78,6 +81,7 @@ abstract class HasCode {
 }
 
 abstract class IsPub {
+  /// True indicates entity is public
   bool isPub = false;
 
   // custom <class IsPub>

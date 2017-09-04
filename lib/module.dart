@@ -260,7 +260,9 @@ class Module extends RsEntity
       hasContents ? '// --- module $section ---\n\n' : null;
 
   String get code => br([
-        innerDocComment(doc == null ? 'TODO: comment module $id' : doc),
+        !noComment
+            ? innerDocComment(doc == null ? 'TODO: comment module $id' : doc)
+            : null,
 
         // If this is an inline module, external attrs will be used
         isInlineModule ? null : internalAttrs,
