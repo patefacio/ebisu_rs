@@ -89,7 +89,6 @@ trait Worker<'b, T>: Add + Mul + Div + Sized where T : Copy + std::fmt::Debug {
   /// Does work of course
   ///
   ///  * `unit` - TODO: comment parm
-  ///  * return - TODO: document return
   ///
   fn do_work<'a>(unit : & 'a mut i32) -> ();
   // custom <trait_worker>

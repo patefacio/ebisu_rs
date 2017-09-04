@@ -690,11 +690,9 @@ All rust named items are *RsEntity* instances.'''
             ..isAbstract = true,
           class_('built_in_type')
             ..extend = 'RsType'
-            ..isCopyable = true
             ..members = [member('type_name')..isFinal = true],
           class_('user_defined_type')
             ..extend = 'RsType'
-            ..isCopyable = true
             ..members = [
               member('name')..isFinal = true,
             ],

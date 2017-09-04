@@ -48,7 +48,6 @@ impl<T> Worker for Vec<Vec<T>> {
   ///
   ///  * `unit` - TODO: comment parm
   ///  * `t` - TODO: comment parm
-  ///  * return - TODO: document return
   ///
   fn do_work<'a>(unit : & 'a mut i32, t : T) -> () {
     // custom <fn worker_vec_vec_t_do_work>
@@ -71,7 +70,6 @@ impl Foo {
   /// Does work of course
   ///
   ///  * `unit` - TODO: comment parm
-  ///  * return - TODO: document return
   ///
   fn do_work<'a>(unit : & 'a mut i32) -> () {
     // custom <fn foo_do_work>

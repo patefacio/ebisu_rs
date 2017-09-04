@@ -82,8 +82,8 @@ abstract class IsPub {
 
   // custom <class IsPub>
 
- String get pubDecl => isPub ? 'pub ' : '';
- 
+  String get pubDecl => isPub ? 'pub ' : '';
+
   // end <class IsPub>
 
 }

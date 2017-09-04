@@ -38,8 +38,6 @@ abstract class RsType implements HasCode {
 }
 
 class BuiltInType extends RsType {
-  copy() => new BuiltInType._copy(this);
-
   final String typeName;
 
   // custom <class BuiltInType>
@@ -49,26 +47,26 @@ class BuiltInType extends RsType {
   @override
   String get code => typeName;
 
+  copy() => this;
+
   // end <class BuiltInType>
 
-  BuiltInType._copy(BuiltInType other) : typeName = other.typeName;
 }
 
 class UserDefinedType extends RsType {
-  copy() => new UserDefinedType._copy(this);
-
   final String name;
 
   // custom <class UserDefinedType>
 
   UserDefinedType(this.name);
 
+  copy() => this;
+
   @override
   get code => name;
 
   // end <class UserDefinedType>
 
-  UserDefinedType._copy(UserDefinedType other) : name = other.name;
 }
 
 class RefType extends RsType {
