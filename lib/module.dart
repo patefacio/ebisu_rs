@@ -211,7 +211,8 @@ class Module extends RsEntity
     }
   }
 
-  String get asInlineCode => brCompact(['${pubDecl}mod $name {', code, '}']);
+  String get asInlineCode =>
+      brCompact([externalAttrs, '${pubDecl}mod $name {', code, '}']);
 
   String get _inlineCode {
     if (isDeclaredModule) {
@@ -219,6 +220,7 @@ class Module extends RsEntity
         for (Module module in modules) {
           _logger.info('!!!Examining ${module}');
           if (module.isInlineModule) {
+            guts.add(module.externalAttrs);
             guts.add('${module.pubDecl}mod ${module.name} {');
             guts.add(module.code);
             addInlineCode(module.modules, guts);
@@ -259,7 +261,9 @@ class Module extends RsEntity
 
   String get code => br([
         innerDocComment(doc == null ? 'TODO: comment module $id' : doc),
-        internalAttrs,
+
+        // If this is an inline module, external attrs will be used
+        isInlineModule ? null : internalAttrs,
 
         // imports
         br([
