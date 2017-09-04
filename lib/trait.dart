@@ -77,7 +77,8 @@ class SelfRefMutableParm extends Parm {
 
 }
 
-class Fn extends RsEntity with IsPub, Generic, HasAttributes, HasCodeBlock {
+class Fn extends RsEntity
+    with IsPub, Generic, HasAttributes, HasCodeBlock, IsUnitTestable {
   List<Parm> get parms => _parms;
   RsType get returnType => _returnType;
 
@@ -191,6 +192,7 @@ class Fn extends RsEntity with IsPub, Generic, HasAttributes, HasCodeBlock {
         super(other.id) {
     doc = other.doc;
     _codeBlock = other._codeBlock?.copy();
+    isUnitTestable = other.isUnitTestable;
   }
 
   // end <class Fn>

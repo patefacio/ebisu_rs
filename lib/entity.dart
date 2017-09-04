@@ -96,6 +96,14 @@ abstract class HasCodeBlock {
 
 }
 
+class IsUnitTestable {
+  bool isUnitTestable = false;
+
+  // custom <class IsUnitTestable>
+  // end <class IsUnitTestable>
+
+}
+
 // custom <library entity>
 
 makeRsId(dynamic id) => makeId(id is Symbol ? MirrorSystem.getName(id) : id);

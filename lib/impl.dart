@@ -32,8 +32,8 @@ class TraitImpl extends Impl with HasTypeAliases {
             : makeRsId(
                 _trait.id.snake + '_' + makeGenericId(_type.code).snake)) {
     functions = _trait.functions
-        .map((fn) =>
-            fn.copy()..codeBlock = new CodeBlock('fn ${id.snake}_${fn.id.snake}'))
+        .map((fn) => fn.copy()
+          ..codeBlock = new CodeBlock('fn ${id.snake}_${fn.id.snake}'))
         .toList();
 
     codeBlock = new CodeBlock('impl ${_trait.name} for $_type');

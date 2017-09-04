@@ -114,7 +114,11 @@ All rust named items are *RsEntity* instances.'''
             ],
           class_('has_code_block')
             ..isAbstract = true
-            ..members = [member('code_block')..type = 'CodeBlock']
+            ..members = [member('code_block')..type = 'CodeBlock'],
+          class_('is_unit_testable')
+            ..members = [
+              member('is_unit_testable')..init = false,
+            ],
         ],
 
       library('generic')
@@ -549,12 +553,15 @@ All rust named items are *RsEntity* instances.'''
               member('uses')
                 ..doc = 'List of use symbols for module'
                 ..init = [],
-              member('test_module')
+              member('unit_test_module')
                 ..doc =
                     'Module `tests` for unit testing this containing modules functionality'
-                ..type = 'Module'
-                ..access = WO
-            ])
+                ..type = 'UnitTestModule'
+                ..access = IA,
+            ]),
+            class_('unit_test_module')
+            ..doc = 'Unit test modules are internal modules for testing contents of module'
+            ..extend = 'Module',
         ],
 
       // trait library
@@ -582,7 +589,7 @@ All rust named items are *RsEntity* instances.'''
           class_('fn')
             ..extend = 'RsEntity'
             ..implement = []
-            ..mixins = ['IsPub', 'Generic', 'HasAttributes', 'HasCodeBlock']
+            ..mixins = ['IsPub', 'Generic', 'HasAttributes', 'HasCodeBlock', 'IsUnitTestable']
             ..members.addAll([
               member('parms')
                 ..access = RO

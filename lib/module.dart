@@ -106,17 +106,19 @@ class Module extends RsEntity
   /// List of use symbols for module
   List uses = [];
 
-  /// Module `tests` for unit testing this containing modules functionality
-  set testModule(Module testModule) => _testModule = testModule;
-
   // custom <class Module>
 
   Module(dynamic id, [this.moduleType]) : super(id);
 
   @override
-  Iterable<Entity> get children =>
-      concat(<List<Entity>>[enums, structs, modules, traits, impls])
-          as Iterable<Entity>;
+  Iterable<Entity> get children => concat(<Iterable<Entity>>[
+        enums,
+        structs,
+        modules,
+        traits,
+        impls,
+        _unitTestModule != null ? [unitTestModule] : new Iterable.empty()
+      ]) as Iterable<Entity>;
 
   String toString() => 'mod($name:$moduleType)';
 
@@ -130,14 +132,16 @@ class Module extends RsEntity
       f(moduleCodeBlocks.putIfAbsent(
           moduleCodeBlock, () => codeBlock('main ${moduleCodeBlock}')));
 
-  void withUnitTestModule(void f(Module module)) => f(testModule);
+  void withUnitTestModule(void f(Module module)) => f(unitTestModule);
 
-  Module get testModule =>
-      _testModule ??
-      (_testModule = module('tests', inlineModule)
+  UnitTestModule get unitTestModule =>
+      _unitTestModule ??
+      (_unitTestModule = new UnitTestModule()
         ..doc = 'Test module for $name module'
-        ..structs = [struct('s')]
         ..attrs = [strAttr('cfg(test)')]);
+
+  addUnitTest(Id id) => unitTestModule.functions
+      .add(new Fn('test_${id.snake}')..attrs = [idAttr('test')]);
 
   onOwnershipEstablished() {
     var ownerPath = (owner as HasFilePath).filePath;
@@ -152,6 +156,13 @@ class Module extends RsEntity
         strAttr('cfg_attr(feature="clippy", plugin(clippy))')
       ]);
     }
+
+    /// add unit tests
+    concat([functions, concat(impls.map((impl) => impl.functions))])
+        .where((Fn fn) => fn.isUnitTestable)
+        .forEach((fn) {
+      addUnitTest(fn.id);
+    });
 
     _filePath = (isDirectoryModule || isInlineModule)
         ? join(ownerPath, id.snake)
@@ -303,7 +314,7 @@ class Module extends RsEntity
           _announce('function definitions', functions.isNotEmpty),
           isDeclaredModule
               ? functions.map((fn) => (fn..codeBlock).code)
-              : indent(br(functions.map((fn) => fn..codeBlock..code))),
+              : indent(br(functions.map((fn) => (fn..codeBlock).code))),
         ]),
 
         // inline code
@@ -311,7 +322,7 @@ class Module extends RsEntity
 
         moduleCodeBlocks[moduleBottom],
 
-        _testModule?.asInlineCode,
+        _unitTestModule?.asInlineCode,
 
         _main,
       ]);
@@ -336,7 +347,19 @@ class Module extends RsEntity
   List<Import> _imports = [];
   Map<ModuleCodeBlock, CodeBlock> _moduleCodeBlocks = {};
   Map<MainCodeBlock, CodeBlock> _mainCodeBlocks = {};
-  Module _testModule;
+
+  /// Module `tests` for unit testing this containing modules functionality
+  UnitTestModule _unitTestModule;
+}
+
+/// Unit test modules are internal modules for testing contents of module
+class UnitTestModule extends Module {
+  // custom <class UnitTestModule>
+
+  UnitTestModule() : super('tests', inlineModule);
+
+  // end <class UnitTestModule>
+
 }
 
 // custom <library module>
