@@ -137,8 +137,10 @@ First struct in root module.
     r.rootPath = join(r.rootPath, 'sample_repo');
     _logger.info(r);
     r.generate();
+    /*
     print(indentBlock(
         br(r.crates.last.rootModule.progeny.map((e) => e.detailedPath))));
+    */
   });
 
 // end <main>

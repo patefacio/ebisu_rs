@@ -33,7 +33,7 @@ class TraitImpl extends Impl with HasTypeAliases {
                 _trait.id.snake + '_' + makeGenericId(_type.code).snake)) {
     functions = _trait.functions
         .map((fn) =>
-            fn.copy()..codeBlock = new CodeBlock(id.snake + '_' + fn.id.snake))
+            fn.copy()..codeBlock = new CodeBlock('fn ${id.snake}_${fn.id.snake}'))
         .toList();
 
     codeBlock = new CodeBlock('impl ${_trait.name} for $_type');
@@ -71,7 +71,7 @@ class TypeImpl extends Impl {
   // custom <class TypeImpl>
 
   TypeImpl(this._type) : super(makeGenericId(_type.code)) {
-    codeBlock = new CodeBlock('impl  $_type');
+    codeBlock = new CodeBlock('impl $_type');
   }
 
   @override
@@ -79,10 +79,9 @@ class TypeImpl extends Impl {
     /// Go through functions and tag custom block with type
     /// This helps prevent custom block tag duplicates
     functions.forEach((fn) {
-      fn.codeBlock;
       final cbTag = fn.codeBlock.tag;
-      if (cbTag == fn.id.snake) {
-        fn.codeBlock.tag = '${id.snake}_$cbTag';
+      if (cbTag == 'fn ${fn.id.snake}') {
+        fn.codeBlock.tag = 'fn ${id.snake}_${fn.id.snake}';
       }
     });
   }

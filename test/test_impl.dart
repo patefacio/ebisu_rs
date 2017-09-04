@@ -51,8 +51,8 @@ impl<T> Worker for Vec<Vec<T>> {
   ///  * return - TODO: document return
   ///
   fn do_work<'a>(unit : & 'a mut i32, t : T) -> () {
-    // custom <worker_vec_vec_t_do_work>
-    // end <worker_vec_vec_t_do_work>
+    // custom <fn worker_vec_vec_t_do_work>
+    // end <fn worker_vec_vec_t_do_work>
   }
   // custom <impl Worker for Vec<Vec<T>>>
   // end <impl Worker for Vec<Vec<T>>>
@@ -74,8 +74,8 @@ impl Foo {
   ///  * return - TODO: document return
   ///
   fn do_work<'a>(unit : & 'a mut i32) -> () {
-    // custom <foo_do_work>
-    // end <foo_do_work>
+    // custom <fn foo_do_work>
+    // end <fn foo_do_work>
   }
   // custom <impl  Foo>
   // end <impl  Foo>

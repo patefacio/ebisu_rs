@@ -105,7 +105,7 @@ class Fn extends RsEntity with IsPub, Generic, HasAttributes, HasCodeBlock {
     }
   }
 
-  get codeBlock => _codeBlock ?? (_codeBlock = new CodeBlock(id.snake));
+  get codeBlock => _codeBlock ?? (_codeBlock = new CodeBlock('fn ${id.snake}'));
 
   withCodeBlock(void codeBlock(CodeBlock)) => codeBlock(this.codeBlock);
 
@@ -233,12 +233,12 @@ class Trait extends RsEntity
         '}'
       ]);
 
-  _getSubtrateName(s) => s is String ? s : s.name;
+  _getSubTraitName(s) => s is String ? s : s.name;
 
   String get _traitDecl =>
       'trait $name${genericDecl}' +
       (subTraits.isNotEmpty
-          ? ': ' + subTraits.map((st) => _getSubtrateName(st)).join(' + ')
+          ? ': ' + subTraits.map((st) => _getSubTraitName(st)).join(' + ')
           : '');
 
   String get name => id.capCamel;

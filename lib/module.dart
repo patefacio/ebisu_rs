@@ -96,6 +96,7 @@ class Module extends RsEntity
   List<Struct> structs = [];
   List<Trait> traits = [];
   List<Impl> impls = [];
+  List<Fn> functions = [];
   Map<ModuleCodeBlock, CodeBlock> get moduleCodeBlocks => _moduleCodeBlocks;
   Map<MainCodeBlock, CodeBlock> get mainCodeBlocks => _mainCodeBlocks;
 
@@ -104,6 +105,9 @@ class Module extends RsEntity
 
   /// List of use symbols for module
   List uses = [];
+
+  /// Module `tests` for unit testing this containing modules functionality
+  set testModule(Module testModule) => _testModule = testModule;
 
   // custom <class Module>
 
@@ -125,6 +129,15 @@ class Module extends RsEntity
           ModuleCodeBlock moduleCodeBlock, void f(CodeBlock codeBlock)) =>
       f(moduleCodeBlocks.putIfAbsent(
           moduleCodeBlock, () => codeBlock('main ${moduleCodeBlock}')));
+
+  void withUnitTestModule(void f(Module module)) => f(testModule);
+
+  Module get testModule =>
+      _testModule ??
+      (_testModule = module('tests', inlineModule)
+        ..doc = 'Test module for $name module'
+        ..structs = [struct('s')]
+        ..attrs = [strAttr('cfg(test)')]);
 
   onOwnershipEstablished() {
     var ownerPath = (owner as HasFilePath).filePath;
@@ -186,6 +199,8 @@ class Module extends RsEntity
       return join(filePath, name);
     }
   }
+
+  String get asInlineCode => brCompact(['${pubDecl}mod $name {', code, '}']);
 
   String get _inlineCode {
     if (isDeclaredModule) {
@@ -283,10 +298,20 @@ class Module extends RsEntity
           isDeclaredModule ? _implDecls : indent(_implDecls),
         ]),
 
+        // functions
+        br([
+          _announce('function definitions', functions.isNotEmpty),
+          isDeclaredModule
+              ? functions.map((fn) => (fn..codeBlock).code)
+              : indent(br(functions.map((fn) => fn..codeBlock..code))),
+        ]),
+
         // inline code
         _inlineCode,
 
         moduleCodeBlocks[moduleBottom],
+
+        _testModule?.asInlineCode,
 
         _main,
       ]);
@@ -311,6 +336,7 @@ class Module extends RsEntity
   List<Import> _imports = [];
   Map<ModuleCodeBlock, CodeBlock> _moduleCodeBlocks = {};
   Map<MainCodeBlock, CodeBlock> _mainCodeBlocks = {};
+  Module _testModule;
 }
 
 // custom <library module>

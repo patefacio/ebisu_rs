@@ -532,6 +532,9 @@ All rust named items are *RsEntity* instances.'''
               member('impls')
                 ..type = 'List<Impl>'
                 ..init = [],
+              member('functions')
+                ..type = 'List<Fn>'
+                ..init = [],
               member('module_code_blocks')
                 ..type = 'Map<ModuleCodeBlock, CodeBlock>'
                 ..init = {}
@@ -546,6 +549,11 @@ All rust named items are *RsEntity* instances.'''
               member('uses')
                 ..doc = 'List of use symbols for module'
                 ..init = [],
+              member('test_module')
+                ..doc =
+                    'Module `tests` for unit testing this containing modules functionality'
+                ..type = 'Module'
+                ..access = WO
             ])
         ],
 
@@ -811,7 +819,7 @@ All rust named items are *RsEntity* instances.'''
             ..mixins = ['IsPub', 'Derives']
             ..withClass(commonFeatures)
             ..members.addAll([]),
-        ]
+        ],
     ];
 
   ebisuRs.generate(generateDrudge: true);

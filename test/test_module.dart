@@ -5,6 +5,7 @@ import 'package:logging/logging.dart';
 import 'package:test/test.dart';
 
 // custom <additional imports>
+import 'package:ebisu/ebisu.dart';
 // end <additional imports>
 
 final Logger _logger = new Logger('test_module');
@@ -26,6 +27,9 @@ void main([List<String> args]) {
       ..crates = [
         crate('c')
           ..rootModule = (module('sub_mod_2')
+            ..functions = [
+              fn(#do_work, [parm(#unit, i32)])
+            ]
             ..uses = ['someType']
             ..useClippy = true)
       ]
@@ -42,6 +46,13 @@ void main([List<String> args]) {
     expect(
         subMod2.code.contains('#![cfg_attr(feature="clippy", plugin(clippy))]'),
         true);
+
+    expect(darkMatter(subMod2.code).contains(darkMatter('''
+fn do_work(unit : i32) -> () {
+  // custom <fn do_work>
+  // end <fn do_work>
+}
+    ''')), true);
   });
 
 // end <main>

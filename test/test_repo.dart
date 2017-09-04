@@ -32,7 +32,7 @@ void main([List<String> args]) {
             ..modules = [module('sub_mod_1'), module('sub_mod_2')])
       ];
 
-    print(r);
+    print('TODO: test repo ${r}');
   });
 
 // end <main>

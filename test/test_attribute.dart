@@ -21,9 +21,10 @@ void main([List<String> args]) {
 // custom <main>
 
   test('identifier attribute', () {
-    print(idAttr(#test).internalAttr);
-    print(attr(#abc, 'one_two_three').externalAttr);
-    print(and([idAttr(#linux), idAttr(#windows)]).externalAttr);
+    expect(idAttr(#test).internalAttr, '#![test]');
+    expect(attr(#abc, 'one_two_three').externalAttr, '#[abc=one_two_three]');
+    expect(and([idAttr(#linux), idAttr(#windows)]).externalAttr,
+        '#[and(linux, windows)]');
   });
 
 // end <main>
