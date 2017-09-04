@@ -140,8 +140,9 @@ class Module extends RsEntity
         ..doc = 'Test module for $name module'
         ..attrs = [strAttr('cfg(test)')]);
 
-  addUnitTest(Id id) => unitTestModule.functions
-      .add(new Fn('test_${id.snake}')..attrs = [idAttr('test')]);
+  addUnitTest(Id id) => unitTestModule.functions.add(new Fn('test_${id.snake}')
+    ..noComment = true
+    ..attrs = [idAttr('test')]);
 
   onOwnershipEstablished() {
     var ownerPath = (owner as HasFilePath).filePath;
