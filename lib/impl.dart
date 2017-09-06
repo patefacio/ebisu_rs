@@ -2,7 +2,9 @@ library ebisu_rs.impl;
 
 import 'package:ebisu/ebisu.dart' hide codeBlock;
 import 'package:ebisu_rs/entity.dart';
+import 'package:ebisu_rs/module.dart';
 import 'package:ebisu_rs/trait.dart';
+import 'package:logging/logging.dart';
 
 export 'package:ebisu_rs/entity.dart';
 export 'package:ebisu_rs/trait.dart';
@@ -10,19 +12,50 @@ export 'package:ebisu_rs/trait.dart';
 // custom <additional imports>
 // end <additional imports>
 
+final Logger _logger = new Logger('impl');
+
 abstract class Impl extends RsEntity with HasCode, Generic, HasCodeBlock {
+  List<Fn> functions = [];
+
   // custom <class Impl>
 
   Impl(dynamic id) : super(id);
 
+  Module get unitTestModule {
+    _logger.info(
+        'Initializing unitTestModule $id -> $_unitTestModule $hasUnitTestModule');
+    return _unitTestModule ??
+        (_unitTestModule = module(id, inlineModule)
+          ..uses = ['super::*']
+          ..noComment = true
+          ..withModuleCodeBlock(moduleBottom, (cb) => null));
+  }
+
+  withUnitTestModule(void f(Module unitTestModule)) => f(unitTestModule);
+
+  @override
+  onOwnershipEstablished() {
+    _logger.info('Ownership of Impl base ${id} established');
+    functions.where((fn) => fn.isUnitTestable).forEach((fn) => unitTestModule
+        .functions
+        .add(makeUnitTestFunction(fn.id, 'test ${fn.codeBlock.tag}')));
+  }
+
+  @override
+  Iterable<Entity> get children =>
+      new List<Fn>.from(functions, growable: false);
+
+  bool get hasUnitTestModule => _unitTestModule != null;
+
   // end <class Impl>
 
+  /// Internal module for unit testing impl
+  Module _unitTestModule;
 }
 
 class TraitImpl extends Impl with HasTypeAliases {
   Trait get trait => _trait;
   RsType get type => _type;
-  List<Fn> functions = [];
 
   // custom <class TraitImpl>
 
@@ -38,9 +71,6 @@ class TraitImpl extends Impl with HasTypeAliases {
 
     codeBlock = new CodeBlock('impl ${_trait.name} for $_type');
   }
-
-  Iterable<Entity> get children =>
-      new List<Fn>.from(functions, growable: false);
 
   get unitTestableFunctions => functions.where((fn) => fn.isUnitTestable);
 
@@ -71,7 +101,6 @@ class TraitImpl extends Impl with HasTypeAliases {
 
 class TypeImpl extends Impl {
   RsType get type => _type;
-  List<Fn> functions = [];
 
   // custom <class TypeImpl>
 
@@ -90,9 +119,6 @@ class TypeImpl extends Impl {
       }
     });
   }
-
-  Iterable<Entity> get children =>
-      new List<Fn>.from(functions, growable: false);
 
   @override
   String get code => brCompact([

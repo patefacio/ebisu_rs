@@ -5,6 +5,7 @@ import 'package:ebisu_rs/attribute.dart';
 import 'package:ebisu_rs/entity.dart';
 import 'package:ebisu_rs/generic.dart';
 import 'package:ebisu_rs/type.dart';
+import 'package:logging/logging.dart';
 
 export 'package:ebisu_rs/attribute.dart';
 export 'package:ebisu_rs/entity.dart';
@@ -13,6 +14,8 @@ export 'package:ebisu_rs/type.dart';
 
 // custom <additional imports>
 // end <additional imports>
+
+final Logger _logger = new Logger('trait');
 
 class Parm extends RsEntity implements HasCode {
   final RsType type;
@@ -112,6 +115,8 @@ class Fn extends RsEntity
 
   @override
   onOwnershipEstablished() {
+    _logger.info(
+        'Ownership established for fn (isUnitTestable:$isUnitTestable) ${id}');
     if (lifetimes.isEmpty) {
       lifetimes = new Set<Lifetime>.from(
               concat(parms.map<Iterable<Parm>>((parm) => parm.type.lifetimes)))
@@ -272,5 +277,16 @@ Trait trait(dynamic id) => new Trait(id);
 final Parm self = new SelfParm();
 final Parm selfRef = new SelfRefParm();
 final Parm selfRefMutable = new SelfRefMutableParm();
+
+Fn makeUnitTestFunction(Id id, [codeBlockTag]) {
+  final function = new Fn('${id.snake}')
+    ..noComment = true
+    ..attrs = [idAttr('test')];
+
+  if (codeBlockTag != null) {
+    function.codeBlock.tag = codeBlockTag;
+  }
+  return function;
+}
 
 // end <library trait>

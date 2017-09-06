@@ -134,31 +134,19 @@ class Module extends RsEntity
 
   void withUnitTestModule(void f(Module module)) => f(unitTestModule);
 
-  UnitTestModule get unitTestModule =>
+  Module get unitTestModule =>
       _unitTestModule ??
-      (_unitTestModule = new UnitTestModule()
-        ..uses = ['super::*']
-        ..doc = 'Test module for $name module'
-        ..attrs = [strAttr('cfg(test)')]);
+      (_unitTestModule = makeUnitTestModule()
+        ..doc = 'Test module for $name module');
 
   get unitTestableFunctions => functions.where((fn) => fn.isUnitTestable);
 
-  static _makeUnitTestFunction(Id id, [codeBlockTag]) {
-    final function = new Fn('${id.snake}')
-      ..noComment = true
-      ..attrs = [idAttr('test')];
-
-    if (codeBlockTag != null) {
-      function.codeBlock.tag = codeBlockTag;
-    }
-    return function;
-  }
-
   addUnitTest(Id id, [codeBlockTag]) =>
-      unitTestModule.functions.add(_makeUnitTestFunction(id, codeBlockTag));
+      unitTestModule.functions.add(makeUnitTestFunction(id, codeBlockTag));
 
+  @override
   onOwnershipEstablished() {
-    print('Ownership established for module ${owner.id}:$id');
+    _logger.info('Ownership established for module ${owner.id}:$id');
     var ownerPath = (owner as HasFilePath).filePath;
 
     if (owner is Crate) {
@@ -176,31 +164,19 @@ class Module extends RsEntity
 
     unitTestableFunctions.forEach((fn) => addUnitTest(fn.id));
 
-    impls.forEach((impl) {
-      Module subModule;
-      makeSubModule() {
-        if (subModule == null) {
-          subModule = new Module(impl.id, inlineModule)
-            ..uses = ['super::*']
-            ..noComment = true
-            ..withModuleCodeBlock(moduleBottom, (cb) => null);
-          unitTestModule.modules.add(subModule);
-        }
-        return subModule;
-      }
-
-      impl.unitTestableFunctions.forEach((fn) {
-        makeSubModule()
-            .functions
-            .add(_makeUnitTestFunction(fn.id, 'test ${fn.codeBlock.tag}'));
-      });
-    });
-
     _filePath = (isDirectoryModule || isInlineModule)
         ? join(ownerPath, id.snake)
         : ownerPath;
 
     _logger.info("Ownership of module($id) established in   $filePath");
+  }
+
+  @override
+  onChildrenOwnershipEstablished() {
+    // Note: ownership of function children dictates whether they require unit test module
+    impls
+        .where((impl) => impl.hasUnitTestModule)
+        .forEach((impl) => unitTestModule.modules.add(impl.unitTestModule));
   }
 
   set imports(Iterable<dynamic> imports) =>
@@ -385,22 +361,16 @@ class Module extends RsEntity
   Map<MainCodeBlock, CodeBlock> _mainCodeBlocks = {};
 
   /// Module `tests` for unit testing this containing modules functionality
-  UnitTestModule _unitTestModule;
-}
-
-/// Unit test modules are internal modules for testing contents of module
-class UnitTestModule extends Module {
-  // custom <class UnitTestModule>
-
-  UnitTestModule() : super('tests', inlineModule);
-
-  // end <class UnitTestModule>
-
+  Module _unitTestModule;
 }
 
 // custom <library module>
 
 Module module(dynamic id, [ModuleType moduleType = fileModule]) =>
     new Module(id, moduleType);
+
+Module makeUnitTestModule() => module('tests', inlineModule)
+  ..uses = ['super::*']
+  ..attrs = [strAttr('cfg(test)')];
 
 // end <library module>

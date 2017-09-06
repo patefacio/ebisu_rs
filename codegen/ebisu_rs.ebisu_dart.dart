@@ -564,17 +564,14 @@ All rust named items are *RsEntity* instances.'''
               member('unit_test_module')
                 ..doc =
                     'Module `tests` for unit testing this containing modules functionality'
-                ..type = 'UnitTestModule'
+                ..type = 'Module'
                 ..access = IA,
             ]),
-          class_('unit_test_module')
-            ..doc =
-                'Unit test modules are internal modules for testing contents of module'
-            ..extend = 'Module',
         ],
 
       // trait library
       library('trait')
+        ..includesLogger = true
         ..imports.add('"package:ebisu/ebisu.dart" hide codeBlock')
         ..importAndExportAll([
           'package:ebisu_rs/entity.dart',
@@ -645,7 +642,11 @@ All rust named items are *RsEntity* instances.'''
         ],
 
       library('impl')
-        ..imports.add('"package:ebisu/ebisu.dart" hide codeBlock')
+        ..includesLogger = true
+        ..imports.addAll([
+          '"package:ebisu/ebisu.dart" hide codeBlock',
+          'package:ebisu_rs/module.dart'
+        ])
         ..importAndExportAll([
           'package:ebisu_rs/entity.dart',
           'package:ebisu_rs/trait.dart',
@@ -654,7 +655,16 @@ All rust named items are *RsEntity* instances.'''
           class_('impl')
             ..isAbstract = true
             ..extend = 'RsEntity'
-            ..mixins = ['HasCode', 'Generic', 'HasCodeBlock'],
+            ..mixins = ['HasCode', 'Generic', 'HasCodeBlock']
+            ..members = [
+              member('functions')
+                ..type = 'List<Fn>'
+                ..init = [],
+              member('unit_test_module')
+                ..doc = 'Internal module for unit testing impl'
+                ..type = 'Module'
+                ..access = IA,
+            ],
           class_('trait_impl')
             ..extend = 'Impl'
             ..mixins = ['HasTypeAliases']
@@ -665,9 +675,6 @@ All rust named items are *RsEntity* instances.'''
               member('type')
                 ..type = 'RsType'
                 ..access = RO,
-              member('functions')
-                ..type = 'List<Fn>'
-                ..init = [],
             ],
           class_('type_impl')
             ..extend = 'Impl'
@@ -675,9 +682,6 @@ All rust named items are *RsEntity* instances.'''
               member('type')
                 ..type = 'RsType'
                 ..access = RO,
-              member('functions')
-                ..type = 'List<Fn>'
-                ..init = [],
             ]
         ],
 
