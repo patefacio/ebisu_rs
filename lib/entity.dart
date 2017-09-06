@@ -104,11 +104,13 @@ class IsUnitTestable {
 
 makeRsId(dynamic id) => makeId(id is Symbol ? MirrorSystem.getName(id) : id);
 
+RegExp _replaceable = new RegExp('[<> ]');
+
 makeGenericId(String s) => makeId(s
-    .replaceAll('<', '_')
-    .replaceAll('>', '')
+    .replaceAll(_replaceable, '')
     .replaceAll('&', 'ref_')
-    .replaceAll(' ', '')
+    .replaceAllMapped(new RegExp('([a-z])([A-Z])'),
+        (Match m) => '${m[1]}_${m[2].toLowerCase()}')
     .toLowerCase());
 
 String indent(String s) => indentBlock(s, '    ');

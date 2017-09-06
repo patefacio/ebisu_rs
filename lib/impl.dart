@@ -42,6 +42,8 @@ class TraitImpl extends Impl with HasTypeAliases {
   Iterable<Entity> get children =>
       new List<Fn>.from(functions, growable: false);
 
+  get unitTestableFunctions => functions.where((fn) => fn.isUnitTestable);
+
   @override
   String get code => brCompact([
         !noComment

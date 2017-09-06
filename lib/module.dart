@@ -117,7 +117,7 @@ class Module extends RsEntity
         modules,
         traits,
         impls,
-        _unitTestModule != null ? [unitTestModule] : new Iterable.empty()
+        _unitTestModule != null ? [_unitTestModule] : new Iterable.empty()
       ]) as Iterable<Entity>;
 
   String toString() => 'mod($name:$moduleType)';
@@ -130,21 +130,35 @@ class Module extends RsEntity
   void withModuleCodeBlock(
           ModuleCodeBlock moduleCodeBlock, void f(CodeBlock codeBlock)) =>
       f(moduleCodeBlocks.putIfAbsent(
-          moduleCodeBlock, () => codeBlock('main ${moduleCodeBlock}')));
+          moduleCodeBlock, () => codeBlock('module ${moduleCodeBlock}')));
 
   void withUnitTestModule(void f(Module module)) => f(unitTestModule);
 
   UnitTestModule get unitTestModule =>
       _unitTestModule ??
       (_unitTestModule = new UnitTestModule()
+        ..uses = ['super::*']
         ..doc = 'Test module for $name module'
         ..attrs = [strAttr('cfg(test)')]);
 
-  addUnitTest(Id id) => unitTestModule.functions.add(new Fn('test_${id.snake}')
-    ..noComment = true
-    ..attrs = [idAttr('test')]);
+  get unitTestableFunctions => functions.where((fn) => fn.isUnitTestable);
+
+  static _makeUnitTestFunction(Id id, [codeBlockTag]) {
+    final function = new Fn('${id.snake}')
+      ..noComment = true
+      ..attrs = [idAttr('test')];
+
+    if (codeBlockTag != null) {
+      function.codeBlock.tag = codeBlockTag;
+    }
+    return function;
+  }
+
+  addUnitTest(Id id, [codeBlockTag]) =>
+      unitTestModule.functions.add(_makeUnitTestFunction(id, codeBlockTag));
 
   onOwnershipEstablished() {
+    print('Ownership established for module ${owner.id}:$id');
     var ownerPath = (owner as HasFilePath).filePath;
 
     if (owner is Crate) {
@@ -159,10 +173,27 @@ class Module extends RsEntity
     }
 
     /// add unit tests
-    concat([functions, concat(impls.map((impl) => impl.functions))])
-        .where((Fn fn) => fn.isUnitTestable)
-        .forEach((fn) {
-      addUnitTest(fn.id);
+
+    unitTestableFunctions.forEach((fn) => addUnitTest(fn.id));
+
+    impls.forEach((impl) {
+      Module subModule;
+      makeSubModule() {
+        if (subModule == null) {
+          subModule = new Module(impl.id, inlineModule)
+            ..uses = ['super::*']
+            ..noComment = true
+            ..withModuleCodeBlock(moduleBottom, (cb) => null);
+          unitTestModule.modules.add(subModule);
+        }
+        return subModule;
+      }
+
+      impl.unitTestableFunctions.forEach((fn) {
+        makeSubModule()
+            .functions
+            .add(_makeUnitTestFunction(fn.id, 'test ${fn.codeBlock.tag}'));
+      });
     });
 
     _filePath = (isDirectoryModule || isInlineModule)
@@ -212,21 +243,19 @@ class Module extends RsEntity
     }
   }
 
-  String get asInlineCode =>
-      brCompact([externalAttrs, '${pubDecl}mod $name {', code, '}']);
-
-  String get _inlineCode {
+  String _inlineCode(Iterable<Module> modules) {
     if (isDeclaredModule) {
       addInlineCode(Iterable<Module> modules, List<String> guts) {
-        for (Module module in modules) {
-          _logger.info('!!!Examining ${module}');
-          if (module.isInlineModule) {
-            guts.add(module.externalAttrs);
-            guts.add('${module.pubDecl}mod ${module.name} {');
-            guts.add(module.code);
-            addInlineCode(module.modules, guts);
-            guts.add('}');
+        for (Module module in modules.where((m) => m.isInlineModule)) {
+          if (!module.noComment) {
+            guts.add(tripleSlashComment(module.doc?.toString() ??
+                'TODO: comment internal module ${module.id.snake}'));
           }
+          guts.add(module.externalAttrs);
+          guts.add('${module.pubDecl}mod ${module.name} {');
+          guts.add(module.code);
+          addInlineCode(module.modules, guts);
+          guts.add('}');
         }
       }
 
@@ -261,7 +290,7 @@ class Module extends RsEntity
       hasContents ? '// --- module $section ---\n\n' : null;
 
   String get code => br([
-        !noComment
+        !noComment && !isInlineModule
             ? innerDocComment(doc == null ? 'TODO: comment module $id' : doc)
             : null,
 
@@ -325,11 +354,11 @@ class Module extends RsEntity
         ]),
 
         // inline code
-        _inlineCode,
+        _inlineCode(modules),
 
         moduleCodeBlocks[moduleBottom],
 
-        _unitTestModule?.asInlineCode,
+        _unitTestModule == null ? null : _inlineCode([_unitTestModule]),
 
         _main,
       ]);
