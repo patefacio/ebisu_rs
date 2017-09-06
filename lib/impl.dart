@@ -17,6 +17,9 @@ final Logger _logger = new Logger('impl');
 abstract class Impl extends RsEntity with HasCode, Generic, HasCodeBlock {
   List<Fn> functions = [];
 
+  /// If true makes all functions `isUnitTestable`
+  bool unitTestFunctions = false;
+
   // custom <class Impl>
 
   Impl(dynamic id) : super(id);
@@ -36,9 +39,9 @@ abstract class Impl extends RsEntity with HasCode, Generic, HasCodeBlock {
   @override
   onOwnershipEstablished() {
     _logger.info('Ownership of Impl base ${id} established');
-    functions.where((fn) => fn.isUnitTestable).forEach((fn) => unitTestModule
-        .functions
-        .add(makeUnitTestFunction(fn.id, 'test ${fn.codeBlock.tag}')));
+    functions.where((fn) => unitTestFunctions || fn.isUnitTestable).forEach(
+        (fn) => unitTestModule.functions
+            .add(makeUnitTestFunction(fn.id, 'test ${fn.codeBlock.tag}')));
   }
 
   @override
@@ -54,7 +57,10 @@ abstract class Impl extends RsEntity with HasCode, Generic, HasCodeBlock {
 }
 
 class TraitImpl extends Impl with HasTypeAliases {
+  /// Trait being implemented for a type
   Trait get trait => _trait;
+
+  /// Type this implementation is for
   RsType get type => _type;
 
   // custom <class TraitImpl>

@@ -664,15 +664,20 @@ All rust named items are *RsEntity* instances.'''
                 ..doc = 'Internal module for unit testing impl'
                 ..type = 'Module'
                 ..access = IA,
+              member('unit_test_functions')
+                ..doc = 'If true makes all functions `isUnitTestable`'
+                ..init = false
             ],
           class_('trait_impl')
             ..extend = 'Impl'
             ..mixins = ['HasTypeAliases']
             ..members = [
               member('trait')
+                ..doc = 'Trait being implemented for a type'
                 ..type = 'Trait'
                 ..access = RO,
               member('type')
+                ..doc = 'Type this implementation is for'
                 ..type = 'RsType'
                 ..access = RO,
             ],
