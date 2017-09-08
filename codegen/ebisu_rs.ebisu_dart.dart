@@ -561,6 +561,9 @@ All rust named items are *RsEntity* instances.'''
               member('uses')
                 ..doc = 'List of use symbols for module'
                 ..init = [],
+              member('pub_uses')
+                ..doc = 'List of pub use symbols for module'
+                ..init = [],
               member('unit_test_module')
                 ..doc =
                     'Module `tests` for unit testing this containing modules functionality'

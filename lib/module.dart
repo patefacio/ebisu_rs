@@ -106,6 +106,9 @@ class Module extends RsEntity
   /// List of use symbols for module
   List uses = [];
 
+  /// List of pub use symbols for module
+  List pubUses = [];
+
   // custom <class Module>
 
   Module(dynamic id, [this.moduleType]) : super(id);
@@ -280,6 +283,12 @@ class Module extends RsEntity
         ]),
 
         moduleCodeBlocks[moduleTop],
+
+        // pub use statements
+        br([
+          _announce('pub use statements', pubUses.isNotEmpty),
+          brCompact(pubUses.map((i) => 'pub use $i;')),
+        ]),
 
         // use statements
         br([
