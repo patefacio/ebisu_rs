@@ -171,6 +171,9 @@ class Module extends RsEntity
         ? join(ownerPath, id.snake)
         : ownerPath;
 
+    uses.sort();
+    pubUses.sort();
+
     _logger.info("Ownership of module($id) established in   $filePath");
   }
 
