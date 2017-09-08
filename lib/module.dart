@@ -66,7 +66,7 @@ const ModuleCodeBlock moduleTop = ModuleCodeBlock.moduleTop;
 ///
 const ModuleCodeBlock moduleBottom = ModuleCodeBlock.moduleBottom;
 
-class Import {
+class Import extends Object with HasAttributes {
   /// Name of crate to import
   String get import => _import;
   bool usesMacros = false;
@@ -76,6 +76,7 @@ class Import {
   Import(this._import, [this.usesMacros = false]);
 
   String get code => brCompact([
+        externalAttrs,
         usesMacros ? '#[macro_use]' : null,
         'extern crate $_import;',
       ]);
@@ -378,11 +379,22 @@ class Module extends RsEntity
 
 // custom <library module>
 
+/// Create a [Module] specified by [import] which may be a Symbol, String or Id
+/// and [moduleType] 
+///
 Module module(dynamic id, [ModuleType moduleType = fileModule]) =>
     new Module(id, moduleType);
 
+/// Creates a [Module] with standard characteristics of `use super::*` and `#[cfg(test)]`
+///
 Module makeUnitTestModule() => module('tests', inlineModule)
   ..uses = ['super::*']
   ..attrs = [strAttr('cfg(test)')];
+
+/// Create an [Import] specified by [import] which may be a Symbol, String or Id
+/// and [usesMcros] indicating to add `#[macro_use]`
+///
+Import import(dynamic import, [bool usesMacros = false]) =>
+    new Import(import, usesMacros);
 
 // end <library module>

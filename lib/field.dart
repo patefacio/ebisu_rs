@@ -67,16 +67,16 @@ class TupleField implements HasCode {
 // custom <library field>
 
 /// Create a *Field*
-/// 
+///
 /// id - Id of field
-/// 
+///
 /// type - RsType-convertible type of field
 Field field(dynamic id, [dynamic type]) => new Field(id, type);
 
 /// Create a public *Field*
-/// 
+///
 /// id - Id of field
-/// 
+///
 /// type - RsType-convertable type of field
 Field pubField(dynamic id, [dynamic type]) => new Field(id, type)..isPub = true;
 

@@ -511,6 +511,9 @@ All rust named items are *RsEntity* instances.'''
         ]
         ..classes = [
           class_('import')
+            ..mixins = [
+              'HasAttributes',
+            ]
             ..members = [
               member('import')
                 ..doc = 'Name of crate to import'
