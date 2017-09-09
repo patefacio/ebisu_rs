@@ -195,6 +195,8 @@ class Fn extends RsEntity
         returnDoc = other.returnDoc,
         elideLifetimes = other.elideLifetimes,
         super(other.id) {
+    typeParms = new List.from(other.typeParms);
+    // TODO: think about this: lifetimes = new List.from(other.lifetimes);
     doc = other.doc;
     _codeBlock = other._codeBlock?.copy();
     noComment = other.noComment;
