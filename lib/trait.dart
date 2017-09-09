@@ -246,7 +246,7 @@ class Trait extends RsEntity
   _getSubTraitName(s) => s is String ? s : s.name;
 
   String get _traitDecl =>
-      'trait $name${genericDecl}' +
+      '${pubDecl}trait $name${genericDecl}' +
       (subTraits.isNotEmpty
           ? ': ' + subTraits.map((st) => _getSubTraitName(st)).join(' + ')
           : '');
