@@ -142,10 +142,10 @@ class Fn extends RsEntity
 
   String get signature => elideLifetimes
       ? signatureNoLifetimes
-      : '${pubDecl}fn $name$genericDecl($_parmsText) -> ${_returnType.lifetimeDecl}';
+      : '${pubDecl}fn $name$genericDecl($_parmsText) -> ${_returnType.lifetimeDecl}$boundsDecl';
 
   String get signatureNoLifetimes =>
-      '${pubDecl}fn $name$genericDeclNoLifetimes($_parmsTextNoLifetimes) -> ${_returnType.code}';
+      '${pubDecl}fn $name$genericDeclNoLifetimes($_parmsTextNoLifetimes) -> ${_returnType.code}$boundsDecl';
 
 /* TODO: revisit if possible to elide lifetimes in sane way
   String get signature => _returnType.lifetimes.isNotEmpty?

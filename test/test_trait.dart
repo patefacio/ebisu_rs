@@ -124,5 +124,15 @@ trait Worker<'b, T>: Add + Mul + Div + Sized where T : Copy + std::fmt::Debug {
         true);
   });
 
+  test('fn bounds', () {
+    Fn f1 = fn(#foo)
+      ..typeParms = [
+        typeParm(#t)..bounds = ['Debug']
+      ];
+    expect(darkMatter(f1.code).contains(darkMatter('''
+fn foo<T>() -> () where T : Debug;
+    ''')), true);
+  });
+
 // end <main>
 }
