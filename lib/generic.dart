@@ -38,9 +38,7 @@ class Lifetime extends RsEntity implements HasCode, Comparable<Lifetime> {
 
 }
 
-class TypeParm extends RsEntity implements HasCode {
-  List<dynamic> get bounds => _bounds;
-
+class TypeParm extends RsEntity with HasBounds implements HasCode {
   // custom <class TypeParm>
 
   get children => new Iterable.empty();
@@ -48,27 +46,11 @@ class TypeParm extends RsEntity implements HasCode {
   @override
   get code => "${id.capCamel}";
 
-  get boundsDecl => '$code : $_boundsDecl';
-
-  get _boundsDecl =>
-      bounds.map((bound) => bound is String ? bound : bound.name).join(' + ');
-
-  set bounds(Iterable<dynamic> bounds) => _bounds = new List
-      .from(bounds.map((bound) => bound
-          is Id
-      ? bound.capCamel
-      : bound is Trait || bound is String
-          ? bound
-          : throw new ArgumentError(
-              'Bounds must be Id, String or Trait not ${bound.runtimeType}')));
-
-  bool get hasBounds => bounds.isNotEmpty;
+  get boundsDecl => '$code : ${super.boundsDecl}';
 
   // end <class TypeParm>
 
   TypeParm(dynamic id) : super(id);
-
-  List<dynamic> _bounds = [];
 }
 
 class Generic {

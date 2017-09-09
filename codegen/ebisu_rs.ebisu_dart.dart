@@ -148,12 +148,8 @@ All rust named items are *RsEntity* instances.'''
           class_('type_parm')
             ..withClass(commonFeatures)
             ..implement = ['HasCode']
-            ..members = [
-              member('bounds')
-                ..type = 'List<dynamic>'
-                ..init = []
-                ..access = RO,
-            ],
+            ..mixins = ['HasBounds']
+            ..members = [],
           class_('generic')
             ..defaultMemberAccess = RO
             ..members = [
@@ -473,7 +469,7 @@ All rust named items are *RsEntity* instances.'''
               member('attrs')
                 ..type = 'List<Attr>'
                 ..init = [],
-            ]
+            ],
         ],
       library('module')
         ..imports = commonIncludes()
@@ -736,7 +732,7 @@ All rust named items are *RsEntity* instances.'''
           class_('type_alias')
             ..doc = 'Rust type alias'
             ..extend = 'RsEntity'
-            ..mixins = ['IsPub', 'Generic', 'HasCode']
+            ..mixins = ['IsPub', 'Generic', 'HasCode', ]
             ..members = [member('aliased')..type = 'RsType'],
           class_('has_type_aliases')
             ..isAbstract = true
@@ -748,13 +744,21 @@ All rust named items are *RsEntity* instances.'''
           class_('associated_type')
             ..doc = 'Rust type alias'
             ..extend = 'RsEntity'
-            ..mixins = ['IsPub', 'Generic', 'HasCode'],
+            ..mixins = ['IsPub', 'Generic', 'HasCode', 'HasBounds'],
           class_('has_associated_types')
             ..isAbstract = true
             ..members = [
               member('associated_types')
                 ..access = RO
                 ..type = 'List<AssociatedType>'
+                ..init = [],
+            ],
+          class_('has_bounds')
+            ..isAbstract = true
+            ..members = [
+              member('bounds')
+                ..type = 'List<dynamic>'
+                ..access = RO
                 ..init = [],
             ]
         ],

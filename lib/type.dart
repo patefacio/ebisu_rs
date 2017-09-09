@@ -178,7 +178,7 @@ abstract class HasTypeAliases {
 }
 
 /// Rust type alias
-class AssociatedType extends RsEntity with IsPub, Generic, HasCode {
+class AssociatedType extends RsEntity with IsPub, Generic, HasCode, HasBounds {
   // custom <class AssociatedType>
 
   AssociatedType(dynamic id) : super(id);
@@ -187,8 +187,10 @@ class AssociatedType extends RsEntity with IsPub, Generic, HasCode {
   get code => brCompact([
         tripleSlashComment(
             doc?.toString() ?? 'TODO: comment associated type ${id.snake}'),
-        '${pubDecl}type ${id.capCamel};'
+        '${pubDecl}type ${id.capCamel}$boundsDecl;'
       ]);
+
+  get boundsDecl => hasBounds? ': ${super.boundsDecl}' : '';
 
   // end <class AssociatedType>
 
@@ -209,6 +211,30 @@ abstract class HasAssociatedTypes {
   // end <class HasAssociatedTypes>
 
   List<AssociatedType> _associatedTypes = [];
+}
+
+abstract class HasBounds {
+  List<dynamic> get bounds => _bounds;
+
+  // custom <class HasBounds>
+
+  get boundsDecl =>
+      bounds.map((bound) => bound is String ? bound : bound.name).join(' + ');
+
+  set bounds(Iterable<dynamic> bounds) => _bounds = new List
+      .from(bounds.map((bound) => bound
+          is Id
+      ? bound.capCamel
+      : bound is String
+          ? bound
+          : throw new ArgumentError(
+              'Bounds must be Id, String or Trait not ${bound.runtimeType}')));
+
+  bool get hasBounds => bounds.isNotEmpty;
+
+  // end <class HasBounds>
+
+  List<dynamic> _bounds = [];
 }
 
 // custom <library type>

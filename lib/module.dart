@@ -380,7 +380,7 @@ class Module extends RsEntity
 // custom <library module>
 
 /// Create a [Module] specified by [import] which may be a Symbol, String or Id
-/// and [moduleType] 
+/// and [moduleType]
 ///
 Module module(dynamic id, [ModuleType moduleType = fileModule]) =>
     new Module(id, moduleType);

@@ -70,7 +70,10 @@ fn foobar<'s, T1, T2>(a : & 's mut i32, mut b : f64, c : String) -> i32;
     var t1 = trait(#worker)
       ..attrs.add(idAttr(#bam))
       ..subTraits = ['Add', 'Mul', 'Div', 'Sized']
-      ..associatedTypes = ['assoc_1', 'assoc_2']
+      ..associatedTypes = [
+        'assoc_1',
+        associatedType('assoc_2')..bounds = ['Foo', 'Goo']
+      ]
       ..lifetimes = [#b]
       ..typeParms = [
         typeParm(#t)..bounds = ['Copy', 'std::fmt::Debug']
@@ -89,7 +92,7 @@ trait Worker<'b, T>: Add + Mul + Div + Sized where T : Copy + std::fmt::Debug {
   /// TODO: comment associated type assoc_1
   type Assoc1;
   /// TODO: comment associated type assoc_2
-  type Assoc2;
+  type Assoc2: Foo + Goo;
   /// Does work of course
   ///
   ///  * `unit` - TODO: comment parm
