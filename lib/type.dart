@@ -260,10 +260,26 @@ const bool_ = const BuiltInType('bool');
 
 const UnitType = const BuiltInType('()');
 
+/// Create a new [Ref] rust type (eg ref(i32) -> &i32).
+/// 
+/// [type] identifies the new type and is convertable from String, Id or Symbol.
+/// [lifetime] may be provided 
+/// 
 Ref ref(dynamic type, [dynamic lifetime]) => new Ref(type, lifetime);
 
+/// Create a new [Mref] rust type (eg mref(i32) -> & mut i32).
+/// 
+/// [type] identifies the new type and is convertable from String, Id or Symbol.
+/// [lifetime] may be provided 
+/// 
 Mref mref(dynamic type, [dynamic lifetime]) => new Mref(type, lifetime);
 
+/// Create a new rust type [RsType].
+/// 
+/// [type] identifies the new type and is convertable from String, Id or Symbol.
+/// If an existing RsType is provided it is returned. Types based on string-like
+/// [type] are created as [UserDefinedType] 
+/// 
 RsType rsType(dynamic type) => type is Symbol
     ? rsType(MirrorSystem.getName(type))
     : type is RsType
@@ -272,8 +288,21 @@ RsType rsType(dynamic type) => type is Symbol
             ? new UserDefinedType(type)
             : throw 'Unsupported rstype ${type.runtimeType}';
 
+/// Create a TypeAlias.
+/// 
+/// [id] identifies the alias - convertable from String, Id, Symbol and
+/// [aliased] is the item being aliased with a new identifier
+/// 
 TypeAlias typeAlias(dynamic id, [dynamic aliased]) =>
     new TypeAlias(id, aliased);
+
+/// Create a TypeAlias that is public.
+/// 
+/// [id] identifies the alias - convertable from String, Id, Symbol and
+/// [aliased] is the item being aliased with a new identifier
+/// 
+TypeAlias pubTypeAlias(dynamic id, [dynamic aliased]) =>
+    new TypeAlias(id, aliased)..isPub = true;
 
 AssociatedType associatedType(dynamic id) =>
     id is AssociatedType ? id : new AssociatedType(id);
