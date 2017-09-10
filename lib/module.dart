@@ -270,7 +270,7 @@ class Module extends RsEntity
   String get _importsDecls => brCompact(imports.map((i) => i.code));
 
   _announce(section, [bool hasContents = true]) =>
-      hasContents ? '// --- module $section ---\n\n' : null;
+      !isInlineModule && hasContents ? '// --- module $section ---\n\n' : null;
 
   String get code => br([
         !noComment && !isInlineModule
