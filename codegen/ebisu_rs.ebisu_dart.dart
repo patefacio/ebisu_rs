@@ -151,6 +151,8 @@ All rust named items are *RsEntity* instances.'''
             ..mixins = ['HasBounds']
             ..members = [],
           class_('generic')
+            ..doc =
+                'An item that is parameterized by [lifetimes] and [typeParms]'
             ..defaultMemberAccess = RO
             ..members = [
               member('lifetimes')
@@ -160,6 +162,23 @@ All rust named items are *RsEntity* instances.'''
                 ..type = 'List<TypeParm>'
                 ..init = [],
             ],
+          class_('generic_inst')
+            ..doc = 'An instantiation of a generic'
+            ..members = [
+              member('generic')
+                ..type = 'Generic'
+                ..doc = 'Optional reference to generic being instantiated',
+              member('lifetimes')
+                ..doc =
+                    'List of lifetimes parameterizing the [Generic]\'s lifetimes'
+                ..type = 'List<String>'
+                ..access = RO,
+              member('type_args')
+                ..doc = 'List of types instantiating the [Generic]\'s types'
+                ..type = 'List<RsType>'
+                ..access = RO
+            ],
+          /* TODO: rethink this - maybe generic_type is a rstype and generic_trait is a rstrait
           class_('generic_type')
             ..extend = 'RsType'
             ..members = [
@@ -173,6 +192,7 @@ All rust named items are *RsEntity* instances.'''
                 ..access = RO
                 ..init = [],
             ],
+            */
         ],
 
       library('enumeration')
@@ -623,6 +643,7 @@ All rust named items are *RsEntity* instances.'''
                 ..init = false
             ]),
           class_('trait')
+            ..doc = 'A rust trait'
             ..extend = 'RsEntity'
             ..implement = ['HasCode']
             ..mixins = [
@@ -640,7 +661,20 @@ All rust named items are *RsEntity* instances.'''
                 ..doc = 'List of subtraits - either as String or modeled Trait'
                 ..type = 'List<dynamic>'
                 ..init = [],
-            ])
+            ]),
+          class_('trait_inst')
+            ..doc = '''
+An instance of a [Trait].
+
+Only applicable to traits with generics. 
+Traits without generics are themselves [TraitInst].
+          '''
+            ..mixins = ['GenericInst']
+            ..members = [
+              member('trait')
+                ..doc = 'Trait being instantiated'
+                ..type = 'dynamic'
+            ]
         ],
 
       library('impl')
@@ -692,6 +726,12 @@ All rust named items are *RsEntity* instances.'''
             ]
         ],
 
+      library('common_traits')
+        ..imports = [
+          'package:ebisu_rs/trait.dart',
+          'package:id/id.dart',
+        ],
+
       library('type')
         ..includesMain = true
         ..imports = ['dart:mirrors', 'package:ebisu/ebisu.dart']
@@ -707,7 +747,8 @@ All rust named items are *RsEntity* instances.'''
           class_('built_in_type')
             ..extend = 'RsType'
             ..members = [member('type_name')..isFinal = true],
-          class_('user_defined_type')
+          class_('unmodeled_type')
+            ..doc = 'A type taken defined by a String and assumed to exist'
             ..extend = 'RsType'
             ..members = [
               member('name')..isFinal = true,
@@ -732,7 +773,11 @@ All rust named items are *RsEntity* instances.'''
           class_('type_alias')
             ..doc = 'Rust type alias'
             ..extend = 'RsEntity'
-            ..mixins = ['IsPub', 'Generic', 'HasCode', ]
+            ..mixins = [
+              'IsPub',
+              'Generic',
+              'HasCode',
+            ]
             ..members = [member('aliased')..type = 'RsType'],
           class_('has_type_aliases')
             ..isAbstract = true

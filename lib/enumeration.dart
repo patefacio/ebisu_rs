@@ -67,7 +67,7 @@ class TupleVariant extends Variant implements HasCode {
       : f is RsType
           ? new TupleField(f)
           : f is String
-              ? new TupleField(new UserDefinedType(f))
+              ? new TupleField(new UnmodeledType(f))
               : throw 'makeField requires RsType or String -> ${f.runtimeType}';
 
   // end <class TupleVariant>

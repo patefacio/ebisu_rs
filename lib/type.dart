@@ -53,19 +53,20 @@ class BuiltInType extends RsType {
 
 }
 
-class UserDefinedType extends RsType {
+/// A type taken defined by a String and assumed to exist
+class UnmodeledType extends RsType {
   final String name;
 
-  // custom <class UserDefinedType>
+  // custom <class UnmodeledType>
 
-  UserDefinedType(this.name);
+  UnmodeledType(this.name);
 
   copy() => this;
 
   @override
   get code => name;
 
-  // end <class UserDefinedType>
+  // end <class UnmodeledType>
 
 }
 
@@ -190,7 +191,7 @@ class AssociatedType extends RsEntity with IsPub, Generic, HasCode, HasBounds {
         '${pubDecl}type ${id.capCamel}$boundsDecl;'
       ]);
 
-  get boundsDecl => hasBounds? ': ${super.boundsDecl}' : '';
+  get boundsDecl => hasBounds ? ': ${super.boundsDecl}' : '';
 
   // end <class AssociatedType>
 
@@ -261,46 +262,46 @@ const bool_ = const BuiltInType('bool');
 const UnitType = const BuiltInType('()');
 
 /// Create a new [Ref] rust type (eg ref(i32) -> &i32).
-/// 
+///
 /// [type] identifies the new type and is convertable from String, Id or Symbol.
-/// [lifetime] may be provided 
-/// 
+/// [lifetime] may be provided
+///
 Ref ref(dynamic type, [dynamic lifetime]) => new Ref(type, lifetime);
 
 /// Create a new [Mref] rust type (eg mref(i32) -> & mut i32).
-/// 
+///
 /// [type] identifies the new type and is convertable from String, Id or Symbol.
-/// [lifetime] may be provided 
-/// 
+/// [lifetime] may be provided
+///
 Mref mref(dynamic type, [dynamic lifetime]) => new Mref(type, lifetime);
 
 /// Create a new rust type [RsType].
-/// 
+///
 /// [type] identifies the new type and is convertable from String, Id or Symbol.
 /// If an existing RsType is provided it is returned. Types based on string-like
-/// [type] are created as [UserDefinedType] 
-/// 
+/// [type] are created as [UnmodeledType]
+///
 RsType rsType(dynamic type) => type is Symbol
     ? rsType(MirrorSystem.getName(type))
     : type is RsType
         ? type
         : type is String
-            ? new UserDefinedType(type)
+            ? new UnmodeledType(type)
             : throw 'Unsupported rstype ${type.runtimeType}';
 
 /// Create a TypeAlias.
-/// 
+///
 /// [id] identifies the alias - convertable from String, Id, Symbol and
 /// [aliased] is the item being aliased with a new identifier
-/// 
+///
 TypeAlias typeAlias(dynamic id, [dynamic aliased]) =>
     new TypeAlias(id, aliased);
 
 /// Create a TypeAlias that is public.
-/// 
+///
 /// [id] identifies the alias - convertable from String, Id, Symbol and
 /// [aliased] is the item being aliased with a new identifier
-/// 
+///
 TypeAlias pubTypeAlias(dynamic id, [dynamic aliased]) =>
     new TypeAlias(id, aliased)..isPub = true;
 

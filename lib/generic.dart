@@ -53,6 +53,7 @@ class TypeParm extends RsEntity with HasBounds implements HasCode {
   TypeParm(dynamic id) : super(id);
 }
 
+/// An item that is parameterized by [lifetimes] and [typeParms]
 class Generic {
   List<Lifetime> get lifetimes => _lifetimes;
   List<TypeParm> get typeParms => _typeParms;
@@ -112,14 +113,20 @@ class Generic {
   List<TypeParm> _typeParms = [];
 }
 
-class GenericType extends RsType {
-  RsType type;
-  List<Id> get lifetimes => _lifetimes;
+/// An instantiation of a generic
+class GenericInst {
+  /// Optional reference to generic being instantiated
+  Generic generic;
+
+  /// List of lifetimes parameterizing the [Generic]'s lifetimes
+  List<String> get lifetimes => _lifetimes;
+
+  /// List of types instantiating the [Generic]'s types
   List<RsType> get typeArgs => _typeArgs;
 
-  // custom <class GenericType>
+  // custom <class GenericInst>
 
-  GenericType(type, dynamic lifetimes, dynamic typeArgs) : type = rsType(type) {
+  GenericInst(type, dynamic lifetimes, dynamic typeArgs) : type = rsType(type) {
     this.lifetimes = lifetimes;
     this.typeArgs = typeArgs;
   }
@@ -146,10 +153,10 @@ class GenericType extends RsType {
         '>'
       ].join('');
 
-  // end <class GenericType>
+  // end <class GenericInst>
 
-  List<Id> _lifetimes = [];
-  List<RsType> _typeArgs = [];
+  List<String> _lifetimes;
+  List<RsType> _typeArgs;
 }
 
 // custom <library generic>

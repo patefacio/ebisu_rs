@@ -28,7 +28,7 @@ class Field extends RsEntity with IsPub, HasAttributes implements HasCode {
   }
 
   set type(dynamic type) => _type =
-      type is String ? _type = new UserDefinedType(type) : type as RsType;
+      type is String ? _type = new UnmodeledType(type) : type as RsType;
 
   String toString() => 'field($name:$type)';
 

@@ -174,7 +174,7 @@ class Fn extends RsEntity
   }
 
   set returns(dynamic rt) => returnType = rt is String
-      ? new UserDefinedType(rt)
+      ? new UnmodeledType(rt)
       : rt is RsType
           ? rt
           : throw '*fn* returns setter requires [String] or [RsType]';
@@ -210,6 +210,7 @@ class Fn extends RsEntity
   CodeBlock _codeBlock;
 }
 
+/// A rust trait
 class Trait extends RsEntity
     with IsPub, Generic, HasAttributes, HasAssociatedTypes, HasCodeBlock
     implements HasCode {
@@ -256,6 +257,20 @@ class Trait extends RsEntity
   String get name => id.capCamel;
 
   // end <class Trait>
+
+}
+
+/// An instance of a [Trait].
+///
+/// Only applicable to traits with generics.
+/// Traits without generics are themselves [TraitInst].
+///
+class TraitInst extends Object with GenericInst {
+  /// Trait being instantiated
+  dynamic trait;
+
+  // custom <class TraitInst>
+  // end <class TraitInst>
 
 }
 
