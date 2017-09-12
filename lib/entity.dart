@@ -80,6 +80,15 @@ abstract class HasCode {
 
 }
 
+abstract class IsGenericInstance {
+  // custom <class IsGenericInstance>
+
+  String get genericName;
+
+  // end <class IsGenericInstance>
+
+}
+
 abstract class IsPub {
   /// True indicates entity is public
   bool isPub = false;

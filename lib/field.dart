@@ -27,8 +27,8 @@ class Field extends RsEntity with IsPub, HasAttributes implements HasCode {
     _logger.info("Ownership of ${id}:${runtimeType}");
   }
 
-  set type(dynamic type) => _type =
-      type is String ? _type = new UnmodeledType(type) : type as RsType;
+  set type(dynamic type) =>
+      _type = type is String ? _type = new UnmodeledType(type) : type as RsType;
 
   String toString() => 'field($name:$type)';
 

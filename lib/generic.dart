@@ -54,11 +54,13 @@ class TypeParm extends RsEntity with HasBounds implements HasCode {
 }
 
 /// An item that is parameterized by [lifetimes] and [typeParms]
-class Generic {
+abstract class Generic {
   List<Lifetime> get lifetimes => _lifetimes;
   List<TypeParm> get typeParms => _typeParms;
 
   // custom <class Generic>
+
+  String get name;
 
   generic(Iterable<dynamic> lifetimes, Iterable<dynamic> typeParms) {
     this._lifetimes =
@@ -114,22 +116,19 @@ class Generic {
 }
 
 /// An instantiation of a generic
-class GenericInst {
+abstract class GenericInst implements IsGenericInstance {
   /// Optional reference to generic being instantiated
   Generic generic;
 
   /// List of lifetimes parameterizing the [Generic]'s lifetimes
-  List<String> get lifetimes => _lifetimes;
+  List<Lifetime> get lifetimes => _lifetimes;
 
   /// List of types instantiating the [Generic]'s types
   List<RsType> get typeArgs => _typeArgs;
 
   // custom <class GenericInst>
 
-  GenericInst(type, dynamic lifetimes, dynamic typeArgs) : type = rsType(type) {
-    this.lifetimes = lifetimes;
-    this.typeArgs = typeArgs;
-  }
+  String get name;
 
   set lifetimes(dynamic lifetimes) => _lifetimes = lifetimes is Iterable
       ? new List.from(lifetimes.map(makeRsId))
@@ -139,12 +138,9 @@ class GenericInst {
       ? new List.from(typeArgs.map((ta) => rsType(ta)))
       : [rsType(typeArgs)];
 
-  copy() => new GenericType(this.type.copy(), new List.from(lifetimes),
-      new List.from(typeArgs.map((t) => t.copy())));
-
   @override
-  get code => [
-        type.code,
+  get genericName => [
+        name,
         '<',
         concat([
           lifetimes.map((lt) => "'${lt.snake}"),
@@ -155,7 +151,7 @@ class GenericInst {
 
   // end <class GenericInst>
 
-  List<String> _lifetimes;
+  List<Lifetime> _lifetimes;
   List<RsType> _typeArgs;
 }
 
@@ -163,14 +159,5 @@ class GenericInst {
 
 Lifetime lifetime([dynamic id]) => id is Lifetime ? id : new Lifetime(id);
 TypeParm typeParm(dynamic id) => id is TypeParm ? id : new TypeParm(id);
-GenericType genericType(type, dynamic lifetimes, dynamic typeArgs) =>
-    new GenericType(type, lifetimes, typeArgs);
-
-/// Generic with one or more lifetimes
-const lgt = genericType;
-
-/// Most common generic types have no lifetimes
-GenericType gt(type, dynamic typeArgs) =>
-    new GenericType(type, const [], typeArgs);
 
 // end <library generic>

@@ -111,6 +111,7 @@ All rust named items are *RsEntity* instances.'''
             ],
           class_('has_file_path')..isAbstract = true,
           class_('has_code')..isAbstract = true,
+          class_('is_generic_instance')..isAbstract = true,
           class_('is_pub')
             ..isAbstract = true
             ..members = [
@@ -151,6 +152,7 @@ All rust named items are *RsEntity* instances.'''
             ..mixins = ['HasBounds']
             ..members = [],
           class_('generic')
+            ..isAbstract = true
             ..doc =
                 'An item that is parameterized by [lifetimes] and [typeParms]'
             ..defaultMemberAccess = RO
@@ -164,6 +166,8 @@ All rust named items are *RsEntity* instances.'''
             ],
           class_('generic_inst')
             ..doc = 'An instantiation of a generic'
+            ..isAbstract = true
+            ..implement = ['IsGenericInstance']
             ..members = [
               member('generic')
                 ..type = 'Generic'
@@ -171,7 +175,7 @@ All rust named items are *RsEntity* instances.'''
               member('lifetimes')
                 ..doc =
                     'List of lifetimes parameterizing the [Generic]\'s lifetimes'
-                ..type = 'List<String>'
+                ..type = 'List<Lifetime>'
                 ..access = RO,
               member('type_args')
                 ..doc = 'List of types instantiating the [Generic]\'s types'
@@ -643,7 +647,12 @@ All rust named items are *RsEntity* instances.'''
                 ..init = false
             ]),
           class_('trait')
-            ..doc = 'A rust trait'
+            ..doc = '''
+A rust trait.
+
+This models a trait by defining the set of subtraits, associated types and functions.
+The trait can be generic.
+'''
             ..extend = 'RsEntity'
             ..implement = ['HasCode']
             ..mixins = [
@@ -666,7 +675,7 @@ All rust named items are *RsEntity* instances.'''
             ..doc = '''
 An instance of a [Trait].
 
-Only applicable to traits with generics. 
+Only useful for traits with generics. 
 Traits without generics are themselves [TraitInst].
           '''
             ..mixins = ['GenericInst']
@@ -674,7 +683,7 @@ Traits without generics are themselves [TraitInst].
               member('trait')
                 ..doc = 'Trait being instantiated'
                 ..type = 'dynamic'
-            ]
+            ],
         ],
 
       library('impl')

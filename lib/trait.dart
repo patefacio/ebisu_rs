@@ -210,7 +210,10 @@ class Fn extends RsEntity
   CodeBlock _codeBlock;
 }
 
-/// A rust trait
+/// A rust trait.
+///
+/// This models a trait by defining the set of subtraits, associated types and functions.
+/// The trait can be generic.
 class Trait extends RsEntity
     with IsPub, Generic, HasAttributes, HasAssociatedTypes, HasCodeBlock
     implements HasCode {
@@ -262,7 +265,7 @@ class Trait extends RsEntity
 
 /// An instance of a [Trait].
 ///
-/// Only applicable to traits with generics.
+/// Only useful for traits with generics.
 /// Traits without generics are themselves [TraitInst].
 ///
 class TraitInst extends Object with GenericInst {
