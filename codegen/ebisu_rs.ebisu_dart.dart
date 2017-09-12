@@ -235,8 +235,10 @@ All rust named items are *RsEntity* instances.'''
                 ..init = []
             ],
           class_('enum')
-            ..implement = ['HasCode']
-            ..mixins = ['IsPub', 'Derives']
+            ..implement = [
+              'HasCode',
+            ]
+            ..mixins = ['IsPub', 'Derives', 'Generic']
             ..defaultMemberAccess = RO
             ..withClass(commonFeatures)
             ..members = [

@@ -84,7 +84,8 @@ class StructVariant extends Variant {
     this.fields = fields;
   }
 
-  set fields(Iterable fields) => _fields = fields.map(field).toList();
+  set fields(Iterable fields) =>
+      _fields = fields.map((f) => f is Field ? f : field(f)).toList();
 
   @override
   String get code => brCompact([
@@ -99,7 +100,7 @@ class StructVariant extends Variant {
   List<Field> _fields = [];
 }
 
-class Enum extends RsEntity with IsPub, Derives implements HasCode {
+class Enum extends RsEntity with IsPub, Derives, Generic implements HasCode {
   List<Variant> get variants => _variants;
 
   /// If self includes *use self::<name>::*;
@@ -116,7 +117,7 @@ class Enum extends RsEntity with IsPub, Derives implements HasCode {
   String get code => brCompact([
         tripleSlashComment(doc == null ? 'TODO: comment $id' : doc),
         derives,
-        '${pubDecl}enum $name {',
+        '${pubDecl}enum $name$genericDecl$boundsDecl {',
         indent(br(variants.map((v) => v.code), ',\n')),
         '}',
         useSelf ? 'use self::$name::*;' : null

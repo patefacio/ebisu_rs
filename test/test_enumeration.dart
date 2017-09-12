@@ -104,5 +104,18 @@ enum SvE {
     expect(e.code.contains('use self::SvE::*;'), true);
   });
 
+  test('generic enum', () {
+    var e = enum_('s', [
+      sv('s_v', [field('A', 'S')])
+    ])
+      ..typeParms = [
+        typeParm(#t)..bounds = ['Add', 'Delete']
+      ];
+    expect(
+        darkMatter(e.code)
+            .contains(darkMatter('enum S<T> where T : Add + Delete')),
+        true);
+  });
+
 // end <main>
 }
