@@ -51,6 +51,8 @@ main(List<String> args) {
       library('test_ebisu_rs')..imports = ['package:ebisu_rs/ebisu_rs.dart'],
       library('test_dependency')
         ..imports = ['package:ebisu_rs/dependency.dart'],
+      library('test_lifetime_elision')
+        ..imports = ['package:ebisu_rs/trait.dart'],
     ]
     ..libraries = [
       library('ebisu_rs')
@@ -645,8 +647,12 @@ All rust named items are *RsEntity* instances.'''
                 ..access = WO,
               member('elide_lifetimes')
                 ..doc =
-                    'If true lifetimes are elided, indicating rust has similar defaults'
-                ..init = false
+                    '''
+If true lifetimes are elided. 
+If false lifetimes are not elided.
+If null, lifetime elision rules apply
+'''
+                ..type = 'bool'
             ]),
           class_('trait')
             ..doc = '''

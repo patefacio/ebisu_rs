@@ -89,8 +89,10 @@ class Fn extends RsEntity
   String returnDoc;
   set codeBlock(CodeBlock codeBlock) => _codeBlock = codeBlock;
 
-  /// If true lifetimes are elided, indicating rust has similar defaults
-  bool elideLifetimes = false;
+  /// If true lifetimes are elided.
+  /// If false lifetimes are not elided.
+  /// If null, lifetime elision rules apply
+  bool elideLifetimes;
 
   // custom <class Fn>
 
@@ -108,6 +110,11 @@ class Fn extends RsEntity
       this.parms = parms;
     }
   }
+
+  get elisionRulesApply =>
+      (!returnType.isRefType ||
+          parms.where((Parm p) => p.type.isRefType).length == 1 ||
+          parms.any((Parm p) => p.type.isRefType && p.id.snake == 'self'));
 
   get codeBlock => _codeBlock ?? (_codeBlock = new CodeBlock('fn ${id.snake}'));
 
@@ -140,7 +147,7 @@ class Fn extends RsEntity
                 ['$signature {', indentBlock(_codeBlock.toString()), '}'])
       ]);
 
-  String get signature => elideLifetimes
+  String get signature => elideLifetimes ?? elisionRulesApply
       ? signatureNoLifetimes
       : '${pubDecl}fn $name$genericDecl($_parmsText) -> ${_returnType.lifetimeDecl}$boundsDecl';
 

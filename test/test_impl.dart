@@ -30,6 +30,7 @@ void main([List<String> args]) {
       ..typeParms = [#t]
       ..functions = [
         fn(#doWork, [parm(#unit, mref(i32)), parm(#t, 'T')])
+          ..elideLifetimes = false
           ..doc = 'Does work of course',
       ]
       ..setAsRoot();
@@ -60,7 +61,9 @@ impl<T> Worker for Vec<Vec<T>> {
 
     i1 = typeImpl(rsType('Foo'))
       ..functions = [
-        fn(#doWork, [parm(#unit, mref(i32))])..doc = 'Does work of course',
+        fn(#doWork, [parm(#unit, mref(i32))])
+          ..elideLifetimes = false
+          ..doc = 'Does work of course',
       ]
       ..setAsRoot();
 

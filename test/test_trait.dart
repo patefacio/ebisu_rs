@@ -29,6 +29,7 @@ void main([List<String> args]) {
       parm(#b, f64, true),
       parm(#c, string)
     ])
+      ..elideLifetimes = false
       ..returns = ref(i32)
       ..attrs = [idAttr(#bam)]
       ..typeParms = [#T1, #T2]
@@ -97,7 +98,7 @@ trait Worker<'b, T>: Add + Mul + Div + Sized where T : Copy + std::fmt::Debug {
   ///
   ///  * `unit` - TODO: comment parm
   ///
-  fn do_work<'a>(unit : & 'a mut i32) -> ();
+  fn do_work(unit : & mut i32) -> ();
   // custom <trait_worker>
   // end <trait_worker>
 } 
@@ -116,8 +117,8 @@ trait Worker<'b, T>: Add + Mul + Div + Sized where T : Copy + std::fmt::Debug {
     final t1Code = darkMatter(t1.code);
     [
       "fn do_work_self(self, unit : i32) -> ();",
-      "fn do_work_self_ref<'a>(& 'a self, unit : i32) -> ();",
-      "fn do_work_self_ref_mutable<'a>(& 'a mut self, unit : i32) -> ();"
+      "fn do_work_self_ref(& self, unit : i32) -> ();",
+      "fn do_work_self_ref_mutable(& mut self, unit : i32) -> ();"
     ].forEach((sig) => expect(t1Code.contains(darkMatter(sig)), true));
 
     t1.functions.last.elideLifetimes = true;
