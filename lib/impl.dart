@@ -78,6 +78,8 @@ class TraitImpl extends Impl with HasTypeAliases {
     codeBlock = new CodeBlock('impl ${_trait.name} for $_type');
   }
 
+  String get name => id.capCamel;
+
   get unitTestableFunctions => functions.where((fn) => fn.isUnitTestable);
 
   @override
@@ -109,6 +111,8 @@ class TypeImpl extends Impl {
   RsType get type => _type;
 
   // custom <class TypeImpl>
+
+  String get name => id.snake;
 
   TypeImpl(this._type) : super(makeGenericId(_type.code)) {
     codeBlock = new CodeBlock('impl $_type');

@@ -78,8 +78,8 @@ impl Foo {
     // custom <fn foo_do_work>
     // end <fn foo_do_work>
   }
-  // custom <impl  Foo>
-  // end <impl  Foo>
+  // custom <impl Foo>
+  // end <impl Foo>
 }
     '''));
   });

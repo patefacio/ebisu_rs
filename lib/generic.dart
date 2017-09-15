@@ -62,6 +62,8 @@ abstract class Generic {
 
   String get name;
 
+  String get genericName => '$name$genericDecl';
+
   generic(Iterable<dynamic> lifetimes, Iterable<dynamic> typeParms) {
     this._lifetimes =
         lifetimes.map((lt) => lt is Lifetime ? lt : lifetime(lt)).toList();
@@ -143,7 +145,7 @@ abstract class GenericInst implements IsGenericInstance {
         name,
         '<',
         concat([
-          lifetimes.map((lt) => "'${lt.snake}"),
+          lifetimes.map((lt) => "'${lt.id.snake}"),
           typeArgs.map((ta) => ta.code)
         ]).join(', '),
         '>'

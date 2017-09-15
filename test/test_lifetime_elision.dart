@@ -36,8 +36,7 @@ void main([List<String> args]) {
         true);
 
     // No lifeetimes in these cases because of elision
-    expect(
-        functions.any((f) => (f..elideLifetimes = true).code.contains("'a")),
+    expect(functions.any((f) => (f..elideLifetimes = true).code.contains("'a")),
         false);
   });
 

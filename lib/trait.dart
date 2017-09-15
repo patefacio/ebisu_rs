@@ -111,10 +111,9 @@ class Fn extends RsEntity
     }
   }
 
-  get elisionRulesApply =>
-      (!returnType.isRefType ||
-          parms.where((Parm p) => p.type.isRefType).length == 1 ||
-          parms.any((Parm p) => p.type.isRefType && p.id.snake == 'self'));
+  get elisionRulesApply => (!returnType.isRefType ||
+      parms.where((Parm p) => p.type.isRefType).length == 1 ||
+      parms.any((Parm p) => p.type.isRefType && p.id.snake == 'self'));
 
   get codeBlock => _codeBlock ?? (_codeBlock = new CodeBlock('fn ${id.snake}'));
 
