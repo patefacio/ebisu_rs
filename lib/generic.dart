@@ -71,6 +71,9 @@ abstract class Generic {
         typeParms.map((tp) => tp is TypeParm ? tp : typeParm(tp)).toList();
   }
 
+  GenericInst inst(
+      {Iterable typeArgs = const [], Iterable lifetimes = const []});
+
   set lifetimes(Iterable<dynamic> lifetimes) =>
       _lifetimes = new List.from(lifetimes.map(lifetime));
 
@@ -145,8 +148,12 @@ abstract class GenericInst implements IsGenericInstance {
         name,
         '<',
         concat([
-          lifetimes.map((lt) => "'${lt.id.snake}"),
-          typeArgs.map((ta) => ta.code)
+          _lifetimes == null
+              ? new Iterable.empty()
+              : _lifetimes.map((lt) => "'${lt.id.snake}"),
+          _typeArgs == null
+              ? new Iterable.empty()
+              : _typeArgs.map((ta) => ta.code)
         ]).join(', '),
         '>'
       ].join('');

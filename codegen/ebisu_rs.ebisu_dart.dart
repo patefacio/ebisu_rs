@@ -646,8 +646,7 @@ All rust named items are *RsEntity* instances.'''
                 ..type = 'CodeBlock'
                 ..access = WO,
               member('elide_lifetimes')
-                ..doc =
-                    '''
+                ..doc = '''
 If true lifetimes are elided. 
 If false lifetimes are not elided.
 If null, lifetime elision rules apply
@@ -679,6 +678,7 @@ The trait can be generic.
                 ..type = 'List<dynamic>'
                 ..init = [],
             ]),
+          class_('unmodeled_trait')..members = [member('name')],
           class_('trait_inst')
             ..doc = '''
 An instance of a [Trait].
@@ -690,7 +690,7 @@ Traits without generics are themselves [TraitInst].
             ..members = [
               member('trait')
                 ..doc = 'Trait being instantiated'
-                ..type = 'dynamic'
+                ..type = 'Trait'
             ],
         ],
 
@@ -727,7 +727,7 @@ Traits without generics are themselves [TraitInst].
             ..members = [
               member('trait')
                 ..doc = 'Trait being implemented for a type'
-                ..type = 'Trait'
+                ..type = 'TraitInst'
                 ..access = RO,
               member('type')
                 ..doc = 'Type this implementation is for'
@@ -740,7 +740,7 @@ Traits without generics are themselves [TraitInst].
               member('type')
                 ..type = 'RsType'
                 ..access = RO,
-            ]
+            ],
         ],
 
       library('common_traits')
@@ -908,12 +908,22 @@ Traits without generics are themselves [TraitInst].
                 ..type = 'List<Field>'
                 ..init = [],
             ]),
+          class_('struct_inst')
+            ..mixins = ['GenericInst']
+            ..members = [
+              member('struct')..type = 'Struct',
+            ],
           class_('tuple_struct')
             ..doc = 'Tuple struct'
             ..implement = ['HasCode']
             ..mixins = ['IsPub', 'Derives', 'Generic']
             ..withClass(commonFeatures)
             ..members.addAll([]),
+          class_('tuple_struct_inst')
+            ..mixins = ['GenericInst']
+            ..members = [
+              member('tuple_struct')..type = 'TupleStruct',
+            ],
           class_('unit_struct')
             ..doc = 'Unit struct'
             ..implement = ['HasCode']

@@ -49,6 +49,12 @@ class Struct extends RsEntity with IsPub, Derives, Generic implements HasCode {
     }
   }
 
+  GenericInst inst(
+          {Iterable typeArgs = const [], Iterable lifetimes = const []}) =>
+      new StructInst(this)
+        ..typeArgs = typeArgs
+        ..lifetimes = lifetimes;
+
   String get template {
     var contents = chomp(brCompact([
       lifetimes.join(', '),
@@ -69,6 +75,19 @@ class Struct extends RsEntity with IsPub, Derives, Generic implements HasCode {
   Struct(dynamic id) : super(id);
 }
 
+class StructInst extends Object with GenericInst {
+  Struct struct;
+
+  // custom <class StructInst>
+
+  StructInst(this.struct);
+
+  String get name => struct.name;
+
+  // end <class StructInst>
+
+}
+
 /// Tuple struct
 class TupleStruct extends RsEntity
     with IsPub, Derives, Generic
@@ -83,11 +102,30 @@ class TupleStruct extends RsEntity
         '}',
       ]);
 
+  GenericInst inst(
+          {Iterable typeArgs = const [], Iterable lifetimes = const []}) =>
+      new TupleStructInst(this)
+        ..typeArgs = typeArgs
+        ..lifetimes = lifetimes;
+
   String get name => id.capCamel;
 
   // end <class TupleStruct>
 
   TupleStruct(dynamic id) : super(id);
+}
+
+class TupleStructInst extends Object with GenericInst {
+  TupleStruct tupleStruct;
+
+  // custom <class TupleStructInst>
+
+  String get name => tupleStruct.name;
+
+  TupleStructInst(this.tupleStruct);
+
+  // end <class TupleStructInst>
+
 }
 
 /// Unit struct

@@ -29,7 +29,7 @@ abstract class RsType implements HasCode {
   /// Returns type with lifetime attributes
   String get lifetimeDecl => toString();
 
-  Iterable<Id> get lifetimes => new Iterable.empty();
+  Iterable<Lifetime> get lifetimes => new Iterable.empty();
 
   String toString() => code;
 

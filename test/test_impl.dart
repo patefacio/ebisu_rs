@@ -24,7 +24,7 @@ void main([List<String> args]) {
 // custom <main>
 
   test('impl', () {
-    var t1 = trait(#worker)
+    var worker = trait(#worker)
       ..attrs.add(idAttr(#bam))
       ..associatedTypes = ['assoc_1', 'assoc_2']
       ..typeParms = [#t]
@@ -35,14 +35,14 @@ void main([List<String> args]) {
       ]
       ..setAsRoot();
 
-    Impl i1 = traitImpl(t1, rsType('Vec<Vec<T>>'))
+    Impl i1 = traitImpl(worker.inst(typeArgs: [#T]), rsType('Vec<Vec<T>>'))
       ..typeParms = [#t]
       ..typeAliases.addAll([typeAlias(#assoc_1, i32), typeAlias(#assoc_2, i64)])
       ..setAsRoot();
 
     expect(darkMatter(i1.code), darkMatter('''
 /// TODO: comment impl worker_vec_vec_t
-impl<T> Worker for Vec<Vec<T>> {
+impl<T> Worker<T> for Vec<Vec<T>> {
   type Assoc1 = i32;
   type Assoc2 = i64;
   /// Does work of course

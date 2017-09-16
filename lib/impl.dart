@@ -58,7 +58,7 @@ abstract class Impl extends RsEntity with HasCode, Generic, HasCodeBlock {
 
 class TraitImpl extends Impl with HasTypeAliases {
   /// Trait being implemented for a type
-  Trait get trait => _trait;
+  TraitInst get trait => _trait;
 
   /// Type this implementation is for
   RsType get type => _type;
@@ -66,10 +66,8 @@ class TraitImpl extends Impl with HasTypeAliases {
   // custom <class TraitImpl>
 
   TraitImpl(this._trait, this._type)
-      : super(_trait == null
-            ? makeGenericId(_type.code)
-            : makeRsId(
-                _trait.id.snake + '_' + makeGenericId(_type.code).snake)) {
+      : super(
+            makeRsId(_trait.id.snake + '_' + makeGenericId(_type.code).snake)) {
     functions = _trait.functions
         .map((fn) => fn.copy()
           ..codeBlock = new CodeBlock('fn ${id.snake}_${fn.id.snake}'))
@@ -79,6 +77,10 @@ class TraitImpl extends Impl with HasTypeAliases {
   }
 
   String get name => id.capCamel;
+
+  GenericInst inst(
+          {Iterable typeArgs = const [], Iterable lifetimes = const []}) =>
+      throw 'TraitImpls are not instantiated in code';
 
   get unitTestableFunctions => functions.where((fn) => fn.isUnitTestable);
 
@@ -99,11 +101,11 @@ class TraitImpl extends Impl with HasTypeAliases {
 
   get _implHeader => _trait == null
       ? 'impl$genericDecl ${_type}$boundsDecl'
-      : 'impl$genericDecl ${_trait.name} for ${_type.code}$boundsDecl';
+      : 'impl$genericDecl ${_trait.genericName} for ${_type.code}$boundsDecl';
 
   // end <class TraitImpl>
 
-  Trait _trait;
+  TraitInst _trait;
   RsType _type;
 }
 
@@ -117,6 +119,10 @@ class TypeImpl extends Impl {
   TypeImpl(this._type) : super(makeGenericId(_type.code)) {
     codeBlock = new CodeBlock('impl $_type');
   }
+
+  GenericInst inst(
+          {Iterable typeArgs = const [], Iterable lifetimes = const []}) =>
+      throw 'TypeImpls are not instantiated in code';
 
   @override
   onOwnershipEstablished() {
@@ -156,8 +162,8 @@ class TypeImpl extends Impl {
 /// *trait* - The trait being implemented
 ///
 /// *type* - The type this impl applies to
-TraitImpl traitImpl(Trait trait, dynamic type) =>
-    new TraitImpl(trait, rsType(type));
+TraitImpl traitImpl(dynamic trait, dynamic type) => new TraitImpl(
+    trait is TraitInst ? trait : new TraitInst(trait), rsType(type));
 
 /// alias impl to traitImpl - most common type of impl if doing trait work
 final impl = traitImpl;

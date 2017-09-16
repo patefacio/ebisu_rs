@@ -234,6 +234,12 @@ class Trait extends RsEntity
     codeBlock = new CodeBlock('trait_${this.id.snake}');
   }
 
+  GenericInst inst(
+          {Iterable typeArgs = const [], Iterable lifetimes = const []}) =>
+      new TraitInst(this)
+        ..typeArgs = typeArgs
+        ..lifetimes = lifetimes;
+
   @override
   onOwnershipEstablished() {}
 
@@ -269,6 +275,17 @@ class Trait extends RsEntity
 
 }
 
+class UnmodeledTrait {
+  String name;
+
+  // custom <class UnmodeledTrait>
+
+  UnmodeledTrait(name);
+
+  // end <class UnmodeledTrait>
+
+}
+
 /// An instance of a [Trait].
 ///
 /// Only useful for traits with generics.
@@ -276,9 +293,18 @@ class Trait extends RsEntity
 ///
 class TraitInst extends Object with GenericInst {
   /// Trait being instantiated
-  dynamic trait;
+  Trait trait;
 
   // custom <class TraitInst>
+
+  String get name => trait.name;
+
+  Id get id => trait.id;
+
+  get functions => trait.functions;
+
+  TraitInst(dynamic trait) : trait = rsTrait(trait);
+
   // end <class TraitInst>
 
 }
@@ -314,5 +340,8 @@ Fn makeUnitTestFunction(Id id, [codeBlockTag]) {
   }
   return function;
 }
+
+Trait rsTrait(dynamic trait) =>
+    trait is Trait ? trait : new UnmodeledTrait(trait);
 
 // end <library trait>
