@@ -11,6 +11,7 @@ import 'package:id/id.dart';
 _numBinaryOpTrait(tag) {
   final id = new Id(tag);
   return trait(id.capCamel)
+    ..typeParms = [#r_h_s]
     ..associatedTypes = [associatedType(#Output)]
     ..functions = [
       fn(id.snake, [self, parm(#rhs, 'RHS')])..returns = 'Self::Output'

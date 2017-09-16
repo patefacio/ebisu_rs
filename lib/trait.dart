@@ -303,6 +303,12 @@ class TraitInst extends Object with GenericInst {
 
   get functions => trait.functions;
 
+  get typeParms => trait.typeParms;
+
+  get lifetimes => trait.lifetimes;
+
+  get genericDeclNoLifetimes => trait.genericDeclNoLifetimes;
+
   TraitInst(dynamic trait) : trait = rsTrait(trait);
 
   // end <class TraitInst>

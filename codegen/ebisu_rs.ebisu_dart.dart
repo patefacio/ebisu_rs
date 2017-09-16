@@ -178,11 +178,11 @@ All rust named items are *RsEntity* instances.'''
                 ..doc =
                     'List of lifetimes parameterizing the [Generic]\'s lifetimes'
                 ..type = 'List<Lifetime>'
-                ..access = RO,
+                ..access = IA,
               member('type_args')
                 ..doc = 'List of types instantiating the [Generic]\'s types'
                 ..type = 'List<RsType>'
-                ..access = RO
+                ..access = IA
             ],
           /* TODO: rethink this - maybe generic_type is a rstype and generic_trait is a rstrait
           class_('generic_type')

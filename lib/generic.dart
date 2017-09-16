@@ -48,6 +48,8 @@ class TypeParm extends RsEntity with HasBounds implements HasCode {
 
   get boundsDecl => '$code : ${super.boundsDecl}';
 
+  toString() => code;
+
   // end <class TypeParm>
 
   TypeParm(dynamic id) : super(id);
@@ -125,15 +127,15 @@ abstract class GenericInst implements IsGenericInstance {
   /// Optional reference to generic being instantiated
   Generic generic;
 
-  /// List of lifetimes parameterizing the [Generic]'s lifetimes
-  List<Lifetime> get lifetimes => _lifetimes;
-
-  /// List of types instantiating the [Generic]'s types
-  List<RsType> get typeArgs => _typeArgs;
-
   // custom <class GenericInst>
 
   String get name;
+
+  /// List of lifetimes parameterizing the [Generic]'s lifetimes
+  Iterable<Lifetime> get lifetimes => _lifetimes ?? new Iterable.empty();
+
+  /// List of types instantiating the [Generic]'s types
+  Iterable<RsType> get typeArgs => _typeArgs ?? new Iterable.empty();
 
   set lifetimes(dynamic lifetimes) => _lifetimes = lifetimes is Iterable
       ? new List.from(lifetimes.map(makeRsId))
@@ -160,7 +162,10 @@ abstract class GenericInst implements IsGenericInstance {
 
   // end <class GenericInst>
 
+  /// List of lifetimes parameterizing the [Generic]'s lifetimes
   List<Lifetime> _lifetimes;
+
+  /// List of types instantiating the [Generic]'s types
   List<RsType> _typeArgs;
 }
 

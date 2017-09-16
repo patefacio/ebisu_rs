@@ -76,6 +76,31 @@ class TraitImpl extends Impl with HasTypeAliases {
     codeBlock = new CodeBlock('impl ${_trait.name} for $_type');
   }
 
+  @override
+  onChildrenOwnershipEstablished() {
+    super.onChildrenOwnershipEstablished();
+    // Trait functions have been copied into impl Now find all instances of any
+    // type args of TraitInst that match any type parms of the trait and replace
+    // them.
+    final replaceFromTo = enumerate(_trait.typeArgs).fold({},
+        (prev, iv) => prev..[_trait.typeParms[iv.index].toString()] = iv.value);
+
+    functions.forEach((fn) {
+      final replacedParms = [];
+      enumerate(fn.parms).forEach((parmIndexValue) {
+        final parm = parmIndexValue.value;
+        final parmType = parm.type.toString();
+        final found = replaceFromTo[parmType];
+        if (found != null) {
+          replacedParms.add(new Parm(parm.id, found));
+        } else {
+          replacedParms.add(parm);
+        }
+      });
+      fn.parms = replacedParms;
+    });
+  }
+
   String get name => id.capCamel;
 
   GenericInst inst(
@@ -85,19 +110,21 @@ class TraitImpl extends Impl with HasTypeAliases {
   get unitTestableFunctions => functions.where((fn) => fn.isUnitTestable);
 
   @override
-  String get code => brCompact([
-        !noComment
-            ? tripleSlashComment(
-                doc?.toString() ?? 'TODO: comment impl ${id.snake}')
-            : null,
-        '$_implHeader {',
-        indentBlock(br([
-          typeAliasDecls,
-          functions.map((fn) => fn.code),
-          codeBlock?.toString()
-        ])),
-        '}',
-      ]);
+  String get code {
+    return brCompact([
+      !noComment
+          ? tripleSlashComment(
+              doc?.toString() ?? 'TODO: comment impl ${id.snake}')
+          : null,
+      '$_implHeader {',
+      indentBlock(br([
+        typeAliasDecls,
+        functions.map((fn) => '${fn.code}'),
+        codeBlock?.toString()
+      ])),
+      '}',
+    ]);
+  }
 
   get _implHeader => _trait == null
       ? 'impl$genericDecl ${_type}$boundsDecl'
