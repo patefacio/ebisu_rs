@@ -28,7 +28,7 @@ class Struct extends RsEntity with IsPub, Derives, Generic implements HasCode {
 
   // custom <class Struct>
 
-  get children => concat([lifetimes, typeParms, fields]);
+  get children => concat([lifetimes, typeParms, fields, genericChildren]);
 
   String toString() => 'struct($name)';
 
@@ -94,7 +94,7 @@ class TupleStruct extends RsEntity
     implements HasCode {
   // custom <class TupleStruct>
 
-  Iterable<Entity> get children => new Iterable.empty();
+  Iterable<RsEntity> get children => genericChildren;
 
   String get code => brCompact([
         tripleSlashComment(doc?.toString() ?? 'TODO: Comment TupleStruct($id)'),
@@ -132,7 +132,7 @@ class TupleStructInst extends Object with GenericInst {
 class UnitStruct extends RsEntity with IsPub, Derives implements HasCode {
   // custom <class UnitStruct>
 
-  Iterable<Entity> get children => new Iterable.empty();
+  Iterable<RsEntity> get children => new Iterable.empty();
 
   String get code => brCompact([
         tripleSlashComment(doc?.toString() ?? 'TODO: Comment UnitStruct($id)'),

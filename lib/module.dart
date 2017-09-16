@@ -115,7 +115,7 @@ class Module extends RsEntity
   Module(dynamic id, [this.moduleType]) : super(id);
 
   @override
-  Iterable<Entity> get children => concat(<Iterable<Entity>>[
+  Iterable<RsEntity> get children => concat(<Iterable<Entity>>[
         enums,
         structs,
         modules,

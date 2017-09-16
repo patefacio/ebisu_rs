@@ -153,6 +153,14 @@ class TypeAlias extends RsEntity with IsPub, Generic, HasCode {
     }
   }
 
+  String get name => id.capCamel;
+
+  GenericInst inst(
+          {Iterable typeArgs = const [], Iterable lifetimes = const []}) =>
+      throw 'GenericInst for TypeAlias not implemented';
+
+  Iterable<RsEntity> get children => genericChildren;
+
   TypeAlias(dynamic id, dynamic aliased)
       : aliased = rsType(aliased),
         super(id);
@@ -183,6 +191,14 @@ class AssociatedType extends RsEntity with IsPub, Generic, HasCode, HasBounds {
   // custom <class AssociatedType>
 
   AssociatedType(dynamic id) : super(id);
+
+  Iterable<RsEntity> get children => genericChildren;
+
+  String get name => id.capCamel;
+
+  GenericInst inst(
+          {Iterable typeArgs = const [], Iterable lifetimes = const []}) =>
+      throw 'GenericInst for AssociatedType not implemented';
 
   @override
   get code => brCompact([

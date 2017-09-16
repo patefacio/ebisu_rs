@@ -251,7 +251,12 @@ All rust named items are *RsEntity* instances.'''
                 ..init = false
                 ..access = RW
                 ..doc = 'If self includes *use self::<name>::*;'
-            ]
+            ],
+          class_('enum_inst')
+            ..mixins = ['GenericInst']
+            ..members = [
+              member('enumeration')..type = 'Enum',
+            ],
         ],
 
       library('repo')

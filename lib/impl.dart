@@ -45,8 +45,8 @@ abstract class Impl extends RsEntity with HasCode, Generic, HasCodeBlock {
   }
 
   @override
-  Iterable<Entity> get children =>
-      new List<Fn>.from(functions, growable: false);
+  Iterable<RsEntity> get children =>
+      concat([new List<Fn>.from(functions, growable: false), genericChildren]);
 
   bool get hasUnitTestModule => _unitTestModule != null;
 
@@ -86,7 +86,7 @@ class TraitImpl extends Impl with HasTypeAliases {
         (prev, iv) => prev..[_trait.typeParms[iv.index].toString()] = iv.value);
 
     functions.forEach((fn) {
-      final replacedParms = [];
+      final replacedParms = <Parm>[];
       enumerate(fn.parms).forEach((parmIndexValue) {
         final parm = parmIndexValue.value;
         final parmType = parm.type.toString();

@@ -111,6 +111,10 @@ class Fn extends RsEntity
     }
   }
 
+  GenericInst inst(
+          {Iterable typeArgs = const [], Iterable lifetimes = const []}) =>
+      throw 'GenericInst for Fn not implemented';
+
   get elisionRulesApply => (!returnType.isRefType ||
       parms.where((Parm p) => p.type.isRefType).length == 1 ||
       parms.any((Parm p) => p.type.isRefType && p.id.snake == 'self'));
@@ -131,7 +135,7 @@ class Fn extends RsEntity
     }
   }
 
-  Iterable<Entity> get children => new List<Parm>.from(parms, growable: false);
+  Iterable<RsEntity> get children => concat([genericChildren, new List<Parm>.from(parms, growable: false)]);
 
   set parms(Iterable<Parm> parms) => _parms = new List.from(parms);
 
@@ -243,8 +247,8 @@ class Trait extends RsEntity
   @override
   onOwnershipEstablished() {}
 
-  Iterable<Entity> get children =>
-      new List<Fn>.from(functions, growable: false);
+  Iterable<RsEntity> get children =>
+      concat([genericChildren, new List<Fn>.from(functions, growable: false)]);
 
   String get code => brCompact([
         !noComment

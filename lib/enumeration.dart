@@ -129,11 +129,30 @@ class Enum extends RsEntity with IsPub, Derives, Generic implements HasCode {
   @override
   Iterable<RsEntity> get children => variants;
 
+  GenericInst inst(
+          {Iterable typeArgs = const [], Iterable lifetimes = const []}) =>
+      new EnumInst(this)
+        ..typeArgs = typeArgs
+        ..lifetimes = lifetimes;
+
   // end <class Enum>
 
   Enum(dynamic id) : super(id);
 
   List<Variant> _variants = [];
+}
+
+class EnumInst extends Object with GenericInst {
+  Enum enumeration;
+
+  // custom <class EnumInst>
+
+  String get name => enumeration.name;
+
+  EnumInst(this.enumeration);
+
+  // end <class EnumInst>
+
 }
 
 // custom <library enumeration>

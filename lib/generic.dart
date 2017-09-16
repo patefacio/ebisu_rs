@@ -26,7 +26,7 @@ class Lifetime extends RsEntity implements HasCode, Comparable<Lifetime> {
   Lifetime copy() => new Lifetime(id);
 
   @override
-  bool operator ==(Lifetime other) =>
+  bool operator ==(other) =>
       identical(this, other) || this.id == other.id;
 
   @override
@@ -82,7 +82,7 @@ abstract class Generic {
   set typeParms(Iterable<dynamic> typeParms) =>
       _typeParms = new List.from(typeParms.map(typeParm));
 
-  get children =>
+  get genericChildren =>
       new List<RsEntity>.from(concat([lifetimes, typeParms]), growable: false);
 
   get hasBounds => _typeParms.any((tp) => tp.hasBounds);
