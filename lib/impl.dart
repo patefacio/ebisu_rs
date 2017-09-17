@@ -113,8 +113,8 @@ class TraitImpl extends Impl with HasTypeAliases {
   String get code {
     return brCompact([
       !noComment
-          ? tripleSlashComment(
-              doc?.toString() ?? 'TODO: comment impl ${id.snake}')
+          ? tripleSlashComment(doc?.toString() ??
+              'Implementation of trait `${trait.name}` for type `${type.lifetimeDecl}`')
           : null,
       '$_implHeader {',
       indentBlock(br([

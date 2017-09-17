@@ -15,6 +15,7 @@ class BinaryOpTrait {
   BinaryOpTrait(String traitName, this._binarySymbol) {
       final id = new Id(traitName);
     _trait = new Trait(id.capCamel)
+    ..doc = 'Trait for binary operator `${id.capCamel}`'
     ..typeParms = [#r_h_s]
     ..associatedTypes = [associatedType(#Output)]
     ..functions = [
