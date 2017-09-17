@@ -135,7 +135,8 @@ class Fn extends RsEntity
     }
   }
 
-  Iterable<RsEntity> get children => concat([genericChildren, new List<Parm>.from(parms, growable: false)]);
+  Iterable<RsEntity> get children =>
+      concat([genericChildren, new List<Parm>.from(parms, growable: false)]);
 
   set parms(Iterable<Parm> parms) => _parms = new List.from(parms);
 

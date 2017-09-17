@@ -128,7 +128,7 @@ class TraitImpl extends Impl with HasTypeAliases {
 
   get _implHeader => _trait == null
       ? 'impl$genericDecl ${_type}$boundsDecl'
-      : 'impl$genericDecl ${_trait.genericName} for ${_type.code}$boundsDecl';
+      : 'impl$genericDecl ${_trait.genericName} for ${_type.lifetimeDecl}$boundsDecl';
 
   // end <class TraitImpl>
 

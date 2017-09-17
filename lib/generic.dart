@@ -26,8 +26,7 @@ class Lifetime extends RsEntity implements HasCode, Comparable<Lifetime> {
   Lifetime copy() => new Lifetime(id);
 
   @override
-  bool operator ==(other) =>
-      identical(this, other) || this.id == other.id;
+  bool operator ==(other) => identical(this, other) || this.id == other.id;
 
   @override
   int get hashCode => id.hashCode;

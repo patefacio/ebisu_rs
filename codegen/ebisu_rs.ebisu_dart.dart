@@ -752,6 +752,14 @@ Traits without generics are themselves [TraitInst].
         ..imports = [
           'package:ebisu_rs/trait.dart',
           'package:id/id.dart',
+        ]
+        ..classes = [
+          class_('binary_op_trait')
+            ..defaultMemberAccess = RO
+            ..members = [
+              member('trait')..type = 'Trait',
+              member('binary_symbol'),
+            ]
         ],
 
       library('type')
