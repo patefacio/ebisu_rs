@@ -98,7 +98,7 @@ class TupleStruct extends RsEntity
 
   String get code => brCompact([
         tripleSlashComment(doc?.toString() ?? 'TODO: Comment TupleStruct($id)'),
-        'struct $name$boundsDecl {',
+        '${pubDecl}struct $name$boundsDecl {',
         '}',
       ]);
 
@@ -136,7 +136,7 @@ class UnitStruct extends RsEntity with IsPub, Derives implements HasCode {
 
   String get code => brCompact([
         tripleSlashComment(doc?.toString() ?? 'TODO: Comment UnitStruct($id)'),
-        'struct $name;'
+        '${pubDecl}struct $name;'
       ]);
 
   String get name => id.capCamel;
@@ -148,10 +148,46 @@ class UnitStruct extends RsEntity with IsPub, Derives implements HasCode {
 
 // custom <library struct>
 
+/// Creates a [Struct].
+///
+/// Creates a [Struct] instance identified by [id], which may be a symbol or string.
+/// Returns new [Struct].
+///
 Struct struct(dynamic id) => new Struct(id);
 
+/// Creates a _public_ [Struct].
+///
+/// Creates a _public_ [Struct] instance identified by [id], which may be a symbol or string.
+/// Returns new [Struct].
+///
+Struct pubStruct(dynamic id) => new Struct(id)..isPub = true;
+
+/// Creates a [UnitStruct].
+///
+/// Creates a [UnitStruct] instance identified by [id], which may be a symbol or string.
+/// Returns new [UnitStruct].
+///
 UnitStruct ustruct(dynamic id) => new UnitStruct(id);
 
+/// Creates a _publid_ [UnitStruct].
+///
+/// Creates a _public_ [UnitStruct] instance identified by [id], which may be a symbol or string.
+/// Returns new [UnitStruct].
+///
+UnitStruct pubUstruct(dynamic id) => new UnitStruct(id)..isPub = true;
+
+/// Creates a [TupleStruct].
+///
+/// Creates a [TupleStruct] instance identified by [id], which may be a symbol or string.
+/// Returns new [TupleStruct].
+///
 TupleStruct tstruct(dynamic id) => new TupleStruct(id);
+
+/// Creates a _public_ [TupleStruct].
+///
+/// Creates a _public_ [TupleStruct] instance identified by [id], which may be a symbol or string.
+/// Returns new [TupleStruct].
+///
+TupleStruct pubTstruct(dynamic id) => new TupleStruct(id)..isPublic = true;
 
 // end <library struct>

@@ -39,11 +39,17 @@ struct Bam<'a, T> {
 }
     '''));
 
-    s = ustruct('bong')..doc = 'Bong struct';
-    expect(darkMatter(s.code), darkMatter('''
+    s = pubStruct('bam');
+    expect(s.code.contains('pub struct Bam'), true);
+
+    var us = ustruct('bong')..doc = 'Bong struct';
+    expect(darkMatter(us.code), darkMatter('''
 /// Bong struct
 struct Bong;
 '''));
+
+    us = pubUstruct('bong')..doc = 'Bong struct';
+    expect(us.code.contains('pub struct Bong'), true);
   });
 
 // end <main>

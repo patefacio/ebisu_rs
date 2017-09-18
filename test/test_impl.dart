@@ -41,7 +41,7 @@ void main([List<String> args]) {
       ..setAsRoot();
 
     expect(darkMatter(i1.code), darkMatter('''
-/// TODO: comment impl worker_vec_vec_t
+/// Implementation of trait `Worker` for type `Vec<Vec<T>>`
 impl<T> Worker<T> for Vec<Vec<T>> {
   type Assoc1 = i32;
   type Assoc2 = i64;
