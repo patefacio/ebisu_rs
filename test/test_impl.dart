@@ -68,7 +68,7 @@ impl<T> Worker<T> for Vec<Vec<T>> {
       ..setAsRoot();
 
     expect(darkMatter(i1.code), darkMatter('''
-    /// TODO: comment impl foo
+    /// Implementation for type `Foo`.
 impl Foo {
   /// Does work of course
   ///

@@ -42,7 +42,7 @@ void main([List<String> args]) {
 ///  * `a` - The *i32* field called *a*
 ///  * `b` - TODO: comment parm
 ///  * `c` - TODO: comment parm
-///  * return - TODO: document return
+///  * _return_ - TODO: document return
 ///
 #[bam]
 fn foobar<'s, T1, T2>(a : & 's mut i32, mut b : f64, c : String) -> &'a i32;
@@ -60,7 +60,7 @@ fn foobar<'s, T1, T2>(a : & 's mut i32, mut b : f64, c : String) -> &'a i32;
 ///  * `a` - The *i32* field called *a*
 ///  * `b` - TODO: comment parm
 ///  * `c` - TODO: comment parm
-///  * return - TODO: document return
+///  * _return_ - TODO: document return
 ///
 #[bam]
 fn foobar<'s, T1, T2>(a : & 's mut i32, mut b : f64, c : String) -> i32;

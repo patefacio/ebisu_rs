@@ -178,7 +178,7 @@ class Fn extends RsEntity
         [
           _returnType == null || _returnType.code == '()'
               ? null
-              : ' * return - ${returnDoc ?? "TODO: document return"}'
+              : ' * _return_ - ${returnDoc ?? "TODO: document return"}'
         ]
       ]))
     ])));

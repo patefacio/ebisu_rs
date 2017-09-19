@@ -141,7 +141,7 @@ class TypeImpl extends Impl {
 
   // custom <class TypeImpl>
 
-  String get name => id.snake;
+  String get name => id.capCamel;
 
   TypeImpl(this._type) : super(makeGenericId(_type.code)) {
     codeBlock = new CodeBlock('impl $_type');
@@ -167,7 +167,7 @@ class TypeImpl extends Impl {
   String get code => brCompact([
         !noComment
             ? tripleSlashComment(
-                doc?.toString() ?? 'TODO: comment impl ${id.snake}')
+                doc?.toString() ?? 'Implementation for type `$name`.')
             : null,
         '$_implHeader {',
         indentBlock(
