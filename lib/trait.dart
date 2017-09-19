@@ -322,23 +322,13 @@ class TraitInst extends Object with GenericInst {
 
 // custom <library trait>
 
-/// Create a Fn.
-///
-/// *id* - Symbol or String identifying function
-///
-/// *parms* - Parameters to the function
-///
-/// *returnType* - Type function returns - default is ()
+/// Create a [Fn] identified by [id], which may be Symbol, String or Id
+/// with function parameters [parms]. Returns the new [Fn].
 Fn fn(dynamic id, [Iterable<dynamic> parms, dynamic returnType = UnitType]) =>
     new Fn(id, parms, returnType);
 
-/// Create a _public_ Fn.
-///
-/// *id* - Symbol or String identifying function
-///
-/// *parms* - Parameters to the function
-///
-/// *returnType* - Type function returns - default is ()
+/// Create a _public_ [Fn] identified by [id], which may be Symbol, String or Id
+/// with function parameters [parms]. Returns the new [Fn].
 Fn pubFn(dynamic id, [Iterable<dynamic> parms, dynamic returnType = UnitType]) =>
     new Fn(id, parms, returnType)..isPub = true;
 

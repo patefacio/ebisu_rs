@@ -381,14 +381,14 @@ class Module extends RsEntity
 
 // custom <library module>
 
-/// Create a [Module] specified by [import] which may be a Symbol, String or Id
+/// Create a [Module] specified by [id] which may be a Symbol, String or Id
 /// and [moduleType]
 ///
 Module module(dynamic id, [ModuleType moduleType = fileModule]) =>
     new Module(id, moduleType);
 
-/// Create a _public_ [Module] specified by [import] which may be a Symbol, String or Id
-/// and [moduleType]
+/// Create a _public_ [Module] specified by [id] which may be a Symbol, String
+/// or Id and [moduleType]
 ///
 Module pubModule(dynamic id, [ModuleType moduleType = fileModule]) =>
     new Module(id, moduleType)..isPub = true;
