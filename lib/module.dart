@@ -387,6 +387,12 @@ class Module extends RsEntity
 Module module(dynamic id, [ModuleType moduleType = fileModule]) =>
     new Module(id, moduleType);
 
+/// Create a _public_ [Module] specified by [import] which may be a Symbol, String or Id
+/// and [moduleType]
+///
+Module pubModule(dynamic id, [ModuleType moduleType = fileModule]) =>
+    new Module(id, moduleType)..isPub = true;
+
 /// Creates a [Module] with standard characteristics of `use super::*` and `#[cfg(test)]`
 ///
 Module makeUnitTestModule() => module('tests', inlineModule)
