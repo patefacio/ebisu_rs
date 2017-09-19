@@ -332,6 +332,16 @@ class TraitInst extends Object with GenericInst {
 Fn fn(dynamic id, [Iterable<dynamic> parms, dynamic returnType = UnitType]) =>
     new Fn(id, parms, returnType);
 
+/// Create a _public_ Fn.
+///
+/// *id* - Symbol or String identifying function
+///
+/// *parms* - Parameters to the function
+///
+/// *returnType* - Type function returns - default is ()
+Fn pubFn(dynamic id, [Iterable<dynamic> parms, dynamic returnType = UnitType]) =>
+    new Fn(id, parms, returnType)..isPub = true;
+
 Parm parm(dynamic id, dynamic type, [bool isMutable = false]) =>
     new Parm(id, type, isMutable);
 

@@ -65,6 +65,8 @@ fn foobar<'s, T1, T2>(a : & 's mut i32, mut b : f64, c : String) -> &'a i32;
 #[bam]
 fn foobar<'s, T1, T2>(a : & 's mut i32, mut b : f64, c : String) -> i32;
     '''));
+
+    expect(pubFn(#foo).code.contains('pub fn foo'), true);
   });
 
   test('trait basics', () {
