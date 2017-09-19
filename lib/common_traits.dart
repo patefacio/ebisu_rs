@@ -13,21 +13,21 @@ class BinaryOpTrait {
   // custom <class BinaryOpTrait>
 
   BinaryOpTrait(String traitName, this._binarySymbol) {
-      final id = new Id(traitName);
+    final id = new Id(traitName);
     _trait = new Trait(id.capCamel)
-    ..doc = 'Trait for binary operator `${id.capCamel}`'
-    ..typeParms = [#r_h_s]
-    ..associatedTypes = [associatedType(#Output)]
-    ..functions = [
-      fn(id.snake, [self, parm(#rhs, 'RHS')..doc = 'right hand side of binary op'])
-        ..returns = 'Self::Output'
-        ..returnDoc = '`Self::Output` result from binary operation'
-        ..doc = 'Binary operation for (`self` `$binarySymbol` `rhs`)'
-    ];
+      ..doc = 'Trait for binary operator `${id.capCamel}`'
+      ..typeParms = [#r_h_s]
+      ..associatedTypes = [associatedType(#Output)]
+      ..functions = [
+        fn(id.snake,
+            [self, parm(#rhs, 'RHS')..doc = 'right hand side of binary op'])
+          ..returns = 'Self::Output'
+          ..returnDoc = '`Self::Output` result from binary operation'
+          ..doc = 'Binary operation for (`self` `$binarySymbol` `rhs`)'
+      ];
   }
 
   get name => _trait.name;
-
 
   // end <class BinaryOpTrait>
 

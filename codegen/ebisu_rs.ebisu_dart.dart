@@ -553,7 +553,7 @@ All rust named items are *RsEntity* instances.'''
           class_('module')
             ..extend = 'RsEntity'
             ..implement = ['HasFilePath', 'HasCode']
-            ..mixins = ['IsPub', 'HasAttributes', 'HasTypeAliases']
+            ..mixins = ['IsPub', 'HasAttributes', 'HasTypeAliases', 'IsUnitTestable']
             ..members.addAll([
               member('file_path')..access = RO,
               member('module_type')..type = 'ModuleType',

@@ -87,7 +87,7 @@ class Import extends Object with HasAttributes {
 }
 
 class Module extends RsEntity
-    with IsPub, HasAttributes, HasTypeAliases
+    with IsPub, HasAttributes, HasTypeAliases, IsUnitTestable
     implements HasFilePath, HasCode {
   String get filePath => _filePath;
   ModuleType moduleType;
@@ -165,6 +165,8 @@ class Module extends RsEntity
     }
 
     /// add unit tests
+
+    if (isUnitTestable) addUnitTest(new Id('module_${id.snake}'));
 
     unitTestableFunctions.forEach((fn) => addUnitTest(fn.id));
 
