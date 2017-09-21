@@ -531,6 +531,9 @@ All rust named items are *RsEntity* instances.'''
             ],
           enum_('module_code_block')
             ..hasLibraryScopedValues = true
+            ..libraryScopedValuesCase = camelCase
+            ..requiresClass = true
+            ..hasCamelNames = true
             ..values = [
               enumValue(id('module_top'))
                 ..doc =

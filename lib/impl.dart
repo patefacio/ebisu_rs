@@ -31,7 +31,7 @@ abstract class Impl extends RsEntity with HasCode, Generic, HasCodeBlock {
         (_unitTestModule = module(id, inlineModule)
           ..uses = ['super::*']
           ..noComment = true
-          ..withModuleCodeBlock(moduleBottom, (cb) => null));
+          ..withModuleCodeBlock(moduleTop, (cb) => null));
   }
 
   withUnitTestModule(void f(Module unitTestModule)) => f(unitTestModule);

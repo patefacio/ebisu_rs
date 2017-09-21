@@ -46,12 +46,47 @@ const MainCodeBlock mainOpen = MainCodeBlock.mainOpen;
 ///
 const MainCodeBlock mainClose = MainCodeBlock.mainClose;
 
-enum ModuleCodeBlock {
+class ModuleCodeBlock implements Comparable<ModuleCodeBlock> {
   /// The custom block appearing just after imports, mod statements and usings
-  moduleTop,
+  static const ModuleCodeBlock moduleTop = const ModuleCodeBlock._(0);
 
   /// The custom block appearing at end of module
-  moduleBottom
+  static const ModuleCodeBlock moduleBottom = const ModuleCodeBlock._(1);
+
+  static List<ModuleCodeBlock> get values =>
+      const <ModuleCodeBlock>[moduleTop, moduleBottom];
+
+  final int value;
+
+  int get hashCode => value;
+
+  const ModuleCodeBlock._(this.value);
+
+  ModuleCodeBlock copy() => this;
+
+  int compareTo(ModuleCodeBlock other) => value.compareTo(other.value);
+
+  String toString() {
+    switch (this) {
+      case moduleTop:
+        return "ModuleTop";
+      case moduleBottom:
+        return "ModuleBottom";
+    }
+    return null;
+  }
+
+  static ModuleCodeBlock fromString(String s) {
+    if (s == null) return null;
+    switch (s) {
+      case "ModuleTop":
+        return moduleTop;
+      case "ModuleBottom":
+        return moduleBottom;
+      default:
+        return null;
+    }
+  }
 }
 
 /// Convenient access to ModuleCodeBlock.moduleTop with *moduleTop* see [ModuleCodeBlock].
@@ -151,21 +186,19 @@ class Module extends RsEntity
 
   addPubUses(Iterable uses) => this._uses.addAll(uses.map(pubUse));
 
-  addUseForTest(dynamic u) =>
-      withUnitTestModule((m) => m.addUse(u));
+  addUseForTest(dynamic u) => withUnitTestModule((m) => m.addUse(u));
 
-  addUsesForTest(Iterable uses) => 
-      withUnitTestModule((m) => m.addUses(uses)); 
+  addUsesForTest(Iterable uses) => withUnitTestModule((m) => m.addUses(uses));
 
   void withMainCodeBlock(
           MainCodeBlock mainCodeBlock, void f(CodeBlock codeBlock)) =>
       f(mainCodeBlocks.putIfAbsent(
-          mainCodeBlock, () => codeBlock('main ${mainCodeBlock}')));
+          mainCodeBlock, () => codeBlock('main $name ${mainCodeBlock}')));
 
   void withModuleCodeBlock(
           ModuleCodeBlock moduleCodeBlock, void f(CodeBlock codeBlock)) =>
       f(moduleCodeBlocks.putIfAbsent(
-          moduleCodeBlock, () => codeBlock('module ${moduleCodeBlock}')));
+          moduleCodeBlock, () => codeBlock('module $name ${moduleCodeBlock}')));
 
   void withUnitTestModule(void f(Module module)) => f(unitTestModule);
 
