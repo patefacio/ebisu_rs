@@ -33,6 +33,8 @@ void main([List<String> args]) {
             ..uses = ['someType', pubUse('pubUseType')]
             ..addUses(['foo::goo'])
             ..addPubUses(['for_consumption::foo'])
+            ..addUseForTest('useForTest')
+            ..addUsesForTest(['a', use('b')])
             ..useClippy = true)
       ]
       ..setAsRoot();
@@ -48,6 +50,11 @@ void main([List<String> args]) {
     expect(subMod2.code.contains('\nuse foo::goo;'), true);
     expect(subMod2.code.contains('\npub use pubUseType;'), true);
     expect(subMod2.code.contains('\npub use for_consumption::foo;'), true);
+
+    expect(subMod2.code.contains(new RegExp(r'mod tests {[^}]*use useForTest;', multiLine: true)), true);
+    expect(subMod2.code.contains(new RegExp(r'mod tests {[^}]*use b;', multiLine: true)), true);
+    expect(subMod2.code.contains(new RegExp(r'mod tests {[^}]*use a;', multiLine: true)), true);
+
     expect(
         subMod2.code.contains('#![cfg_attr(feature="clippy", plugin(clippy))]'),
         true);

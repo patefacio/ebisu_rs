@@ -145,9 +145,17 @@ class Module extends RsEntity
     addUses(uses);
   }
 
-  addUses(Iterable uses) => this._uses.addAll(uses.map(use));
+  addUse(dynamic u) => this._uses.add(use(u));
+
+  addUses(Iterable uses) => uses.forEach((u) => addUse(u));
 
   addPubUses(Iterable uses) => this._uses.addAll(uses.map(pubUse));
+
+  addUseForTest(dynamic u) =>
+      withUnitTestModule((m) => m.addUse(u));
+
+  addUsesForTest(Iterable uses) => 
+      withUnitTestModule((m) => m.addUses(uses)); 
 
   void withMainCodeBlock(
           MainCodeBlock mainCodeBlock, void f(CodeBlock codeBlock)) =>
