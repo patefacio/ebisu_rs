@@ -86,6 +86,23 @@ class Import extends Object with HasAttributes {
   final String _import;
 }
 
+/// Represents a rust using statement
+class Use extends Object with HasAttributes, IsPub implements Comparable<Use> {
+  int compareTo(Use other) => used.compareTo(other.used);
+
+  /// The symbol used
+  String used;
+
+  // custom <class Use>
+
+  Use(this.used);
+
+  String get useStatement => brCompact([externalAttrs, '${pubDecl}use $used;']);
+
+  // end <class Use>
+
+}
+
 class Module extends RsEntity
     with IsPub, HasAttributes, HasTypeAliases, IsUnitTestable
     implements HasFilePath, HasCode {
@@ -105,10 +122,7 @@ class Module extends RsEntity
   bool useClippy = false;
 
   /// List of use symbols for module
-  List uses = [];
-
-  /// List of pub use symbols for module
-  List pubUses = [];
+  List<Use> get uses => _uses;
 
   // custom <class Module>
 
@@ -125,6 +139,15 @@ class Module extends RsEntity
       ]) as Iterable<Entity>;
 
   String toString() => 'mod($name:$moduleType)';
+
+  set uses(Iterable<dynamic> uses) {
+    this._uses..clear();
+    addUses(uses);
+  }
+
+  addUses(Iterable uses) => this._uses.addAll(uses.map(use));
+
+  addPubUses(Iterable uses) => this._uses.addAll(uses.map(pubUse));
 
   void withMainCodeBlock(
           MainCodeBlock mainCodeBlock, void f(CodeBlock codeBlock)) =>
@@ -173,9 +196,6 @@ class Module extends RsEntity
     _filePath = (isDirectoryModule || isInlineModule)
         ? join(ownerPath, id.snake)
         : ownerPath;
-
-    uses.sort();
-    pubUses.sort();
 
     _logger.info("Ownership of module($id) established in   $filePath");
   }
@@ -271,88 +291,96 @@ class Module extends RsEntity
   String get _implDecls => br(impls.map((i) => i.code));
   String get _importsDecls => brCompact(imports.map((i) => i.code));
 
+  get _sortedNonPubUses => uses.where((u) => !u.isPub).toList()..sort();
+  get _sortedPubUses => uses.where((u) => u.isPub).toList()..sort();
+
   _announce(section, [bool hasContents = true]) =>
       !isInlineModule && hasContents ? '// --- module $section ---\n\n' : null;
 
-  String get code => br([
-        !noComment && !isInlineModule
-            ? innerDocComment(doc == null ? 'TODO: comment module $id' : doc)
-            : null,
+  String get code {
+    final pubUses = _sortedPubUses;
+    final nonPubUses = _sortedNonPubUses;
 
-        // If this is an inline module, external attrs will be used
-        isInlineModule ? null : internalAttrs,
+    return br([
+      !noComment && !isInlineModule
+          ? innerDocComment(doc == null ? 'TODO: comment module $id' : doc)
+          : null,
 
-        // imports
-        br([
-          _announce('imports', imports.isNotEmpty),
-          brCompact(_importsDecls),
-        ]),
+      // If this is an inline module, external attrs will be used
+      isInlineModule ? null : internalAttrs,
 
-        moduleCodeBlocks[moduleTop],
+      // imports
+      br([
+        _announce('imports', imports.isNotEmpty),
+        brCompact(_importsDecls),
+      ]),
 
-        // pub use statements
-        br([
-          _announce('pub use statements', pubUses.isNotEmpty),
-          brCompact(pubUses.map((i) => 'pub use $i;')),
-        ]),
+      moduleCodeBlocks[moduleTop],
 
-        // use statements
-        br([
-          _announce('use statements', uses.isNotEmpty),
-          brCompact(uses.map((i) => 'use $i;')),
-        ]),
+      // pub use statements
+      br([
+        _announce('pub use statements', pubUses.isNotEmpty),
+        brCompact(pubUses.map((i) => i.useStatement)),
+      ]),
 
-        // declared mods
-        brCompact(declaredMods
-            .map((module) => '${module.pubDecl}mod ${module.name};')),
+      // use statements
+      br([
+        _announce('use statements', nonPubUses.isNotEmpty),
+        brCompact(nonPubUses.map((i) => i.useStatement)),
+      ]),
 
-        // type aliases
-        br([
-          _announce('type aliases', hasTypeAliases),
-          brCompact(typeAliasDecls),
-        ]),
+      // declared mods
+      brCompact(
+          declaredMods.map((module) => '${module.pubDecl}mod ${module.name};')),
 
-        // enums
-        br([
-          _announce('enum definitions', enums.isNotEmpty),
-          isDeclaredModule ? _enumDecls : indent(_enumDecls),
-        ]),
+      // type aliases
+      br([
+        _announce('type aliases', hasTypeAliases),
+        brCompact(typeAliasDecls),
+      ]),
 
-        // structs
-        br([
-          _announce('struct definitinos', structs.isNotEmpty),
-          isDeclaredModule ? _structDecls : indent(_structDecls),
-        ]),
+      // enums
+      br([
+        _announce('enum definitions', enums.isNotEmpty),
+        isDeclaredModule ? _enumDecls : indent(_enumDecls),
+      ]),
 
-        // traits
-        br([
-          _announce('trait definitions', traits.isNotEmpty),
-          isDeclaredModule ? _traitDecls : indent(_traitDecls),
-        ]),
+      // structs
+      br([
+        _announce('struct definitinos', structs.isNotEmpty),
+        isDeclaredModule ? _structDecls : indent(_structDecls),
+      ]),
 
-        // impls
-        br([
-          _announce('impl definitions', impls.isNotEmpty),
-          isDeclaredModule ? _implDecls : indent(_implDecls),
-        ]),
+      // traits
+      br([
+        _announce('trait definitions', traits.isNotEmpty),
+        isDeclaredModule ? _traitDecls : indent(_traitDecls),
+      ]),
 
-        // functions
-        br([
-          _announce('function definitions', functions.isNotEmpty),
-          isDeclaredModule
-              ? functions.map((fn) => (fn..codeBlock).code)
-              : indent(br(functions.map((fn) => (fn..codeBlock).code))),
-        ]),
+      // impls
+      br([
+        _announce('impl definitions', impls.isNotEmpty),
+        isDeclaredModule ? _implDecls : indent(_implDecls),
+      ]),
 
-        // inline code
-        _inlineCode(modules),
+      // functions
+      br([
+        _announce('function definitions', functions.isNotEmpty),
+        isDeclaredModule
+            ? functions.map((fn) => (fn..codeBlock).code)
+            : indent(br(functions.map((fn) => (fn..codeBlock).code))),
+      ]),
 
-        moduleCodeBlocks[moduleBottom],
+      // inline code
+      _inlineCode(modules),
 
-        _unitTestModule == null ? null : _inlineCode([_unitTestModule]),
+      moduleCodeBlocks[moduleBottom],
 
-        _main,
-      ]);
+      _unitTestModule == null ? null : _inlineCode([_unitTestModule]),
+
+      _main,
+    ]);
+  }
 
   bool get _hasMain => mainCodeBlocks.isNotEmpty;
 
@@ -374,6 +402,7 @@ class Module extends RsEntity
   List<Import> _imports = [];
   Map<ModuleCodeBlock, CodeBlock> _moduleCodeBlocks = {};
   Map<MainCodeBlock, CodeBlock> _mainCodeBlocks = {};
+  List<Use> _uses = [];
 
   /// Module `tests` for unit testing this containing modules functionality
   Module _unitTestModule;
@@ -404,5 +433,14 @@ Module makeUnitTestModule() => module('tests', inlineModule)
 ///
 Import import(dynamic import, [bool usesMacros = false]) =>
     new Import(import, usesMacros);
+
+/// Create an [Used] specified by [used]
+///
+Use use(dynamic used) => used is Use ? used : new Use(used);
+
+/// Create an _public_ [Used] specified by [used]
+///
+Use pubUse(dynamic used) =>
+    ((used is Use ? use : new Use(used)) as Use)..isPub = true;
 
 // end <library module>

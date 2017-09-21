@@ -89,6 +89,7 @@ abstract class IsGenericInstance {
 
 }
 
+/// Mixin for entities that support _pub_ keyword
 abstract class IsPub {
   /// True indicates entity is public
   bool isPub = false;

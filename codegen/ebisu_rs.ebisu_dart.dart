@@ -115,6 +115,7 @@ All rust named items are *RsEntity* instances.'''
           class_('has_code')..isAbstract = true,
           class_('is_generic_instance')..isAbstract = true,
           class_('is_pub')
+            ..doc = 'Mixin for entities that support _pub_ keyword'
             ..isAbstract = true
             ..members = [
               member('is_pub')
@@ -550,10 +551,24 @@ All rust named items are *RsEntity* instances.'''
                 ..isFinal = true,
               member('uses_macros')..init = false
             ],
+
+          class_('use')
+          ..doc = 'Represents a rust using statement'
+          ..mixins = [ 'HasAttributes', 'IsPub']
+          ..isComparable = true
+          ..members = [
+            member('used')
+            ..doc = 'The symbol used'
+          ],
           class_('module')
             ..extend = 'RsEntity'
             ..implement = ['HasFilePath', 'HasCode']
-            ..mixins = ['IsPub', 'HasAttributes', 'HasTypeAliases', 'IsUnitTestable']
+            ..mixins = [
+              'IsPub',
+              'HasAttributes',
+              'HasTypeAliases',
+              'IsUnitTestable'
+            ]
             ..members.addAll([
               member('file_path')..access = RO,
               member('module_type')..type = 'ModuleType',
@@ -592,9 +607,8 @@ All rust named items are *RsEntity* instances.'''
                 ..init = false,
               member('uses')
                 ..doc = 'List of use symbols for module'
-                ..init = [],
-              member('pub_uses')
-                ..doc = 'List of pub use symbols for module'
+                ..type = 'List<Use>'
+                ..access = RO
                 ..init = [],
               member('unit_test_module')
                 ..doc =

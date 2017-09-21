@@ -329,7 +329,8 @@ Fn fn(dynamic id, [Iterable<dynamic> parms, dynamic returnType = UnitType]) =>
 
 /// Create a _public_ [Fn] identified by [id], which may be Symbol, String or Id
 /// with function parameters [parms]. Returns the new [Fn].
-Fn pubFn(dynamic id, [Iterable<dynamic> parms, dynamic returnType = UnitType]) =>
+Fn pubFn(dynamic id,
+        [Iterable<dynamic> parms, dynamic returnType = UnitType]) =>
     new Fn(id, parms, returnType)..isPub = true;
 
 Parm parm(dynamic id, dynamic type, [bool isMutable = false]) =>

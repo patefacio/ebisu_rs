@@ -30,7 +30,9 @@ void main([List<String> args]) {
             ..functions = [
               fn(#do_work, [parm(#unit, i32)])
             ]
-            ..uses = ['someType']
+            ..uses = ['someType', pubUse('pubUseType')]
+            ..addUses(['foo::goo'])
+            ..addPubUses(['for_consumption::foo'])
             ..useClippy = true)
       ]
       ..setAsRoot();
@@ -42,7 +44,10 @@ void main([List<String> args]) {
         subMod2.code
             .contains('#![cfg_attr(feature="clippy", feature(plugin))]'),
         true);
-    expect(subMod2.code.contains('use someType;'), true);
+    expect(subMod2.code.contains('\nuse someType;'), true);
+    expect(subMod2.code.contains('\nuse foo::goo;'), true);
+    expect(subMod2.code.contains('\npub use pubUseType;'), true);
+    expect(subMod2.code.contains('\npub use for_consumption::foo;'), true);
     expect(
         subMod2.code.contains('#![cfg_attr(feature="clippy", plugin(clippy))]'),
         true);
