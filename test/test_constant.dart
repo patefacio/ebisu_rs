@@ -25,9 +25,10 @@ void main([List<String> args]) {
 
   test('constants in functions', () {
     var f = fn(#foo)
-      ..constants = [new Const(#foo, i32)..value = 3]
+      ..constants = [new Const(#foo, i32)..value = 3..doc = 'Is const foo']
       ..setAsRoot();
 
+    expect(f.code.contains('/// Is const foo'), true);
     expect(f.code.contains('const FOO: i32 = 3;'), true);
 
     f = fn(#foo)

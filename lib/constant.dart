@@ -23,7 +23,14 @@ class Const extends RsEntity with IsPub, HasAttributes {
 
   set type(dynamic type) => _type = rsType(type);
 
-  String get code => '${pubDecl}const ${id.shout}: ${type.code} = $value;';
+  String get code => brCompact([
+        !noComment
+            ? tripleSlashComment(doc?.toString() ??
+                'TODO: comment static`${id.shout}`')
+            : null,
+        '${pubDecl}const ${id.shout}: ${type.code} = $value;'
+      ]);
+
 
   // end <class Const>
 
