@@ -29,6 +29,16 @@ void main([List<String> args]) {
       ..setAsRoot();
 
     expect(f.code.contains('const FOO: i32 = 3;'), true);
+
+    f = fn(#foo)
+      ..constants = [
+        const_(#foo, i32)
+          ..value = 3
+          ..isPub = true
+      ]
+      ..setAsRoot();
+
+    expect(f.code.contains('pub const FOO: i32 = 3;'), true);
   });
 
   test('constants in modules', () {
@@ -36,6 +46,9 @@ void main([List<String> args]) {
       ..constants = [new Const(#foo, i32)..value = 3]
       ..setAsRoot();
     expect(m.code.contains('const FOO: i32 = 3;'), true);
+
+    m.constants.first.isPub = true;
+    expect(m.code.contains('pub const FOO: i32 = 3;'), true);
   });
 
 // end <main>

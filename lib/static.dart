@@ -10,7 +10,7 @@ import 'package:ebisu_rs/type.dart';
 // end <additional imports>
 
 /// Defines a rust constant
-class Static extends RsEntity with HasAttributes {
+class Static extends RsEntity with IsPub, HasAttributes {
   /// Value assigned to static
   dynamic value;
 
@@ -25,7 +25,7 @@ class Static extends RsEntity with HasAttributes {
 
   set type(dynamic type) => _type = rsType(type);
 
-  String get code => 'static ${id.shout}: ${type.code} = $value;';
+  String get code => '${pubDecl}static ${id.shout}: ${type.code} = $value;';
 
   // end <class Static>
 
@@ -48,5 +48,8 @@ abstract class HasStatics {
 // custom <library static>
 
 Static static(dynamic id, [dynamic type]) => new Static(id, type);
+
+Static pubStatic(dynamic id, [dynamic type]) =>
+    new Static(id, type)..isPub = true;
 
 // end <library static>

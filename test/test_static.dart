@@ -28,14 +28,30 @@ void main([List<String> args]) {
       ..statics = [static(#foo, i32)..value = 3]
       ..setAsRoot();
 
-    expect(f.code.contains('static FOO: i32 = 3;'), true);
+    expect(
+        f.code.contains(
+            new RegExp(r'\n\s*static FOO: i32 = 3;', multiLine: true)),
+        true);
+
+    f = fn(#foo)
+      ..statics = [static(#foo, i32)..value = 3..isPub = true]
+      ..setAsRoot();
+
+    expect(f.code.contains('pub static FOO: i32 = 3;'), true);
   });
 
   test('statics in modules', () {
     var m = module(#foo, inlineModule)
       ..statics = [static(#foo, i32)..value = 3]
       ..setAsRoot();
-    expect(m.code.contains('static FOO: i32 = 3;'), true);
+
+    expect(
+        m.code.contains(
+            new RegExp(r'\n?\s*static FOO: i32 = 3;', multiLine: true)),
+        true);
+
+    m.statics.first.isPub = true;
+    expect(m.code.contains('pub static FOO: i32 = 3;'), true);
   });
 
 // end <main>

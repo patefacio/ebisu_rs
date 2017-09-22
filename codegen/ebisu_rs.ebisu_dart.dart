@@ -520,7 +520,7 @@ All rust named items are *RsEntity* instances.'''
           class_('const')
             ..doc = 'Defines a rust constant'
             ..extend = 'RsEntity'
-            ..mixins = ['HasAttributes']
+            ..mixins = ['IsPub', 'HasAttributes']
             ..members = [
               member('value')
                 ..doc = 'Value assigned to constant'
@@ -550,11 +550,11 @@ All rust named items are *RsEntity* instances.'''
           class_('static')
             ..doc = 'Defines a rust constant'
             ..extend = 'RsEntity'
-            ..mixins = ['HasAttributes']
+            ..mixins = ['IsPub', 'HasAttributes']
             ..members = [
               member('value')
-              ..doc = 'Value assigned to static'
-              ..type = 'dynamic',
+                ..doc = 'Value assigned to static'
+                ..type = 'dynamic',
               member('type')
                 ..doc = 'Type associated with static'
                 ..access = RO
