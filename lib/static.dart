@@ -27,8 +27,8 @@ class Static extends RsEntity with IsPub, HasAttributes {
 
   String get code => brCompact([
         !noComment
-            ? tripleSlashComment(doc?.toString() ??
-                'TODO: comment static`${id.shout}`')
+            ? tripleSlashComment(
+                doc?.toString() ?? 'TODO: comment static`${id.shout}`')
             : null,
         '${pubDecl}static ${id.shout}: ${type.code} = $value;'
       ]);

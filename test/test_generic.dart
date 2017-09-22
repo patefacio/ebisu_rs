@@ -29,6 +29,8 @@ void main([List<String> args]) {
     expect(lifetime(#a).code, "'a");
     expect(typeParm(#t).code, 'T');
 
+    expect((typeParm(#t)..defaultType = f64).code, 'T = f64');
+
     var s = struct('a')
       ..fields = [
         field(#t1, #T1)..doc = 'The t1 factor',

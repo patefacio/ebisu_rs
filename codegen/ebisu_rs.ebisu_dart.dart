@@ -138,9 +138,9 @@ All rust named items are *RsEntity* instances.'''
       library('generic')
         ..imports = [
           'package:ebisu_rs/trait.dart',
+          'package:ebisu/ebisu.dart',
         ]
         ..importAndExportAll([
-          'package:id/id.dart',
           'package:ebisu_rs/entity.dart',
           'package:ebisu_rs/type.dart',
           'package:quiver/iterables.dart',
@@ -155,7 +155,12 @@ All rust named items are *RsEntity* instances.'''
             ..withClass(commonFeatures)
             ..implement = ['HasCode']
             ..mixins = ['HasBounds']
-            ..members = [],
+            ..members = [
+              member('default_type')
+                ..doc = 'Default for the type for the `TypeParm`'
+                ..access = RO
+                ..type = 'RsType',
+            ],
           class_('generic')
             ..isAbstract = true
             ..doc =
@@ -850,6 +855,7 @@ Traits without generics are themselves [TraitInst].
         ..includesMain = true
         ..imports = ['dart:mirrors', 'package:ebisu/ebisu.dart']
         ..importAndExportAll([
+          'package:id/id.dart',
           'package:quiver/iterables.dart',
           'package:ebisu_rs/entity.dart',
           'package:ebisu_rs/generic.dart',

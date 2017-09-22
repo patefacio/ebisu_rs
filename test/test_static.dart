@@ -25,7 +25,11 @@ void main([List<String> args]) {
 
   test('statics in functions', () {
     var f = fn(#foo)
-      ..statics = [static(#foo, i32)..value = 3..doc = 'Is static foo']
+      ..statics = [
+        static(#foo, i32)
+          ..value = 3
+          ..doc = 'Is static foo'
+      ]
       ..setAsRoot();
 
     expect(f.code.contains('/// Is static foo'), true);
@@ -35,7 +39,11 @@ void main([List<String> args]) {
         true);
 
     f = fn(#foo)
-      ..statics = [static(#foo, i32)..value = 3..isPub = true]
+      ..statics = [
+        static(#foo, i32)
+          ..value = 3
+          ..isPub = true
+      ]
       ..setAsRoot();
 
     expect(f.code.contains('pub static FOO: i32 = 3;'), true);

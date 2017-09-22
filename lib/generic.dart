@@ -1,14 +1,13 @@
 library ebisu_rs.generic;
 
+import 'package:ebisu/ebisu.dart';
 import 'package:ebisu_rs/entity.dart';
 import 'package:ebisu_rs/trait.dart';
 import 'package:ebisu_rs/type.dart';
-import 'package:id/id.dart';
 import 'package:quiver/iterables.dart';
 
 export 'package:ebisu_rs/entity.dart';
 export 'package:ebisu_rs/type.dart';
-export 'package:id/id.dart';
 export 'package:quiver/iterables.dart';
 
 // custom <additional imports>
@@ -38,20 +37,30 @@ class Lifetime extends RsEntity implements HasCode, Comparable<Lifetime> {
 }
 
 class TypeParm extends RsEntity with HasBounds implements HasCode {
+  /// Default for the type for the `TypeParm`
+  RsType get defaultType => _defaultType;
+
   // custom <class TypeParm>
 
   get children => new Iterable.empty();
 
   @override
-  get code => "${id.capCamel}";
+  get code => '${id.capCamel}$_withDefault';
 
   get boundsDecl => '$code : ${super.boundsDecl}';
 
+  set defaultType(dynamic defaultType) => _defaultType = rsType(defaultType);
+
   toString() => code;
+
+  String get _withDefault =>
+      _defaultType == null ? '' : ' = ${_defaultType.code}';
 
   // end <class TypeParm>
 
   TypeParm(dynamic id) : super(id);
+
+  RsType _defaultType;
 }
 
 /// An item that is parameterized by [lifetimes] and [typeParms]

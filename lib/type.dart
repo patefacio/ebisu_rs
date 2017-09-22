@@ -4,10 +4,12 @@ import 'dart:mirrors';
 import 'package:ebisu/ebisu.dart';
 import 'package:ebisu_rs/entity.dart';
 import 'package:ebisu_rs/generic.dart';
+import 'package:id/id.dart';
 import 'package:quiver/iterables.dart';
 
 export 'package:ebisu_rs/entity.dart';
 export 'package:ebisu_rs/generic.dart';
+export 'package:id/id.dart';
 export 'package:quiver/iterables.dart';
 
 // custom <additional imports>
