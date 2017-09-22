@@ -3,9 +3,11 @@ library ebisu_rs.module;
 import 'dart:io';
 import 'package:ebisu/ebisu.dart';
 import 'package:ebisu_rs/attribute.dart';
+import 'package:ebisu_rs/constant.dart';
 import 'package:ebisu_rs/crate.dart';
 import 'package:ebisu_rs/entity.dart';
 import 'package:ebisu_rs/impl.dart';
+import 'package:ebisu_rs/static.dart';
 import 'package:ebisu_rs/struct.dart';
 import 'package:ebisu_rs/trait.dart';
 import 'package:logging/logging.dart';
@@ -14,8 +16,10 @@ import 'package:quiver/iterables.dart';
 
 export 'dart:io';
 export 'package:ebisu_rs/attribute.dart';
+export 'package:ebisu_rs/constant.dart';
 export 'package:ebisu_rs/crate.dart';
 export 'package:ebisu_rs/impl.dart';
+export 'package:ebisu_rs/static.dart';
 export 'package:ebisu_rs/struct.dart';
 export 'package:ebisu_rs/trait.dart';
 export 'package:path/path.dart';
@@ -139,7 +143,13 @@ class Use extends Object with HasAttributes, IsPub implements Comparable<Use> {
 }
 
 class Module extends RsEntity
-    with IsPub, HasAttributes, HasTypeAliases, IsUnitTestable
+    with
+        IsPub,
+        HasConstants,
+        HasStatics,
+        HasAttributes,
+        HasTypeAliases,
+        IsUnitTestable
     implements HasFilePath, HasCode {
   String get filePath => _filePath;
   ModuleType moduleType;
@@ -214,11 +224,17 @@ class Module extends RsEntity
 
   @override
   onOwnershipEstablished() {
-    _logger.info('Ownership established for module ${owner.id}:$id');
-    var ownerPath = (owner as HasFilePath).filePath;
+    _logger.info('Ownership established for module ${owner?.id}:$id');
+    if (owner != null) {
+      var ownerPath = (owner as HasFilePath).filePath;
 
-    if (owner is Crate) {
-      ownerPath = join(ownerPath, 'src');
+      if (owner is Crate) {
+        ownerPath = join(ownerPath, 'src');
+      }
+
+      _filePath = (isDirectoryModule || isInlineModule)
+          ? join(ownerPath, id.snake)
+          : ownerPath;
     }
 
     if (useClippy) {
@@ -233,10 +249,6 @@ class Module extends RsEntity
     if (isUnitTestable) addUnitTest(new Id('module_${id.snake}'));
 
     unitTestableFunctions.forEach((fn) => addUnitTest(fn.id));
-
-    _filePath = (isDirectoryModule || isInlineModule)
-        ? join(ownerPath, id.snake)
-        : ownerPath;
 
     _logger.info("Ownership of module($id) established in   $filePath");
   }
@@ -378,6 +390,18 @@ class Module extends RsEntity
       br([
         _announce('type aliases', hasTypeAliases),
         brCompact(typeAliasDecls),
+      ]),
+
+      // constants
+      br([
+        _announce('constants', hasConstants),
+        brCompact(constantDecls),
+      ]),
+
+      // statics
+      br([
+        _announce('statics', hasStatics),
+        brCompact(staticDecls),
       ]),
 
       // enums

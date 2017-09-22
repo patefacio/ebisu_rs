@@ -2,14 +2,18 @@ library ebisu_rs.trait;
 
 import 'package:ebisu/ebisu.dart' hide codeBlock;
 import 'package:ebisu_rs/attribute.dart';
+import 'package:ebisu_rs/constant.dart';
 import 'package:ebisu_rs/entity.dart';
 import 'package:ebisu_rs/generic.dart';
+import 'package:ebisu_rs/static.dart';
 import 'package:ebisu_rs/type.dart';
 import 'package:logging/logging.dart';
 
 export 'package:ebisu_rs/attribute.dart';
+export 'package:ebisu_rs/constant.dart';
 export 'package:ebisu_rs/entity.dart';
 export 'package:ebisu_rs/generic.dart';
+export 'package:ebisu_rs/static.dart';
 export 'package:ebisu_rs/type.dart';
 
 // custom <additional imports>
@@ -81,7 +85,14 @@ class SelfRefMutableParm extends Parm {
 }
 
 class Fn extends RsEntity
-    with IsPub, Generic, HasAttributes, HasCodeBlock, IsUnitTestable {
+    with
+        IsPub,
+        Generic,
+        HasStatics,
+        HasConstants,
+        HasAttributes,
+        HasCodeBlock,
+        IsUnitTestable {
   List<Parm> get parms => _parms;
   RsType get returnType => _returnType;
 
@@ -133,10 +144,18 @@ class Fn extends RsEntity
           .toList()
             ..sort();
     }
+
+    if (hasStatics) {
+      codeBlock.snippets.insert(0, brCompact(staticDecls));
+    }
+
+    if (hasConstants) {
+      codeBlock.snippets.insert(0, brCompact(constantDecls));
+    }
   }
 
   Iterable<RsEntity> get children =>
-      concat([genericChildren, new List<Parm>.from(parms, growable: false)]);
+      concat([genericChildren, constants, statics]);
 
   set parms(Iterable<Parm> parms) => _parms = new List.from(parms);
 

@@ -53,6 +53,8 @@ main(List<String> args) {
         ..imports = ['package:ebisu_rs/dependency.dart'],
       library('test_lifetime_elision')
         ..imports = ['package:ebisu_rs/trait.dart'],
+      library('test_constant')..imports = ['package:ebisu_rs/constant.dart'],
+      library('test_static')..imports = ['package:ebisu_rs/static.dart'],
     ]
     ..libraries = [
       library('ebisu_rs')
@@ -505,10 +507,73 @@ All rust named items are *RsEntity* instances.'''
                 ..init = [],
             ],
         ],
+
+      library('constant')
+        ..doc = 'Support for *const* definitions'
+        ..imports = [
+          'package:ebisu_rs/type.dart',
+          'package:ebisu_rs/entity.dart',
+          'package:ebisu_rs/attribute.dart',
+          'package:ebisu/ebisu.dart',
+        ]
+        ..classes = [
+          class_('const')
+            ..doc = 'Defines a rust constant'
+            ..extend = 'RsEntity'
+            ..mixins = ['HasAttributes']
+            ..members = [
+              member('value')
+                ..doc = 'Value assigned to constant'
+                ..type = 'dynamic',
+              member('type')
+                ..doc = 'Type associated with constant'
+                ..access = RO
+                ..type = 'RsType'
+            ],
+          class_('has_constants')
+            ..isAbstract = true
+            ..members = [
+              member('constants')
+                ..type = 'List<Const>'
+                ..init = []
+            ],
+        ],
+      library('static')
+        ..doc = 'Support for *const* definitions'
+        ..imports = [
+          'package:ebisu_rs/type.dart',
+          'package:ebisu_rs/entity.dart',
+          'package:ebisu_rs/attribute.dart',
+          'package:ebisu/ebisu.dart',
+        ]
+        ..classes = [
+          class_('static')
+            ..doc = 'Defines a rust constant'
+            ..extend = 'RsEntity'
+            ..mixins = ['HasAttributes']
+            ..members = [
+              member('value')
+              ..doc = 'Value assigned to static'
+              ..type = 'dynamic',
+              member('type')
+                ..doc = 'Type associated with static'
+                ..access = RO
+                ..type = 'RsType'
+            ],
+          class_('has_statics')
+            ..isAbstract = true
+            ..members = [
+              member('statics')
+                ..type = 'List<Static>'
+                ..init = []
+            ],
+        ],
       library('module')
         ..imports = commonIncludes()
         ..importAndExportAll([
           'package:path/path.dart',
+          'package:ebisu_rs/constant.dart',
+          'package:ebisu_rs/static.dart',
           'package:ebisu_rs/attribute.dart',
           'package:ebisu_rs/struct.dart',
           'package:ebisu_rs/crate.dart',
@@ -554,20 +619,18 @@ All rust named items are *RsEntity* instances.'''
                 ..isFinal = true,
               member('uses_macros')..init = false
             ],
-
           class_('use')
-          ..doc = 'Represents a rust using statement'
-          ..mixins = [ 'HasAttributes', 'IsPub']
-          ..isComparable = true
-          ..members = [
-            member('used')
-            ..doc = 'The symbol used'
-          ],
+            ..doc = 'Represents a rust using statement'
+            ..mixins = ['HasAttributes', 'IsPub']
+            ..isComparable = true
+            ..members = [member('used')..doc = 'The symbol used'],
           class_('module')
             ..extend = 'RsEntity'
             ..implement = ['HasFilePath', 'HasCode']
             ..mixins = [
               'IsPub',
+              'HasConstants',
+              'HasStatics',
               'HasAttributes',
               'HasTypeAliases',
               'IsUnitTestable'
@@ -627,6 +690,8 @@ All rust named items are *RsEntity* instances.'''
         ..imports.add('"package:ebisu/ebisu.dart" hide codeBlock')
         ..importAndExportAll([
           'package:ebisu_rs/entity.dart',
+          'package:ebisu_rs/constant.dart',
+          'package:ebisu_rs/static.dart',
           'package:ebisu_rs/attribute.dart',
           'package:ebisu_rs/generic.dart',
           'package:ebisu_rs/type.dart',
@@ -650,6 +715,8 @@ All rust named items are *RsEntity* instances.'''
             ..mixins = [
               'IsPub',
               'Generic',
+              'HasStatics',
+              'HasConstants',
               'HasAttributes',
               'HasCodeBlock',
               'IsUnitTestable'

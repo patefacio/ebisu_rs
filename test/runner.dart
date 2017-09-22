@@ -12,6 +12,8 @@ import 'test_enumeration.dart' as test_enumeration;
 import 'test_ebisu_rs.dart' as test_ebisu_rs;
 import 'test_dependency.dart' as test_dependency;
 import 'test_lifetime_elision.dart' as test_lifetime_elision;
+import 'test_constant.dart' as test_constant;
+import 'test_static.dart' as test_static;
 
 void main() {
   Logger.root.level = Level.OFF;
@@ -32,4 +34,6 @@ void main() {
   test_ebisu_rs.main(null);
   test_dependency.main(null);
   test_lifetime_elision.main(null);
+  test_constant.main(null);
+  test_static.main(null);
 }
