@@ -45,7 +45,24 @@ final BinaryOpTrait remTrait = new BinaryOpTrait('rem', '%');
 
 final binaryOpTraits = [addTrait, subTrait, mulTrait, divTrait, remTrait];
 
-final Trait derefTrait = _numBinaryOpTrait('deref');
-final Trait derefMutTrait = _numBinaryOpTrait('deref_mut');
+final Trait derefTrait = trait('deref')
+  ..associatedTypes = [#t]
+  ..functions = [
+    fn(#deref)
+      ..doc = 'Method to dereference a value'
+      ..parms = [selfRef]
+      ..returns = '&Self::Target'
+      ..returnDoc = 'The dereferenced value'
+  ];
+
+final Trait derefMutTrait = trait('deref_mut')
+  ..associatedTypes = [#t]
+  ..functions = [
+    fn(#deref_mut)
+      ..doc = 'Method to dereference a value mutably (like *v = 1;)'
+      ..parms = [selfRefMutable]
+      ..returns = '&mut Self::Target'
+      ..returnDoc = 'The dereferenced value'
+  ];
 
 // end <library common_traits>
