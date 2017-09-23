@@ -355,7 +355,13 @@ Fn pubFn(dynamic id,
 Parm parm(dynamic id, dynamic type, [bool isMutable = false]) =>
     new Parm(id, type, isMutable);
 
+/// Create a [Trait] identified by [id], which may be Symbol, String or Id.
+/// Returns the new [Trait].
 Trait trait(dynamic id) => new Trait(id);
+
+/// Create a _public_ [Trait] identified by [id],∏ which may be Symbol, String
+/// or Id. Returns the new [Trait].
+Trait pubTrait(dynamic id) => new Trait(id)..isPub = true;
 
 final Parm self = new SelfParm();
 final Parm selfRef = new SelfRefParm();

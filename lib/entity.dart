@@ -114,7 +114,7 @@ class IsUnitTestable {
 
 makeRsId(dynamic id) => makeId(id is Symbol ? MirrorSystem.getName(id) : id);
 
-RegExp _replaceable = new RegExp('[<> ]');
+RegExp _replaceable = new RegExp('[<> ,]');
 
 makeGenericId(String s) => makeId(s
     .replaceAll(_replaceable, '')
