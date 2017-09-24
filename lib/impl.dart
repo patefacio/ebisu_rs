@@ -92,7 +92,10 @@ class TraitImpl extends Impl with HasTypeAliases {
         final parmType = parm.type.toString();
         final found = replaceFromTo[parmType];
         if (found != null) {
-          replacedParms.add(new Parm(parm.id, found));
+          // TODO: Consider making parm copyable
+          replacedParms.add(new Parm(parm.id, found)
+            ..doc = parm.doc
+            ..isMutable = parm.isMutable);
         } else {
           replacedParms.add(parm);
         }

@@ -177,12 +177,6 @@ class Fn extends RsEntity
   String get signatureNoLifetimes =>
       '${pubDecl}fn $name$genericDeclNoLifetimes($_parmsTextNoLifetimes) -> ${_returnType.code}$boundsDecl';
 
-/* TODO: revisit if possible to elide lifetimes in sane way
-  String get signature => _returnType.lifetimes.isNotEmpty?
-      '${pubDecl}fn $name$genericDecl($_parmsText) -> ${_returnType.lifetimeDecl}' :
-      '${pubDecl}fn $name$genericDeclNoLifetimes($_parmsText) -> ${returnType.lifetimeDecl}';
-*/
-
   String get _docComment {
     var fnDoc = [
       descr == null
