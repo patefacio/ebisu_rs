@@ -279,7 +279,7 @@ class Trait extends RsEntity
         '}'
       ]);
 
-  _getSubTraitName(s) => s is String ? s : s.name;
+  _getSubTraitName(s) => s is String ? s : s.genericName;
 
   String get _traitDecl =>
       '${pubDecl}trait $name${genericDecl}' +
