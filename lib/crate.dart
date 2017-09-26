@@ -328,7 +328,7 @@ class CrateToml {
     _logger.info('Generating crate toml $crate');
 
     var tomlPath = join(crate.filePath, 'Cargo.toml');
-    mergeWithFile(contents, tomlPath);
+    scriptMergeWithFile(contents, tomlPath);
   }
 
   void _addIfMissing(Dependency dependency) {
@@ -363,6 +363,7 @@ class CrateToml {
 
         '\n[dependencies]',
         deps.join("\n"),
+        new ScriptCodeBlock('dependencies').toString(),
 
         _buildDeps,
       ]);
