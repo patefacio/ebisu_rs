@@ -160,6 +160,9 @@ class EnumInst extends Object with GenericInst {
 Enum enum_(dynamic id, Iterable<dynamic> variants) => new Enum(id)
   ..variants = variants.map((v) => v is String ? uv(v) : v as Variant);
 
+Enum pubEnum(dynamic id, Iterable<dynamic> variants) =>
+    enum_(id, variants)..isPub = true;
+
 UnitVariant uv(dynamic id, [dynamic value]) => new UnitVariant(id, value);
 TupleVariant tv(dynamic id, [Iterable fields]) => new TupleVariant(id, fields);
 TupleField tf(dynamic type, [String doc]) => new TupleField(type, doc);
