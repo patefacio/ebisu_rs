@@ -75,10 +75,8 @@ abstract class Generic {
   String get genericName => '$name$genericDecl';
 
   generic(Iterable<dynamic> lifetimes, Iterable<dynamic> typeParms) {
-    this._lifetimes =
-        lifetimes.map((lt) => lt is Lifetime ? lt : lifetime(lt)).toList();
-    this._typeParms =
-        typeParms.map((tp) => tp is TypeParm ? tp : typeParm(tp)).toList();
+    this.lifetimes = lifetimes;
+    this.typeParms = typeParms;
   }
 
   GenericInst inst(
@@ -146,7 +144,7 @@ abstract class GenericInst implements IsGenericInstance {
   Iterable<RsType> get typeArgs => _typeArgs ?? new Iterable.empty();
 
   set lifetimes(dynamic lifetimes) => _lifetimes = lifetimes is Iterable
-      ? new List.from(lifetimes.map(makeRsId))
+      ? new List.from(lifetimes.map(lifetime))
       : [makeRsId(lifetimes)];
 
   set typeArgs(dynamic typeArgs) => _typeArgs = typeArgs is Iterable
@@ -179,7 +177,7 @@ abstract class GenericInst implements IsGenericInstance {
 
 // custom <library generic>
 
-Lifetime lifetime([dynamic id]) => id is Lifetime ? id : new Lifetime(id);
+Lifetime lifetime([dynamic id]) => id is Lifetime ? id : new Lifetime(makeRsId(id));
 TypeParm typeParm(dynamic id) => id is TypeParm ? id : new TypeParm(id);
 
 // end <library generic>

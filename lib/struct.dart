@@ -23,7 +23,7 @@ export 'package:ebisu_rs/field.dart';
 
 final Logger _logger = new Logger('struct');
 
-class Struct extends RsEntity with IsPub, Derives, Generic implements HasCode {
+class Struct extends RsEntity with IsPub, Derives, Generic implements RsType {
   List<Field> fields = [];
 
   // custom <class Struct>
@@ -33,6 +33,12 @@ class Struct extends RsEntity with IsPub, Derives, Generic implements HasCode {
   String toString() => 'struct($name)';
 
   String get name => id.capCamel;
+
+  bool get isRef => false;
+
+  bool get isMref => false;
+
+  bool get isRefType => false;
 
   @override
   onOwnershipEstablished() {
@@ -70,22 +76,45 @@ class Struct extends RsEntity with IsPub, Derives, Generic implements HasCode {
         '}'
       ]);
 
+  @override
+  copy() => throw 'Struct may not be copied';
+
+  @override
+  get lifetimeDecl => genericName;
+
   // end <class Struct>
 
   Struct(dynamic id) : super(id);
 }
 
-class StructInst extends Object with GenericInst {
-  Struct struct;
+class StructInst extends Object with GenericInst implements RsType {
+  copy() => new StructInst._copy(this);
+
+  Struct get struct => _struct;
 
   // custom <class StructInst>
 
-  StructInst(this.struct);
+  StructInst(this._struct);
+
+  bool get isRef => false;
+
+  bool get isMref => false;
+
+  bool get isRefType => false;
 
   String get name => struct.name;
 
+  @override
+  String get lifetimeDecl => genericName;
+
+  @override
+  String get code => genericName;
+
   // end <class StructInst>
 
+  StructInst._copy(StructInst other) : _struct = other._struct?.copy();
+
+  Struct _struct;
 }
 
 /// Tuple struct

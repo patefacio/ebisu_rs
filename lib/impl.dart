@@ -147,7 +147,7 @@ class TypeImpl extends Impl {
   String get name => id.capCamel;
 
   TypeImpl(this._type) : super(makeGenericId(_type.code)) {
-    codeBlock = new CodeBlock('impl $_type');
+    codeBlock = new CodeBlock('impl ${id.snake}');
   }
 
   GenericInst inst(
@@ -178,7 +178,7 @@ class TypeImpl extends Impl {
         '}',
       ]);
 
-  get _implHeader => 'impl$genericDecl ${_type}$boundsDecl';
+  get _implHeader => 'impl$genericDecl ${_type.lifetimeDecl}$boundsDecl';
 
   // end <class TypeImpl>
 

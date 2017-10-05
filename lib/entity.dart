@@ -58,6 +58,10 @@ abstract class RsEntity extends Object with Entity {
   @override
   Iterable<RsEntity> get children => new Iterable.empty();
 
+  RsEntity._copy(RsEntity other)
+      : id = other.id,
+        noComment = other.noComment;
+
   // end <class RsEntity>
 
 }
@@ -114,10 +118,11 @@ class IsUnitTestable {
 
 makeRsId(dynamic id) => makeId(id is Symbol ? MirrorSystem.getName(id) : id);
 
-RegExp _replaceable = new RegExp('[<> ,]');
+RegExp _replaceable = new RegExp("[<> ,]");
 
 makeGenericId(String s) => makeId(s
     .replaceAll(_replaceable, '')
+    .replaceAll("'", '_')
     .replaceAll('&', 'ref_')
     .replaceAllMapped(new RegExp('([a-z])([A-Z])'),
         (Match m) => '${m[1]}_${m[2].toLowerCase()}')

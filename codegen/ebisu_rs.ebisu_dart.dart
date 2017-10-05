@@ -1003,7 +1003,7 @@ Traits without generics are themselves [TraitInst].
         ])
         ..classes = [
           class_('struct')
-            ..implement = ['HasCode']
+            ..implement = ['RsType']
             ..mixins = ['IsPub', 'Derives', 'Generic']
             ..withClass(commonFeatures)
             ..members.addAll([
@@ -1013,8 +1013,12 @@ Traits without generics are themselves [TraitInst].
             ]),
           class_('struct_inst')
             ..mixins = ['GenericInst']
+            ..implement = ['RsType']
+            ..isCopyable = true
             ..members = [
-              member('struct')..type = 'Struct',
+              member('struct')
+                ..type = 'Struct'
+                ..access = RO,
             ],
           class_('tuple_struct')
             ..doc = 'Tuple struct'
