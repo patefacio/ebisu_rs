@@ -20,7 +20,7 @@ abstract class Variant extends RsEntity implements HasCode {
   @override
   get children => new Iterable.empty();
 
-  String get name => id.camel;
+  String get name => id.capCamel;
 
   // end <class Variant>
 
