@@ -114,8 +114,8 @@ class Fn extends RsEntity
   /// *parms* - Parameters to the function
   ///
   /// *returnType* - Type function returns - default is ()
-  Fn(dynamic id, [Iterable<Parm> parms, dynamic returnType = UnitType])
-      : _returnType = returnType,
+  Fn(dynamic id, [Iterable<Parm> parms, dynamic returnType])
+      : _returnType = returnType ?? UnitType,
         super(id) {
     if (parms != null) {
       this.parms = parms;
@@ -126,9 +126,9 @@ class Fn extends RsEntity
           {Iterable typeArgs = const [], Iterable lifetimes = const []}) =>
       throw 'GenericInst for Fn not implemented';
 
-  get elisionRulesApply => (!returnType.isRefType ||
-      parms.where((Parm p) => p.type.isRefType).length == 1 ||
-      parms.any((Parm p) => p.type.isRefType && p.id.snake == 'self'));
+  get elisionRulesApply => (!returnType.isRef ||
+      parms.where((Parm p) => p.type.isRef).length == 1 ||
+      parms.any((Parm p) => p.type.isRef && p.id.snake == 'self'));
 
   get codeBlock => _codeBlock ?? (_codeBlock = new CodeBlock('fn ${id.snake}'));
 
@@ -309,7 +309,7 @@ class UnmodeledTrait {
 /// Only useful for traits with generics.
 /// Traits without generics are themselves [TraitInst].
 ///
-class TraitInst extends Object with GenericInst {
+class TraitInst extends GenericInst {
   /// Trait being instantiated
   Trait trait;
 
@@ -337,14 +337,13 @@ class TraitInst extends Object with GenericInst {
 
 /// Create a [Fn] identified by [id], which may be Symbol, String or Id
 /// with function parameters [parms]. Returns the new [Fn].
-Fn fn(dynamic id, [Iterable<dynamic> parms, dynamic returnType = UnitType]) =>
-    new Fn(id, parms, returnType);
+Fn fn(dynamic id, [Iterable<dynamic> parms, dynamic returnType]) =>
+    new Fn(id, parms, returnType ?? UnitType);
 
 /// Create a _public_ [Fn] identified by [id], which may be Symbol, String or Id
 /// with function parameters [parms]. Returns the new [Fn].
-Fn pubFn(dynamic id,
-        [Iterable<dynamic> parms, dynamic returnType = UnitType]) =>
-    new Fn(id, parms, returnType)..isPub = true;
+Fn pubFn(dynamic id, [Iterable<dynamic> parms, dynamic returnType]) =>
+    new Fn(id, parms, returnType ?? UnitType)..isPub = true;
 
 Parm parm(dynamic id, dynamic type, [bool isMutable = false]) =>
     new Parm(id, type, isMutable);

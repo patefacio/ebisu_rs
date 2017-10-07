@@ -20,13 +20,9 @@ abstract class RsType implements HasCode {
 
   RsType copy();
 
-  const RsType();
+  bool get isRef => this is RefType;
 
-  bool get isRef => false;
-
-  bool get isMref => false;
-
-  bool get isRefType => false;
+  bool get isMref => this is Mref;
 
   /// Returns type with lifetime attributes
   String get lifetimeDecl => toString();
@@ -44,7 +40,7 @@ class BuiltInType extends RsType {
 
   // custom <class BuiltInType>
 
-  const BuiltInType(this.typeName);
+  BuiltInType(this.typeName);
 
   @override
   String get code => typeName;
@@ -56,7 +52,7 @@ class BuiltInType extends RsType {
 }
 
 /// A type taken defined by a String and assumed to exist
-class UnmodeledType extends RsType {
+class UnmodeledType extends GenericInst {
   final String name;
 
   // custom <class UnmodeledType>
@@ -64,6 +60,9 @@ class UnmodeledType extends RsType {
   UnmodeledType(this.name);
 
   copy() => this;
+
+  @override
+  get lifetimeDecl => code;
 
   @override
   get code => name;
@@ -84,18 +83,20 @@ class RefType extends RsType {
       : referent = rsType(referent),
         _lifetime = lifetime is Lifetime ? lifetime : new Lifetime(lifetime);
 
-  bool get isRefType => true;
-
   String get lifetimeDecl => ['&', lifetime.code, mut, referent.lifetimeDecl]
       .where((term) => term.isNotEmpty)
       .join(' ');
 
-  Iterable<Lifetime> get lifetimes => lifetime != null
-      ? concat(<Iterable<Lifetime>>[
-          [lifetime],
-          referent.lifetimes
-        ])
-      : referent.lifetimes;
+  Iterable<Lifetime> get lifetimes {
+    final result = _lifetime != null
+        ? concat(<Iterable<Lifetime>>[
+            [_lifetime],
+            referent.lifetimes
+          ])
+        : referent.lifetimes;
+
+    return result;
+  }
 
   bool get isMutable => false;
 
@@ -117,8 +118,6 @@ class Ref extends RefType {
   // custom <class Ref>
 
   Ref(dynamic referent, [dynamic lifetime]) : super(referent, lifetime);
-
-  bool get isRef => true;
 
   // end <class Ref>
 
@@ -258,26 +257,26 @@ abstract class HasBounds {
 
 // custom <library type>
 
-const char = const BuiltInType('char');
-const string = const BuiltInType('String');
-const str = const BuiltInType('str');
-const isize = const BuiltInType('isize');
-const usize = const BuiltInType('usize');
-const i8 = const BuiltInType('i8');
-const i16 = const BuiltInType('i16');
-const i32 = const BuiltInType('i32');
-const i64 = const BuiltInType('i64');
+final char = new BuiltInType('char');
+final string = new BuiltInType('String');
+final str = new BuiltInType('str');
+final isize = new BuiltInType('isize');
+final usize = new BuiltInType('usize');
+final i8 = new BuiltInType('i8');
+final i16 = new BuiltInType('i16');
+final i32 = new BuiltInType('i32');
+final i64 = new BuiltInType('i64');
 
-const u8 = const BuiltInType('u8');
-const u16 = const BuiltInType('u16');
-const u32 = const BuiltInType('u32');
-const u64 = const BuiltInType('u64');
+final u8 = new BuiltInType('u8');
+final u16 = new BuiltInType('u16');
+final u32 = new BuiltInType('u32');
+final u64 = new BuiltInType('u64');
 
-const f32 = const BuiltInType('f32');
-const f64 = const BuiltInType('f64');
-const bool_ = const BuiltInType('bool');
+final f32 = new BuiltInType('f32');
+final f64 = new BuiltInType('f64');
+final bool_ = new BuiltInType('bool');
 
-const UnitType = const BuiltInType('()');
+final UnitType = new BuiltInType('()');
 
 /// Create a new [Ref] rust type (eg ref(i32) -> &i32).
 ///

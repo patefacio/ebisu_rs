@@ -142,7 +142,7 @@ class Enum extends RsEntity with IsPub, Derives, Generic implements HasCode {
   List<Variant> _variants = [];
 }
 
-class EnumInst extends Object with GenericInst {
+class EnumInst extends GenericInst {
   Enum enumeration;
 
   // custom <class EnumInst>

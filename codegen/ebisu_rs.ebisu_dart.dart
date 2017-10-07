@@ -38,6 +38,7 @@ main(List<String> args) {
     ..scripts = []
     ..testLibraries = [
       library('test_attribute')..imports = ['package:ebisu_rs/attribute.dart'],
+      library('test_binary')..imports = ['package:ebisu_rs/crate.dart'],
       library('test_type')..imports = ['package:ebisu_rs/type.dart'],
       library('test_struct')..imports = ['package:ebisu_rs/struct.dart'],
       library('test_repo')..imports = ['package:ebisu_rs/repo.dart'],
@@ -82,6 +83,8 @@ All rust named items are *RsEntity* instances.'''
         ..includesLogger = true
         ..imports = [
           'package:id/id.dart',
+          'package:ebisu_rs/repo.dart',
+          'package:ebisu_rs/crate.dart',
           'package:ebisu/ebisu.dart',
           'package:glob/glob.dart',
           'dart:mirrors',
@@ -94,6 +97,7 @@ All rust named items are *RsEntity* instances.'''
           enum_('module_type')
             ..hasLibraryScopedValues = true
             ..values = [
+              'binary_module',
               'root_module',
               'inline_module',
               'file_module',
@@ -115,7 +119,6 @@ All rust named items are *RsEntity* instances.'''
             ],
           class_('has_file_path')..isAbstract = true,
           class_('has_code')..isAbstract = true,
-          class_('is_generic_instance')..isAbstract = true,
           class_('is_pub')
             ..doc = 'Mixin for entities that support _pub_ keyword'
             ..isAbstract = true
@@ -176,8 +179,7 @@ All rust named items are *RsEntity* instances.'''
             ],
           class_('generic_inst')
             ..doc = 'An instantiation of a generic'
-            ..isAbstract = true
-            ..implement = ['IsGenericInstance']
+            ..extend = 'RsType'
             ..members = [
               member('generic')
                 ..type = 'Generic'
@@ -261,7 +263,7 @@ All rust named items are *RsEntity* instances.'''
                 ..doc = 'If self includes *use self::<name>::*;'
             ],
           class_('enum_inst')
-            ..mixins = ['GenericInst']
+            ..extend = 'GenericInst'
             ..members = [
               member('enumeration')..type = 'Enum',
             ],
@@ -408,7 +410,6 @@ All rust named items are *RsEntity* instances.'''
           class_('clap')
             ..doc = 'Models command line args per *clap* crate'
             ..members = [
-              member('crate')..type = 'Crate',
               member('pull_args')
                 ..doc = 'Create struct to store args and pull from matches'
                 ..init = true,
@@ -466,8 +467,29 @@ All rust named items are *RsEntity* instances.'''
               member('clap')
                 ..doc = 'For app crates a command line argument processor'
                 ..type = 'Clap'
-                ..access = RO
+                ..access = RO,
+              member('binaries')
+                ..doc =
+                    'Additinal binaries in the create - deposited in `.../src/bin`'
+                ..type = 'List<Binary>'
+                ..init = [],
             ],
+          class_('binary')
+            ..extend = 'RsEntity'
+            ..implement = ['HasFilePath']
+            ..doc =
+                'An executable generated into the `src/bin/` path of the crate'
+            ..members = [
+              member('logger_type')..type = 'LoggerType',
+              member('clap')
+                ..doc = 'For command line options of the binary'
+                ..type = 'Clap'
+                ..access = RO,
+              member('module')
+                ..doc = 'Module for the binary'
+                ..type = 'Module'
+                ..access = RO
+            ]
         ],
       library('attribute')
         ..imports = ['package:id/id.dart', 'package:ebisu_rs/entity.dart']
@@ -780,7 +802,7 @@ An instance of a [Trait].
 Only useful for traits with generics. 
 Traits without generics are themselves [TraitInst].
           '''
-            ..mixins = ['GenericInst']
+            ..extend = 'GenericInst'
             ..members = [
               member('trait')
                 ..doc = 'Trait being instantiated'
@@ -869,7 +891,7 @@ Traits without generics are themselves [TraitInst].
             ..members = [member('type_name')..isFinal = true],
           class_('unmodeled_type')
             ..doc = 'A type taken defined by a String and assumed to exist'
-            ..extend = 'RsType'
+            ..extend = 'GenericInst'
             ..members = [
               member('name')..isFinal = true,
             ],
@@ -1003,7 +1025,6 @@ Traits without generics are themselves [TraitInst].
         ])
         ..classes = [
           class_('struct')
-            ..implement = ['RsType']
             ..mixins = ['IsPub', 'Derives', 'Generic']
             ..withClass(commonFeatures)
             ..members.addAll([
@@ -1012,8 +1033,7 @@ Traits without generics are themselves [TraitInst].
                 ..init = [],
             ]),
           class_('struct_inst')
-            ..mixins = ['GenericInst']
-            ..implement = ['RsType']
+            ..extend = 'GenericInst'
             ..isCopyable = true
             ..members = [
               member('struct')
@@ -1027,7 +1047,7 @@ Traits without generics are themselves [TraitInst].
             ..withClass(commonFeatures)
             ..members.addAll([]),
           class_('tuple_struct_inst')
-            ..mixins = ['GenericInst']
+            ..extend = 'GenericInst'
             ..members = [
               member('tuple_struct')..type = 'TupleStruct',
             ],

@@ -23,7 +23,7 @@ export 'package:ebisu_rs/field.dart';
 
 final Logger _logger = new Logger('struct');
 
-class Struct extends RsEntity with IsPub, Derives, Generic implements RsType {
+class Struct extends RsEntity with IsPub, Derives, Generic {
   List<Field> fields = [];
 
   // custom <class Struct>
@@ -34,25 +34,19 @@ class Struct extends RsEntity with IsPub, Derives, Generic implements RsType {
 
   String get name => id.capCamel;
 
-  bool get isRef => false;
-
-  bool get isMref => false;
-
-  bool get isRefType => false;
-
   @override
   onOwnershipEstablished() {
     _logger.info("Ownership of struct ${id}:${runtimeType}");
     if (lifetimes.isEmpty) {
-      lifetimes = new Set<Lifetime>.from(
-              concat(fields.map<Iterable<Field>>((m) => m.lifetimes)).toList())
-          .toList()
-            ..sort();
+      inferLifetimes();
     }
+  }
 
-    for (final field in fields) {
-      if (field.type.isRef) {}
-    }
+  inferLifetimes() {
+    lifetimes =
+        new Set<Lifetime>.from(concat(fields.map((m) => m.lifetimes)).toList())
+            .toList()
+              ..sort();
   }
 
   GenericInst inst(
@@ -76,10 +70,8 @@ class Struct extends RsEntity with IsPub, Derives, Generic implements RsType {
         '}'
       ]);
 
-  @override
   copy() => throw 'Struct may not be copied';
-
-  @override
+  // TODO: Is this function necessary?
   get lifetimeDecl => genericName;
 
   // end <class Struct>
@@ -87,7 +79,7 @@ class Struct extends RsEntity with IsPub, Derives, Generic implements RsType {
   Struct(dynamic id) : super(id);
 }
 
-class StructInst extends Object with GenericInst implements RsType {
+class StructInst extends GenericInst {
   copy() => new StructInst._copy(this);
 
   Struct get struct => _struct;
@@ -95,12 +87,6 @@ class StructInst extends Object with GenericInst implements RsType {
   // custom <class StructInst>
 
   StructInst(this._struct);
-
-  bool get isRef => false;
-
-  bool get isMref => false;
-
-  bool get isRefType => false;
 
   String get name => struct.name;
 
@@ -144,7 +130,7 @@ class TupleStruct extends RsEntity
   TupleStruct(dynamic id) : super(id);
 }
 
-class TupleStructInst extends Object with GenericInst {
+class TupleStructInst extends GenericInst {
   TupleStruct tupleStruct;
 
   // custom <class TupleStructInst>

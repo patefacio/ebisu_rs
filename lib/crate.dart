@@ -153,11 +153,13 @@ class Arg {
 
   bool get takesValue => defaultValue != null || argType != argBool;
 
-  String get type =>
-      isMultiple ? 'Vec<${_baseType.lifetimeDecl}>' : _baseType.lifetimeDecl;
+  // TODO: fix the Vec<..>
+  get type => isMultiple
+      ? (new UnmodeledType('Vec')..typeArgs = [ref('str')])
+      : _baseType;
 
   static final Map<ArgType, RsType> _baseTypes = {
-    argString: ref(str, 'a'),
+    argString: ref(str),
     argI8: i8,
     argI16: i16,
     argI32: i32,
@@ -201,8 +203,6 @@ class Command {
 
 /// Models command line args per *clap* crate
 class Clap {
-  Crate crate;
-
   /// Create struct to store args and pull from matches
   bool pullArgs = true;
 
@@ -214,15 +214,17 @@ class Clap {
 
   // custom <class Clap>
 
-  Clap(this.crate) : _command = new Command(crate.id);
+  Clap(dynamic id) : _command = new Command(makeRsId(id));
 
   set version(String version) => command.version = version;
   set author(String author) => command.author = author;
   set about(String about) => command.about = about;
 
+  get id => command.id;
+
   String get code => brCompact([
         'use clap::{App, Arg};',
-        'let matches = App::new("${crate.name}")',
+        'let matches = App::new("${id.snake}")',
         indent(brCompact([
           doc != null ? '.help("$doc")' : null,
           '${args.map((Arg arg) => arg.code).join("").trim()}',
@@ -231,18 +233,15 @@ class Clap {
       ]);
 
   String get defineStructs =>
-      pullArgs ? _defineStruct('${crate.name}_options', args) : null;
+      pullArgs ? _defineStruct('${id.snake}_options', args) : null;
 
   String _defineStruct(dynamic id, List<Arg> args) {
     Struct structDecl = struct(id)
       ..derive = <Derivable>[Debug]
-      ..lifetimes =
-          args.any((arg) => arg.type == ArgType.argString || arg.isMultiple)
-              ? [lifetime(#a)]
-              : []
       ..fields.addAll(args.map((arg) => field(arg.id)
         ..doc = arg.doc
-        ..type = arg.type));
+        ..type = arg.type))
+      ..inferLifetimes();
 
     String literal = brCompact(<String>[
       '${structDecl.name} {',
@@ -387,6 +386,9 @@ class Crate extends RsEntity implements HasFilePath {
   /// For app crates a command line argument processor
   Clap get clap => _clap;
 
+  /// Additinal binaries in the create - deposited in `.../src/bin`
+  List<Binary> binaries = [];
+
   // custom <class Crate>
 
   Crate(dynamic id, [CrateType crateType = libCrate])
@@ -401,9 +403,12 @@ class Crate extends RsEntity implements HasFilePath {
 
   void withRootModule(void f(Module module)) => f(rootModule);
   void withCrateToml(void f(CrateToml crateToml)) => f(_crateToml);
-  void withClap(void f(Clap clap)) => f(_clap ?? (_clap = new Clap(this)));
+  void withClap(void f(Clap clap)) => f(_clap ?? (_clap = new Clap(id)));
 
-  get children => new List<Module>.filled(1, rootModule, growable: false);
+  get children => concat([
+        [rootModule],
+        binaries
+      ]);
 
   get modules => progeny.where((dynamic m) => m is Module);
   get enums => progeny.where((dynamic e) => e is Enum);
@@ -413,15 +418,28 @@ class Crate extends RsEntity implements HasFilePath {
 
   String toString() => 'crate($name)';
 
+  @override
   onOwnershipEstablished() {
     _logger.info("Ownership of crate($id) established");
-    _filePath = join((owner as Repo).rootPath, id.snake);
+    final rootPath = this.rootPath ?? '../tmp';
+    _filePath = join(rootPath, id.snake);
+    if (_clap != null) {
+      _addClapToModule(rootModule, _clap);
+    }
+  }
+
+  @override
+  onChildrenOwnershipEstablished() {
     _addInferredDependencies();
   }
 
   void _addInferredDependencies() {
-    _addLogSupport();
-    if (_requiresSerde) {
+    _addLoggerInitToModule(rootModule, loggerType);
+    _addLogSupport(rootModule, loggerType);
+    if (requiresClap) {
+      _crateToml._addIfMissing(new Dependency('clap', '^2.26.2'));
+    }
+    if (requiresSerde) {
       _crateToml._addIfMissing(new Dependency('serde', '^1.0.11'));
     }
     if (modules.any((Module m) => m.useClippy)) {
@@ -430,55 +448,26 @@ class Crate extends RsEntity implements HasFilePath {
     }
   }
 
-  bool get _requiresSerde => concat([enums, structs]).any((item) =>
-      (item is Derives) &&
-      item.derive.any(
-          (derivable) => derivable == Serialize || derivable == Deserialize));
+  bool get requiresClap =>
+      _clap != null || binaries.any((bin) => bin.requiresClap);
+
+  bool get requiresSerde => concat([
+        enums,
+        structs,
+        concat([
+          binaries.map((bin) => bin.module.enums),
+          binaries.map((bin) => bin.module.structs)
+        ])
+      ]).any((item) =>
+          (item is Derives) &&
+          item.derive.any((derivable) =>
+              derivable == Serialize || derivable == Deserialize));
 
   void generate() {
     _logger.info('Generating crate $id into $filePath');
-
-    if (_clap != null) {
-      rootModule
-        ..import('clap')
-        ..withMainCodeBlock(
-            mainOpen,
-            (CodeBlock cb) => cb
-              ..hasSnippetsFirst = true
-              ..snippets.add(brCompact([
-                clap.defineStructs,
-                loggerType == envLogger
-                    ? '''
-env_logger::init().expect("Successful init of env_logger");
-'''
-                    : null,
-                indent(_clap.code),
-              ])));
-    }
-
-    rootModule..generate();
+    rootModule.generate();
     _crateToml.generate();
-  }
-
-  void _addLogSupport() {
-    if (loggerType != null) {
-      _crateToml._addIfMissing(new Dependency('log', '^0.3.8'));
-      rootModule.importWithMacros('log');
-      _logger.info('Adding logging for $loggerType');
-      switch (loggerType) {
-        case envLogger:
-          {
-            _crateToml._addIfMissing(new Dependency('env_logger', '^0.4.3'));
-            rootModule.import('env_logger');
-            break;
-          }
-        case flexiLogger:
-          {
-            _crateToml._addIfMissing(new Dependency('flexi_logger', '^0.5.2'));
-            break;
-          }
-      }
-    }
+    binaries.forEach((bin) => bin.generate());
   }
 
   bool get isLib => crateType == libCrate;
@@ -495,11 +484,99 @@ env_logger::init().expect("Successful init of env_logger");
   Clap _clap;
 }
 
+/// An executable generated into the `src/bin/` path of the crate
+class Binary extends RsEntity implements HasFilePath {
+  LoggerType loggerType;
+
+  /// For command line options of the binary
+  Clap get clap => _clap;
+
+  /// Module for the binary
+  Module get module => _module;
+
+  // custom <class Binary>
+
+  String get filePath => join(rootPath, owner.id.snake, 'src', 'bin');
+
+  Binary(dynamic id)
+      : _module = new Module(id, binaryModule),
+        super(id);
+
+  String get code => module.code;
+
+  withModule(f(Module)) => f(module);
+
+  withClap(f(clap)) => f(_clap ?? (_clap = new Clap(id)));
+
+  bool get requiresClap => _clap != null;
+
+  @override
+  onChildrenOwnershipEstablished() {
+    _addLoggerInitToModule(module, loggerType);
+    if (_clap != null) {
+      _addClapToModule(module, _clap);
+    }
+  }
+
+  generate() => module.generate();
+
+  get children => [module];
+
+  // end <class Binary>
+
+  Clap _clap;
+  Module _module;
+}
+
 // custom <library crate>
 
 Crate crate(dynamic id, [CrateType crateType = libCrate]) =>
     new Crate(id, crateType);
 
 Arg arg(dynamic id) => new Arg(id);
+
+Binary binary(dynamic id) => new Binary(id);
+
+_addLogSupport(Module module, LoggerType loggerType) {
+  if (loggerType != null) {
+    module.crate.withCrateToml((toml) {
+      toml._addIfMissing(new Dependency('log', '^0.3.8'));
+      module.importWithMacros('log');
+      _logger.info('Adding logging for $loggerType');
+      switch (loggerType) {
+        case envLogger:
+          {
+            toml._addIfMissing(new Dependency('env_logger', '^0.4.3'));
+            module.import('env_logger');
+            break;
+          }
+        case flexiLogger:
+          {
+            toml._addIfMissing(new Dependency('flexi_logger', '^0.5.2'));
+            break;
+          }
+      }
+    });
+  }
+}
+
+_addLoggerInitToModule(Module module, LoggerType loggerType) => loggerType ==
+        envLogger
+    ? module.withMainCodeBlock(
+        mainOpen,
+        (CodeBlock cb) => cb.snippets
+            .add('env_logger::init().expect("Successful init of env_logger");'))
+    : null;
+
+_addClapToModule(Module module, Clap clap) => module
+  ..import('clap')
+  ..withMainCodeBlock(
+      mainOpen,
+      (CodeBlock cb) => cb
+        ..hasSnippetsFirst = true
+        ..snippets.add(brCompact([
+          clap.defineStructs,
+          indent(clap.code),
+        ])));
 
 // end <library crate>

@@ -259,6 +259,11 @@ class Module extends RsEntity
     impls
         .where((impl) => impl.hasUnitTestModule)
         .forEach((impl) => unitTestModule.modules.add(impl.unitTestModule));
+
+    if (isBinaryModule) {
+      // ensure main code block provided for binaries
+      withMainCodeBlock(mainOpen, (m) => null);
+    }
   }
 
   set imports(Iterable<dynamic> imports) =>
@@ -289,7 +294,7 @@ class Module extends RsEntity
   }
 
   String get codePath {
-    if (isFileModule) {
+    if (isFileModule || isBinaryModule) {
       return join(filePath, '$name.rs');
     } else if (isDirectoryModule) {
       return join(filePath, 'mod.rs');
@@ -325,6 +330,7 @@ class Module extends RsEntity
     return '';
   }
 
+  bool get isBinaryModule => moduleType == binaryModule;
   bool get isFileModule => moduleType == fileModule;
   bool get isDirectoryModule => moduleType == directoryModule;
   bool get isRootModule => moduleType == rootModule;

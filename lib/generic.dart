@@ -129,7 +129,7 @@ abstract class Generic {
 }
 
 /// An instantiation of a generic
-abstract class GenericInst implements IsGenericInstance {
+class GenericInst extends RsType {
   /// Optional reference to generic being instantiated
   Generic generic;
 
@@ -151,7 +151,6 @@ abstract class GenericInst implements IsGenericInstance {
       ? new List.from(typeArgs.map((ta) => rsType(ta)))
       : [rsType(typeArgs)];
 
-  @override
   get genericName => [
         name,
         '<',
@@ -177,7 +176,8 @@ abstract class GenericInst implements IsGenericInstance {
 
 // custom <library generic>
 
-Lifetime lifetime([dynamic id]) => id is Lifetime ? id : new Lifetime(makeRsId(id));
+Lifetime lifetime([dynamic id]) =>
+    id is Lifetime ? id : new Lifetime(makeRsId(id));
 TypeParm typeParm(dynamic id) => id is TypeParm ? id : new TypeParm(id);
 
 // end <library generic>

@@ -6,6 +6,8 @@ library ebisu_rs.entity;
 import 'dart:io';
 import 'dart:mirrors';
 import 'package:ebisu/ebisu.dart';
+import 'package:ebisu_rs/crate.dart';
+import 'package:ebisu_rs/repo.dart';
 import 'package:glob/glob.dart';
 import 'package:id/id.dart';
 import 'package:logging/logging.dart';
@@ -25,7 +27,17 @@ const CrateType libCrate = CrateType.libCrate;
 ///
 const CrateType appCrate = CrateType.appCrate;
 
-enum ModuleType { rootModule, inlineModule, fileModule, directoryModule }
+enum ModuleType {
+  binaryModule,
+  rootModule,
+  inlineModule,
+  fileModule,
+  directoryModule
+}
+
+/// Convenient access to ModuleType.binaryModule with *binaryModule* see [ModuleType].
+///
+const ModuleType binaryModule = ModuleType.binaryModule;
 
 /// Convenient access to ModuleType.rootModule with *rootModule* see [ModuleType].
 ///
@@ -58,6 +70,29 @@ abstract class RsEntity extends Object with Entity {
   @override
   Iterable<RsEntity> get children => new Iterable.empty();
 
+  /// Get the [rootPath] of this repo
+  String get rootPath {
+    RsEntity current = this;
+    do {
+      if (current is Repo) {
+        return current.rootPath;
+      }
+      current = current.owner;
+    } while (current != null);
+    return '/tmp';
+  }
+
+  Crate get crate {
+    RsEntity current = this;
+    do {
+      if (current is Crate) {
+        return current;
+      }
+      current = current.owner;
+    } while (current != null);
+    return null;
+  }
+
   RsEntity._copy(RsEntity other)
       : id = other.id,
         noComment = other.noComment;
@@ -81,15 +116,6 @@ abstract class HasCode {
   String get code;
 
   // end <class HasCode>
-
-}
-
-abstract class IsGenericInstance {
-  // custom <class IsGenericInstance>
-
-  String get genericName;
-
-  // end <class IsGenericInstance>
 
 }
 

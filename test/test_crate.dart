@@ -61,12 +61,6 @@ void main([List<String> args]) {
     ].forEach((required) {
       expect(toml.contains(darkMatter(required)), true);
     });
-/*
-    print(crate_);
-    print(crate_.structs);
-    print(crate_.enums);
-    print(crate_.modules);
-    */
   });
 
 // end <main>
