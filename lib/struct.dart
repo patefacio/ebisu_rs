@@ -66,7 +66,7 @@ class Struct extends RsEntity with IsPub, Derives, Generic {
         tripleSlashComment(doc?.toString() ?? 'TODO: comment struct $id'),
         derives,
         '${pubDecl}struct $name${genericDecl}$boundsDecl {',
-        indentBlock(br(fields.map((m) => m.code), ',\n')),
+        indentBlock(br(fields.map((field) => field.code), ',\n')),
         '}'
       ]);
 

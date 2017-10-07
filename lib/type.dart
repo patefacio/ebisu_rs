@@ -15,21 +15,23 @@ export 'package:quiver/iterables.dart';
 // custom <additional imports>
 // end <additional imports>
 
-abstract class RsType implements HasCode {
+abstract class RsType {
   // custom <class RsType>
 
-  RsType copy();
+  RsType copy() => this;
 
   bool get isRef => this is RefType;
 
   bool get isMref => this is Mref;
 
   /// Returns type with lifetime attributes
-  String get lifetimeDecl => toString();
+  String get lifetimeDecl => typeName;
 
   Iterable<Lifetime> get lifetimes => new Iterable.empty();
 
-  String toString() => code;
+  String get typeName;
+
+  String toString() => typeName;
 
   // end <class RsType>
 
@@ -42,9 +44,6 @@ class BuiltInType extends RsType {
 
   BuiltInType(this.typeName);
 
-  @override
-  String get code => typeName;
-
   copy() => this;
 
   // end <class BuiltInType>
@@ -52,7 +51,7 @@ class BuiltInType extends RsType {
 }
 
 /// A type taken defined by a String and assumed to exist
-class UnmodeledType extends GenericInst {
+class UnmodeledType extends RsType {
   final String name;
 
   // custom <class UnmodeledType>
@@ -62,12 +61,24 @@ class UnmodeledType extends GenericInst {
   copy() => this;
 
   @override
-  get lifetimeDecl => code;
-
-  @override
-  get code => name;
+  get typeName => name;
 
   // end <class UnmodeledType>
+
+}
+
+/// A type taken defined by a String and assumed to exist
+class UnmodeledGenericType extends GenericInst {
+  final String name;
+
+  // custom <class UnmodeledGenericType>
+
+  UnmodeledGenericType(this.name);
+
+  Iterable<Lifetime> get lifetimes =>
+      new Set.from(concat(typeArgs.map((RsType typeArg) => typeArg.lifetimes)));
+
+  // end <class UnmodeledGenericType>
 
 }
 
@@ -103,7 +114,7 @@ class RefType extends RsType {
   get mut => '';
 
   @override
-  get code => "& $referent";
+  get typeName => "& $referent";
 
   // end <class RefType>
 
@@ -135,7 +146,7 @@ class Mref extends RefType {
   get mut => 'mut';
 
   @override
-  get code => "& mut $referent";
+  get typeName => "& mut $referent";
 
   // end <class Mref>
 

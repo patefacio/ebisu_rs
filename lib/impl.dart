@@ -66,8 +66,8 @@ class TraitImpl extends Impl with HasTypeAliases {
   // custom <class TraitImpl>
 
   TraitImpl(this._trait, this._type)
-      : super(
-            makeRsId(_trait.id.snake + '_' + makeGenericId(_type.code).snake)) {
+      : super(makeRsId(
+            _trait.id.snake + '_' + makeGenericId(_type.typeName).snake)) {
     functions = _trait.functions
         .map((fn) => fn.copy()
           ..codeBlock = new CodeBlock('fn ${id.snake}_${fn.id.snake}'))
@@ -146,7 +146,7 @@ class TypeImpl extends Impl {
 
   String get name => id.capCamel;
 
-  TypeImpl(this._type) : super(makeGenericId(_type.code)) {
+  TypeImpl(this._type) : super(makeGenericId(_type.typeName)) {
     codeBlock = new CodeBlock('impl ${id.snake}');
   }
 

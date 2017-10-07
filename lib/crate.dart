@@ -153,9 +153,8 @@ class Arg {
 
   bool get takesValue => defaultValue != null || argType != argBool;
 
-  // TODO: fix the Vec<..>
   get type => isMultiple
-      ? (new UnmodeledType('Vec')..typeArgs = [ref('str')])
+      ? (new UnmodeledGenericType('Vec')..typeArgs = [ref('str')])
       : _baseType;
 
   static final Map<ArgType, RsType> _baseTypes = {
@@ -230,6 +229,7 @@ class Clap {
           '${args.map((Arg arg) => arg.code).join("").trim()}',
         ])),
         '.get_matches();',
+        'let options = ${new Id("${id.snake}_options").capCamel}::from_matches(&matches);'
       ]);
 
   String get defineStructs =>

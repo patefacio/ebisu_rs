@@ -180,6 +180,7 @@ All rust named items are *RsEntity* instances.'''
           class_('generic_inst')
             ..doc = 'An instantiation of a generic'
             ..extend = 'RsType'
+            ..isAbstract = true
             ..members = [
               member('generic')
                 ..type = 'Generic'
@@ -883,13 +884,17 @@ Traits without generics are themselves [TraitInst].
           'package:ebisu_rs/generic.dart',
         ])
         ..classes = [
-          class_('rs_type')
-            ..implement = ['HasCode']
-            ..isAbstract = true,
+          class_('rs_type')..isAbstract = true,
           class_('built_in_type')
             ..extend = 'RsType'
             ..members = [member('type_name')..isFinal = true],
           class_('unmodeled_type')
+            ..doc = 'A type taken defined by a String and assumed to exist'
+            ..extend = 'RsType'
+            ..members = [
+              member('name')..isFinal = true,
+            ],
+          class_('unmodeled_generic_type')
             ..doc = 'A type taken defined by a String and assumed to exist'
             ..extend = 'GenericInst'
             ..members = [

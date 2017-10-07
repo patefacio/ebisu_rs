@@ -30,7 +30,7 @@ class Static extends RsEntity with IsPub, HasAttributes {
             ? tripleSlashComment(
                 doc?.toString() ?? 'TODO: comment static`${id.shout}`')
             : null,
-        '${pubDecl}static ${id.shout}: ${type.code} = $value;'
+        '${pubDecl}static ${id.shout}: ${type.typeName} = $value;'
       ]);
 
   // end <class Static>

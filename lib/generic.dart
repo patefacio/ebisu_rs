@@ -54,7 +54,7 @@ class TypeParm extends RsEntity with HasBounds implements HasCode {
   toString() => code;
 
   String get _withDefault =>
-      _defaultType == null ? '' : ' = ${_defaultType.code}';
+      _defaultType == null ? '' : ' = ${_defaultType.typeName}';
 
   // end <class TypeParm>
 
@@ -129,13 +129,16 @@ abstract class Generic {
 }
 
 /// An instantiation of a generic
-class GenericInst extends RsType {
+abstract class GenericInst extends RsType {
   /// Optional reference to generic being instantiated
   Generic generic;
 
   // custom <class GenericInst>
 
   String get name;
+
+  @override
+  get typeName => genericName;
 
   /// List of lifetimes parameterizing the [Generic]'s lifetimes
   Iterable<Lifetime> get lifetimes => _lifetimes ?? new Iterable.empty();
@@ -160,7 +163,22 @@ class GenericInst extends RsType {
               : _lifetimes.map((lt) => "'${lt.id.snake}"),
           _typeArgs == null
               ? new Iterable.empty()
-              : _typeArgs.map((ta) => ta.code)
+              : _typeArgs.map((ta) => ta.typeName)
+        ]).join(', '),
+        '>'
+      ].join('');
+
+  @override
+  get lifetimeDecl =>  [
+        name,
+        '<',
+        concat([
+          _lifetimes == null
+              ? new Iterable.empty()
+              : _lifetimes.map((lt) => "'${lt.id.snake}"),
+          _typeArgs == null
+              ? new Iterable.empty()
+              : _typeArgs.map((ta) => ta.lifetimeDecl)
         ]).join(', '),
         '>'
       ].join('');

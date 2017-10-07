@@ -39,7 +39,7 @@ class Parm extends RsEntity implements HasCode {
 
   get code => isMutable ? 'mut $_decl' : _decl;
 
-  get _decl => '${id.snake} : ${type.code}';
+  get _decl => '${id.snake} : ${type.typeName}';
 
   // end <class Parm>
 
@@ -140,9 +140,8 @@ class Fn extends RsEntity
         'Ownership established for fn (isUnitTestable:$isUnitTestable) ${id}');
     if (lifetimes.isEmpty) {
       lifetimes = new Set<Lifetime>.from(
-              concat(parms.map<Iterable<Parm>>((parm) => parm.type.lifetimes)))
-          .toList()
-            ..sort();
+          concat(parms.map((parm) => parm.type.lifetimes))).toList()
+        ..sort();
     }
 
     if (hasStatics) {
@@ -175,7 +174,7 @@ class Fn extends RsEntity
       : '${pubDecl}fn $name$genericDecl($_parmsText) -> ${_returnType.lifetimeDecl}$boundsDecl';
 
   String get signatureNoLifetimes =>
-      '${pubDecl}fn $name$genericDeclNoLifetimes($_parmsTextNoLifetimes) -> ${_returnType.code}$boundsDecl';
+      '${pubDecl}fn $name$genericDeclNoLifetimes($_parmsTextNoLifetimes) -> ${_returnType.typeName}$boundsDecl';
 
   String get _docComment {
     var fnDoc = [
@@ -189,7 +188,7 @@ class Fn extends RsEntity
         parms.where((p) => p.id.snake != 'self').map((p) =>
             ' * `${p.id.snake}` - ${p.doc == null? "TODO: comment parm" : p.doc}'),
         [
-          _returnType == null || _returnType.code == '()'
+          _returnType == null || _returnType.typeName == '()'
               ? null
               : ' * _return_ - ${returnDoc ?? "TODO: document return"}'
         ]

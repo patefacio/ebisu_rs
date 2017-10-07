@@ -28,7 +28,7 @@ class Const extends RsEntity with IsPub, HasAttributes {
             ? tripleSlashComment(
                 doc?.toString() ?? 'TODO: comment static`${id.shout}`')
             : null,
-        '${pubDecl}const ${id.shout}: ${type.code} = $value;'
+        '${pubDecl}const ${id.shout}: ${type.typeName} = $value;'
       ]);
 
   // end <class Const>
