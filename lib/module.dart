@@ -156,7 +156,7 @@ class Module extends RsEntity
   List<Module> modules = [];
   List<Import> get imports => _imports;
   List<Enum> enums = [];
-  List<Struct> structs = [];
+  List<StructType> structs = [];
   List<Trait> traits = [];
   List<Impl> impls = [];
   List<Fn> functions = [];

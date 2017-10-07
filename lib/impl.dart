@@ -48,6 +48,9 @@ abstract class Impl extends RsEntity with HasCode, Generic, HasCodeBlock {
   Iterable<RsEntity> get children =>
       concat([new List<Fn>.from(functions, growable: false), genericChildren]);
 
+  @override
+  String get unqualifiedName => id.capCamel;
+
   bool get hasUnitTestModule => _unitTestModule != null;
 
   // end <class Impl>
@@ -104,8 +107,7 @@ class TraitImpl extends Impl with HasTypeAliases {
     });
   }
 
-  String get name => id.capCamel;
-
+  @override
   GenericInst inst(
           {Iterable typeArgs = const [], Iterable lifetimes = const []}) =>
       throw 'TraitImpls are not instantiated in code';
@@ -144,8 +146,6 @@ class TypeImpl extends Impl {
 
   // custom <class TypeImpl>
 
-  String get name => id.capCamel;
-
   TypeImpl(this._type) : super(makeGenericId(_type.typeName)) {
     codeBlock = new CodeBlock('impl ${id.snake}');
   }
@@ -170,7 +170,7 @@ class TypeImpl extends Impl {
   String get code => brCompact([
         !noComment
             ? tripleSlashComment(
-                doc?.toString() ?? 'Implementation for type `$name`.')
+                doc?.toString() ?? 'Implementation for type `$unqualifiedName`.')
             : null,
         '$_implHeader {',
         indentBlock(

@@ -70,9 +70,11 @@ abstract class Generic {
 
   // custom <class Generic>
 
-  String get name;
+  /// The name of the [Generic] without the [genericDecl]
+  String get unqualifiedName;
 
-  String get genericName => '$name$genericDecl';
+  /// The name of the [Generic] with the [genericDecl]
+  String get genericName => '$unqualifiedName$genericDecl';
 
   generic(Iterable<dynamic> lifetimes, Iterable<dynamic> typeParms) {
     this.lifetimes = lifetimes;
@@ -169,7 +171,7 @@ abstract class GenericInst extends RsType {
       ].join('');
 
   @override
-  get lifetimeDecl =>  [
+  get lifetimeDecl => [
         name,
         '<',
         concat([

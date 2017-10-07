@@ -165,12 +165,15 @@ class TypeAlias extends RsEntity with IsPub, Generic, HasCode {
     }
   }
 
-  String get name => id.capCamel;
+  @override
+  String get unqualifiedName => id.capCamel;
 
+  @override
   GenericInst inst(
           {Iterable typeArgs = const [], Iterable lifetimes = const []}) =>
       throw 'GenericInst for TypeAlias not implemented';
 
+  @override
   Iterable<RsEntity> get children => genericChildren;
 
   TypeAlias(dynamic id, dynamic aliased)
@@ -179,7 +182,7 @@ class TypeAlias extends RsEntity with IsPub, Generic, HasCode {
 
   @override
   get code =>
-      '${pubDecl}type ${id.capCamel}${genericDecl} = ${aliased.lifetimeDecl};';
+      '${pubDecl}type ${unqualifiedName}${genericDecl} = ${aliased.lifetimeDecl};';
 
   // end <class TypeAlias>
 
@@ -204,10 +207,13 @@ class AssociatedType extends RsEntity with IsPub, Generic, HasCode, HasBounds {
 
   AssociatedType(dynamic id) : super(id);
 
+  @override
   Iterable<RsEntity> get children => genericChildren;
 
-  String get name => id.capCamel;
+  @override
+  String get unqualifiedName => id.capCamel;
 
+  @override
   GenericInst inst(
           {Iterable typeArgs = const [], Iterable lifetimes = const []}) =>
       throw 'GenericInst for AssociatedType not implemented';
@@ -216,7 +222,7 @@ class AssociatedType extends RsEntity with IsPub, Generic, HasCode, HasBounds {
   get code => brCompact([
         tripleSlashComment(
             doc?.toString() ?? 'TODO: comment associated type ${id.snake}'),
-        '${pubDecl}type ${id.capCamel}$boundsDecl;'
+        '${pubDecl}type ${unqualifiedName}$boundsDecl;'
       ]);
 
   get boundsDecl => hasBounds ? ': ${super.boundsDecl}' : '';

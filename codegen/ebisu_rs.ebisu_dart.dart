@@ -19,9 +19,9 @@ main(List<String> args) {
         'package:ebisu_rs/entity.dart',
       ];
 
-  commonFeatures(cls) {
+  commonFeatures(cls, [base]) {
     cls
-      ..extend = 'RsEntity'
+      ..extend = base ?? 'RsEntity'
       ..withCustomBlock(
           (blk) => blk.snippets.add('${cls.name}(dynamic id) : super(id);'));
   }
@@ -677,7 +677,7 @@ All rust named items are *RsEntity* instances.'''
                 ..type = 'List<Enum>'
                 ..init = [],
               member('structs')
-                ..type = 'List<Struct>'
+                ..type = 'List<StructType>'
                 ..init = [],
               member('traits')
                 ..type = 'List<Trait>'
@@ -1029,9 +1029,20 @@ Traits without generics are themselves [TraitInst].
           'package:quiver/iterables.dart',
         ])
         ..classes = [
-          class_('struct')
-            ..mixins = ['IsPub', 'Derives', 'Generic']
+          class_('struct_type')
+            ..doc =
+                'Base class for various struct types (struct, tuple_struct, unit_struct)'
             ..withClass(commonFeatures)
+            ..implement = ['HasCode']
+            ..isAbstract = true
+            ..customCodeBlock.tag = null
+            ..mixins = [
+              'IsPub',
+              'Derives',
+            ],
+          class_('struct')
+            ..mixins = ['Generic']
+            ..withClass((cls) => commonFeatures(cls, 'StructType'))
             ..members.addAll([
               member('fields')
                 ..type = 'List<Field>'
@@ -1039,7 +1050,6 @@ Traits without generics are themselves [TraitInst].
             ]),
           class_('struct_inst')
             ..extend = 'GenericInst'
-            ..isCopyable = true
             ..members = [
               member('struct')
                 ..type = 'Struct'
@@ -1047,20 +1057,19 @@ Traits without generics are themselves [TraitInst].
             ],
           class_('tuple_struct')
             ..doc = 'Tuple struct'
-            ..implement = ['HasCode']
-            ..mixins = ['IsPub', 'Derives', 'Generic']
-            ..withClass(commonFeatures)
+            ..mixins = ['Generic']
+            ..withClass((cls) => commonFeatures(cls, 'StructType'))
             ..members.addAll([]),
           class_('tuple_struct_inst')
             ..extend = 'GenericInst'
             ..members = [
-              member('tuple_struct')..type = 'TupleStruct',
+              member('tuple_struct')
+                ..type = 'TupleStruct'
+                ..access = RO,
             ],
           class_('unit_struct')
             ..doc = 'Unit struct'
-            ..implement = ['HasCode']
-            ..mixins = ['IsPub', 'Derives']
-            ..withClass(commonFeatures)
+            ..withClass((cls) => commonFeatures(cls, 'StructType'))
             ..members.addAll([]),
         ],
     ];

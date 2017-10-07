@@ -244,20 +244,20 @@ class Clap {
       ..inferLifetimes();
 
     String literal = brCompact(<String>[
-      '${structDecl.name} {',
+      '${structDecl.unqualifiedName} {',
       indent(brCompact(args.map(_pullArg))),
       '}',
     ]);
 
     String ctor = brCompact(<String>[
-      'fn from_matches(matches: &\'a clap::ArgMatches) -> ${structDecl.name}<\'a> {',
+      'fn from_matches(matches: &\'a clap::ArgMatches) -> ${structDecl.unqualifiedName}<\'a> {',
       indent(literal),
       '}',
     ]);
 
     return brCompact(<String>[
       structDecl.code,
-      'impl<\'a> ${structDecl.name}<\'a> {',
+      'impl<\'a> ${structDecl.unqualifiedName}<\'a> {',
       indent(ctor),
       '}'
     ]);

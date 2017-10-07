@@ -108,7 +108,8 @@ class Enum extends RsEntity with IsPub, Derives, Generic implements HasCode {
 
   // custom <class Enum>
 
-  String get name => id.capCamel;
+  @override
+  String get unqualifiedName => id.capCamel;
 
   void set variants(Iterable<Variant> variants) =>
       _variants = new List<Variant>.from(variants);
@@ -117,14 +118,14 @@ class Enum extends RsEntity with IsPub, Derives, Generic implements HasCode {
   String get code => brCompact([
         tripleSlashComment(doc == null ? 'TODO: comment $id' : doc),
         derives,
-        '${pubDecl}enum $name$genericDecl$boundsDecl {',
+        '${pubDecl}enum $unqualifiedName$genericDecl$boundsDecl {',
         indent(br(variants.map((v) => v.code), ',\n')),
         '}',
-        useSelf ? 'use self::$name::*;' : null
+        useSelf ? 'use self::$unqualifiedName::*;' : null
       ]);
 
   @override
-  toString() => 'enum($name)';
+  toString() => 'enum($unqualifiedName)';
 
   @override
   Iterable<RsEntity> get children => variants;
@@ -147,7 +148,7 @@ class EnumInst extends GenericInst {
 
   // custom <class EnumInst>
 
-  String get name => enumeration.name;
+  String get name => enumeration.unqualifiedName;
 
   EnumInst(this.enumeration);
 

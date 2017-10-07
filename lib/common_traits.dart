@@ -27,7 +27,7 @@ class BinaryOpTrait {
       ];
   }
 
-  get name => _trait.name;
+  get name => _trait.unqualifiedName;
 
   // end <class BinaryOpTrait>
 

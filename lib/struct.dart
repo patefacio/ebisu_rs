@@ -23,16 +23,25 @@ export 'package:ebisu_rs/field.dart';
 
 final Logger _logger = new Logger('struct');
 
-class Struct extends RsEntity with IsPub, Derives, Generic {
+/// Base class for various struct types (struct, tuple_struct, unit_struct)
+abstract class StructType extends RsEntity
+    with IsPub, Derives
+    implements HasCode {
+  StructType(dynamic id) : super(id);
+}
+
+class Struct extends StructType with Generic {
   List<Field> fields = [];
 
   // custom <class Struct>
 
+  @override
   get children => concat([lifetimes, typeParms, fields, genericChildren]);
 
-  String toString() => 'struct($name)';
+  String toString() => 'struct($unqualifiedName)';
 
-  String get name => id.capCamel;
+  @override
+  String get unqualifiedName => id.capCamel;
 
   @override
   onOwnershipEstablished() {
@@ -49,30 +58,21 @@ class Struct extends RsEntity with IsPub, Derives, Generic {
               ..sort();
   }
 
+  @override
   GenericInst inst(
           {Iterable typeArgs = const [], Iterable lifetimes = const []}) =>
       new StructInst(this)
         ..typeArgs = typeArgs
         ..lifetimes = lifetimes;
 
-  String get template {
-    var contents = chomp(brCompact([
-      lifetimes.join(', '),
-    ]));
-    return contents.isNotEmpty ? '<$contents>' : '';
-  }
-
+  @override
   String get code => brCompact([
         tripleSlashComment(doc?.toString() ?? 'TODO: comment struct $id'),
         derives,
-        '${pubDecl}struct $name${genericDecl}$boundsDecl {',
+        '${pubDecl}struct $unqualifiedName${genericDecl}$boundsDecl {',
         indentBlock(br(fields.map((field) => field.code), ',\n')),
         '}'
       ]);
-
-  copy() => throw 'Struct may not be copied';
-  // TODO: Is this function necessary?
-  get lifetimeDecl => genericName;
 
   // end <class Struct>
 
@@ -80,50 +80,51 @@ class Struct extends RsEntity with IsPub, Derives, Generic {
 }
 
 class StructInst extends GenericInst {
-  copy() => new StructInst._copy(this);
-
   Struct get struct => _struct;
 
   // custom <class StructInst>
 
   StructInst(this._struct);
 
-  String get name => struct.name;
+  @override
+  String get name => struct.unqualifiedName;
 
   @override
   String get lifetimeDecl => genericName;
 
   @override
-  String get code => genericName;
+  copy() => new StructInst(_struct)
+    ..lifetimes = new List.from(lifetimes)
+    ..typeArgs = new List.from(typeArgs);
 
   // end <class StructInst>
-
-  StructInst._copy(StructInst other) : _struct = other._struct?.copy();
 
   Struct _struct;
 }
 
 /// Tuple struct
-class TupleStruct extends RsEntity
-    with IsPub, Derives, Generic
-    implements HasCode {
+class TupleStruct extends StructType with Generic {
   // custom <class TupleStruct>
 
+  @override
   Iterable<RsEntity> get children => genericChildren;
 
+  @override
   String get code => brCompact([
         tripleSlashComment(doc?.toString() ?? 'TODO: Comment TupleStruct($id)'),
-        '${pubDecl}struct $name$boundsDecl {',
+        '${pubDecl}struct ${unqualifiedName}$boundsDecl {',
         '}',
       ]);
 
+  @override
   GenericInst inst(
           {Iterable typeArgs = const [], Iterable lifetimes = const []}) =>
       new TupleStructInst(this)
         ..typeArgs = typeArgs
         ..lifetimes = lifetimes;
 
-  String get name => id.capCamel;
+  @override
+  String get unqualifiedName => id.capCamel;
 
   // end <class TupleStruct>
 
@@ -131,30 +132,36 @@ class TupleStruct extends RsEntity
 }
 
 class TupleStructInst extends GenericInst {
-  TupleStruct tupleStruct;
+  TupleStruct get tupleStruct => _tupleStruct;
 
   // custom <class TupleStructInst>
 
-  String get name => tupleStruct.name;
+  @override
+  String get name => tupleStruct.unqualifiedName;
 
-  TupleStructInst(this.tupleStruct);
+  TupleStructInst(this._tupleStruct);
+
+  @override
+  copy() => new TupleStructInst(tupleStruct)
+    ..lifetimes = new List.from(lifetimes)
+    ..typeArgs = new List.from(typeArgs);
 
   // end <class TupleStructInst>
 
+  TupleStruct _tupleStruct;
 }
 
 /// Unit struct
-class UnitStruct extends RsEntity with IsPub, Derives implements HasCode {
+class UnitStruct extends StructType {
   // custom <class UnitStruct>
 
   Iterable<RsEntity> get children => new Iterable.empty();
 
+  @override
   String get code => brCompact([
         tripleSlashComment(doc?.toString() ?? 'TODO: Comment UnitStruct($id)'),
-        '${pubDecl}struct $name;'
+        '${pubDecl}struct ${id.capCamel};'
       ]);
-
-  String get name => id.capCamel;
 
   // end <class UnitStruct>
 
@@ -203,6 +210,6 @@ TupleStruct tstruct(dynamic id) => new TupleStruct(id);
 /// Creates a _public_ [TupleStruct] instance identified by [id], which may be a symbol or string.
 /// Returns new [TupleStruct].
 ///
-TupleStruct pubTstruct(dynamic id) => new TupleStruct(id)..isPublic = true;
+TupleStruct pubTstruct(dynamic id) => new TupleStruct(id)..isPub = true;
 
 // end <library struct>

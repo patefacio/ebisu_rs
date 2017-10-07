@@ -171,10 +171,10 @@ class Fn extends RsEntity
 
   String get signature => elideLifetimes ?? elisionRulesApply
       ? signatureNoLifetimes
-      : '${pubDecl}fn $name$genericDecl($_parmsText) -> ${_returnType.lifetimeDecl}$boundsDecl';
+      : '${pubDecl}fn $unqualifiedName$genericDecl($_parmsText) -> ${_returnType.lifetimeDecl}$boundsDecl';
 
   String get signatureNoLifetimes =>
-      '${pubDecl}fn $name$genericDeclNoLifetimes($_parmsTextNoLifetimes) -> ${_returnType.typeName}$boundsDecl';
+      '${pubDecl}fn $unqualifiedName$genericDeclNoLifetimes($_parmsTextNoLifetimes) -> ${_returnType.typeName}$boundsDecl';
 
   String get _docComment {
     var fnDoc = [
@@ -202,7 +202,8 @@ class Fn extends RsEntity
           ? rt
           : throw '*fn* returns setter requires [String] or [RsType]';
 
-  String get name => id.snake;
+  @override
+  String get unqualifiedName => id.snake;
 
   String get _parmsText => parms.map((p) => p.lifetimeDecl).join(', ');
 
@@ -260,9 +261,11 @@ class Trait extends RsEntity
   @override
   onOwnershipEstablished() {}
 
+  @override
   Iterable<RsEntity> get children =>
       concat([genericChildren, new List<Fn>.from(functions, growable: false)]);
 
+  @override
   String get code => brCompact([
         !noComment
             ? tripleSlashComment(
@@ -281,12 +284,13 @@ class Trait extends RsEntity
   _getSubTraitName(s) => s is String ? s : s.genericName;
 
   String get _traitDecl =>
-      '${pubDecl}trait $name${genericDecl}' +
+      '${pubDecl}trait $unqualifiedName${genericDecl}' +
       (subTraits.isNotEmpty
           ? ': ' + subTraits.map((st) => _getSubTraitName(st)).join(' + ')
           : '');
 
-  String get name => id.capCamel;
+  @override
+  String get unqualifiedName => id.capCamel;
 
   // end <class Trait>
 
@@ -314,7 +318,7 @@ class TraitInst extends GenericInst {
 
   // custom <class TraitInst>
 
-  String get name => trait.name;
+  String get name => trait.unqualifiedName;
 
   Id get id => trait.id;
 
