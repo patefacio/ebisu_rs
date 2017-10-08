@@ -19,7 +19,9 @@ class Const extends RsEntity with IsPub, HasAttributes {
 
   // custom <class Const>
 
-  Const(dynamic id, [this._type]) : super(id);
+  Const(dynamic id, [dynamic type])
+      : _type = type != null ? rsType(type) : type,
+        super(id);
 
   set type(dynamic type) => _type = rsType(type);
 
