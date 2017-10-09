@@ -67,7 +67,7 @@ class Struct extends StructType with Generic {
 
   @override
   String get code => brCompact([
-        tripleSlashComment(doc?.toString() ?? 'TODO: comment struct $id'),
+        tripleSlashComment(doc?.toString() ?? 'TODO: comment struct `$genericName`'),
         derives,
         '${pubDecl}struct $unqualifiedName${genericDecl}$boundsDecl {',
         indentBlock(br(fields.map((field) => field.code), ',\n')),
@@ -111,7 +111,7 @@ class TupleStruct extends StructType with Generic {
 
   @override
   String get code => brCompact([
-        tripleSlashComment(doc?.toString() ?? 'TODO: Comment TupleStruct($id)'),
+        tripleSlashComment(doc?.toString() ?? 'TODO: Comment TupleStruct(`$genericName`)'),
         '${pubDecl}struct ${unqualifiedName}$boundsDecl {',
         '}',
       ]);
@@ -159,9 +159,11 @@ class UnitStruct extends StructType {
 
   @override
   String get code => brCompact([
-        tripleSlashComment(doc?.toString() ?? 'TODO: Comment UnitStruct($id)'),
-        '${pubDecl}struct ${id.capCamel};'
+        tripleSlashComment(doc?.toString() ?? 'TODO: Comment UnitStruct(`$name`)'),
+        '${pubDecl}struct $name;'
       ]);
+
+  String get name => id.capCamel;
 
   // end <class UnitStruct>
 

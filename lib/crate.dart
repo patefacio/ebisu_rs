@@ -158,6 +158,7 @@ class Arg {
       : _baseType;
 
   static final Map<ArgType, RsType> _baseTypes = {
+    argBool: bool_,
     argString: ref(str),
     argI8: i8,
     argI16: i16,
@@ -232,16 +233,21 @@ class Clap {
         'let options = ${new Id("${id.snake}_options").capCamel}::from_matches(&matches);'
       ]);
 
-  String get defineStructs =>
-      pullArgs ? _defineStruct('${id.snake}_options', args) : null;
+  String get defineStructs => pullArgs
+      ? _defineOptionsStruct(makeRsId('${id.snake}_options'), args)
+      : null;
 
-  String _defineStruct(dynamic id, List<Arg> args) {
-    Struct structDecl = struct(id)
+  String _defineOptionsStruct(Id optionsId, List<Arg> args) {
+    Struct structDecl = struct(optionsId)
+      ..doc = 'Struct to capture ${id.snake} options.'
       ..derive = <Derivable>[Debug]
       ..fields.addAll(args.map((arg) => field(arg.id)
         ..doc = arg.doc
         ..type = arg.type))
       ..inferLifetimes();
+
+    final lifetime = structDecl.lifetimes.isEmpty ? '' : "'a";
+    final bracketLifetime = structDecl.lifetimes.isEmpty ? '' : "<'a>";
 
     String literal = brCompact(<String>[
       '${structDecl.unqualifiedName} {',
@@ -250,14 +256,14 @@ class Clap {
     ]);
 
     String ctor = brCompact(<String>[
-      'fn from_matches(matches: &\'a clap::ArgMatches) -> ${structDecl.unqualifiedName}<\'a> {',
+      'fn from_matches(matches: &$lifetime clap::ArgMatches) -> ${structDecl.genericName} {',
       indent(literal),
       '}',
     ]);
 
     return brCompact(<String>[
       structDecl.code,
-      'impl<\'a> ${structDecl.unqualifiedName}<\'a> {',
+      'impl$bracketLifetime ${structDecl.genericName} {',
       indent(ctor),
       '}'
     ]);
@@ -271,6 +277,9 @@ class Clap {
 
   String _pullNonStringArg(Arg arg) =>
       '${arg.id.snake}: matches.value_of("${arg.id.snake}")${_expectUnwrap(arg)}.parse()${_expectParse(arg)},';
+
+  String _pullFlagArg(Arg arg) =>
+      '${arg.id.snake}: match matches.occurrences_of("${arg.id.snake}") { 0 => false, _ => true },';
 
   String _pullStringArg(Arg arg) =>
       '${arg.id.snake}: matches.value_of("${arg.id.snake}")${_expectUnwrap(arg)},';
@@ -296,8 +305,9 @@ class Clap {
       ? _pullMultipleStringArg(arg)
       : _pullMultipleNonStringArg(arg);
 
-  String _pullArg(Arg arg) =>
-      arg.isMultiple ? _pullMultipleArg(arg) : _pullSingleArg(arg);
+  String _pullArg(Arg arg) => arg.isMultiple
+      ? _pullMultipleArg(arg)
+      : arg.argType == argBool ? _pullFlagArg(arg) : _pullSingleArg(arg);
 
   // end <class Clap>
 
