@@ -239,7 +239,7 @@ class Clap {
 
   String _defineOptionsStruct(Id optionsId, List<Arg> args) {
     Struct structDecl = struct(optionsId)
-      ..doc = 'Struct to capture ${id.snake} options.'
+      ..doc = 'Struct to capture options for `${id.snake}` options.'
       ..derive = <Derivable>[Debug]
       ..fields.addAll(args.map((arg) => field(arg.id)
         ..doc = arg.doc
