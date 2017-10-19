@@ -44,7 +44,7 @@ void main([List<String> args]) {
 
     expect(s.genericDecl, "<'a, 'b, T1, T2>");
     expect(darkMatter(s.code), darkMatter('''
-/// TODO: comment struct a
+/// TODO: comment struct `A<'a, 'b, T1, T2>`
 struct A<'a, 'b, T1, T2> {
   /// The t1 factor
   t1: T1,

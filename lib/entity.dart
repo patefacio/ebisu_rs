@@ -169,6 +169,7 @@ ProcessResult formatRustFile(String filePath) {
     _logger.info('Deleting backup ${backup.path}');
     backup.deleteSync();
   }
+  _logger.info('Formatting *complete* rust file ${filePath}');
 
   return result;
 }

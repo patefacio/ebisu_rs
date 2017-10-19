@@ -163,7 +163,8 @@ class Fn extends RsEntity
   String get code => brCompact([
         !noComment ? _docComment : null,
         externalAttrs,
-        _codeBlock == null || (_codeBlock.tag == null && _codeBlock.snippets.isEmpty)
+        _codeBlock == null ||
+                (_codeBlock.tag == null && _codeBlock.snippets.isEmpty)
             ? '$signature;'
             : brCompact(
                 ['$signature {', indentBlock(_codeBlock.toString()), '}'])

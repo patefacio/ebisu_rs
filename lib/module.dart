@@ -142,6 +142,104 @@ class Use extends Object with HasAttributes, IsPub implements Comparable<Use> {
 
 }
 
+/// Provides for specific type of logging
+abstract class LogProvider {
+  // custom <class LogProvider>
+
+  addModuleSupport(Module module);
+
+  addCrateRequirements(Crate crate);
+
+  // end <class LogProvider>
+
+}
+
+/// Provides for env_logger
+class EnvLogProvider implements LogProvider {
+  // custom <class EnvLogProvider>
+
+  addCrateRequirements(Crate crate) => crate
+    ..withCrateToml((toml) => toml
+      ..addIfMissing(baseLogDependency)
+      ..addIfMissing(new Dependency('env_logger', '^0.4.3')));
+
+  addModuleSupport(Module module) {
+    if (module.moduleType == binaryModule) {
+      module.withMainCodeBlock(
+          mainOpen,
+          (CodeBlock cb) => cb.snippets.add(
+              'env_logger::init().expect("Successful init of env_logger");'));
+    }
+  }
+
+  // end <class EnvLogProvider>
+
+}
+
+/// Provides for flexi logger
+class FlexiLogProvider implements LogProvider {
+  // custom <class FlexiLogProvider>
+
+  addCrateRequirements(Crate crate) => crate
+    ..rootModule.importWithMacros('log')
+    ..rootModule.import('flexi_logger')
+    ..withCrateToml((toml) => toml
+      ..addIfMissing(baseLogDependency)
+      ..addIfMissing(new Dependency('flexi_logger', '^0.6.8')));
+
+  addModuleSupport(Module module) {
+    if (module.moduleType == binaryModule) {
+      module
+        ..import('flexi_logger')
+        ..withMainCodeBlock(mainOpen, (CodeBlock cb) => cb.snippets.add('''
+   flexi_logger::Logger::with_str("info")
+       .start()
+       .unwrap_or_else(|e| panic!("Logger initialization failed with {}", e));
+              '''));
+    }
+  }
+
+  // end <class FlexiLogProvider>
+
+}
+
+/// Provides for slog logger
+class SlogLogProvider implements LogProvider {
+  // custom <class SlogLogProvider>
+
+  addCrateRequirements(Crate crate) => crate
+    ..rootModule.importWithMacros('log')
+    ..withCrateToml((toml) => toml
+      ..addIfMissing(baseLogDependency)
+      ..addIfMissing(new Dependency('sloggers', '^0.2.1'))
+      ..addIfMissing(new Dependency('slog', '^2.0.12')));
+
+  addModuleSupport(Module module) {
+    if (module.moduleType == binaryModule) {
+      module
+        ..import('sloggers')
+        ..importWithMacros('slog')
+        ..withMainCodeBlock(mainOpen, (CodeBlock cb) => cb.snippets.add('''
+use sloggers::{Build, set_stdlog_logger};
+use sloggers::terminal::{TerminalLoggerBuilder, Destination};
+use sloggers::types::Severity;
+
+let mut builder = TerminalLoggerBuilder::new();
+builder.level(Severity::Debug);
+builder.destination(Destination::Stderr);
+
+let logger = builder.build().unwrap();
+info!(logger, "Hello World!");
+set_stdlog_logger(logger).expect("Setting ${module.id} logger succeed");
+
+          '''));
+    }
+  }
+
+  // end <class SlogLogProvider>
+
+}
+
 class Module extends RsEntity
     with
         IsPub,
@@ -168,6 +266,10 @@ class Module extends RsEntity
 
   /// List of use symbols for module
   List<Use> get uses => _uses;
+  LoggerType loggerType;
+
+  /// If not supplied, initialized from loggerType if set
+  LogProvider logProvider;
 
   // custom <class Module>
 
@@ -232,6 +334,19 @@ class Module extends RsEntity
         ownerPath = join(ownerPath, 'src');
       }
 
+      if (loggerType != null) {
+        logProvider = loggerType == envLogger
+            ? new EnvLogProvider()
+            : loggerType == flexiLogger
+                ? new FlexiLogProvider()
+                : loggerType == slogLogger
+                    ? new SlogLogProvider()
+                    : throw 'Unrecognized default log provider $loggerType';
+
+        logProvider.addModuleSupport(this);
+        logProvider.addCrateRequirements(this.crate);
+      }
+
       _filePath = (isDirectoryModule || isInlineModule)
           ? join(ownerPath, id.snake)
           : ownerPath;
@@ -271,10 +386,16 @@ class Module extends RsEntity
 
   void import(dynamic import) => import is Iterable
       ? import.forEach((dynamic i) => this.import(i))
-      : imports.add(import is Import ? import : new Import(import as String));
+      : _addImportIfNotPreset(
+          import is Import ? import : new Import(import as String));
+
+  _addImportIfNotPreset(Import import) =>
+      imports.any((i) => i.import == import.import)
+          ? null
+          : imports.add(import);
 
   void importWithMacros(String crateName) =>
-      imports.add(new Import(crateName, true));
+      _addImportIfNotPreset(new Import(crateName, true));
 
   void generate() {
     _logger.info(
@@ -513,5 +634,7 @@ Use use(dynamic used) => used is Use ? used : new Use(used);
 ///
 Use pubUse(dynamic used) =>
     ((used is Use ? use : new Use(used)) as Use)..isPub = true;
+
+get baseLogDependency => new Dependency('log', '^0.3.8');
 
 // end <library module>

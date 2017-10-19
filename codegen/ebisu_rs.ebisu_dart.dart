@@ -373,7 +373,7 @@ All rust named items are *RsEntity* instances.'''
             ].map((primitive) => 'arg_$primitive'),
           enum_('logger_type')
             ..hasLibraryScopedValues = true
-            ..values = ['env_logger', 'flexi_logger']
+            ..values = ['env_logger', 'flexi_logger', 'slog_logger']
         ]
         ..classes = [
           class_('arg')
@@ -461,7 +461,6 @@ All rust named items are *RsEntity* instances.'''
                 ..type = 'Module'
                 ..access = RO,
               member('file_path')..access = RO,
-              member('logger_type')..type = 'LoggerType',
               member('crate_toml')
                 ..type = 'CrateToml'
                 ..access = IA,
@@ -481,7 +480,9 @@ All rust named items are *RsEntity* instances.'''
             ..doc =
                 'An executable generated into the `src/bin/` path of the crate'
             ..members = [
-              member('logger_type')..type = 'LoggerType',
+              member('has_log_level')
+                ..doc = 'If set includes _clap_ _Arg_ to set log level'
+                ..init = false,
               member('clap')
                 ..doc = 'For command line options of the binary'
                 ..type = 'Clap'
@@ -652,6 +653,18 @@ All rust named items are *RsEntity* instances.'''
             ..mixins = ['HasAttributes', 'IsPub']
             ..isComparable = true
             ..members = [member('used')..doc = 'The symbol used'],
+          class_('log_provider')
+            ..doc = 'Provides for specific type of logging'
+            ..isAbstract = true,
+          class_('env_log_provider')
+            ..doc = 'Provides for env_logger'
+            ..implement = ['LogProvider'],
+          class_('flexi_log_provider')
+            ..doc = 'Provides for flexi logger'
+            ..implement = ['LogProvider'],
+          class_('slog_log_provider')
+            ..doc = 'Provides for slog logger'
+            ..implement = ['LogProvider'],
           class_('module')
             ..extend = 'RsEntity'
             ..implement = ['HasFilePath', 'HasCode']
@@ -709,6 +722,10 @@ All rust named items are *RsEntity* instances.'''
                     'Module `tests` for unit testing this containing modules functionality'
                 ..type = 'Module'
                 ..access = IA,
+              member('logger_type')..type = 'LoggerType',
+              member('log_provider')
+                ..type = 'LogProvider'
+                ..doc = 'If not supplied, initialized from loggerType if set'
             ]),
         ],
 

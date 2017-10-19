@@ -99,7 +99,7 @@ const ArgType argF32 = ArgType.argF32;
 ///
 const ArgType argF64 = ArgType.argF64;
 
-enum LoggerType { envLogger, flexiLogger }
+enum LoggerType { envLogger, flexiLogger, slogLogger }
 
 /// Convenient access to LoggerType.envLogger with *envLogger* see [LoggerType].
 ///
@@ -108,6 +108,10 @@ const LoggerType envLogger = LoggerType.envLogger;
 /// Convenient access to LoggerType.flexiLogger with *flexiLogger* see [LoggerType].
 ///
 const LoggerType flexiLogger = LoggerType.flexiLogger;
+
+/// Convenient access to LoggerType.slogLogger with *slogLogger* see [LoggerType].
+///
+const LoggerType slogLogger = LoggerType.slogLogger;
 
 /// *clap* arg
 class Arg {
@@ -340,7 +344,7 @@ class CrateToml {
     scriptMergeWithFile(contents, tomlPath);
   }
 
-  void _addIfMissing(Dependency dependency) {
+  void addIfMissing(Dependency dependency) {
     if (!deps.any((d) => d.crate == dependency.crate)) {
       deps.add(dependency);
     }
@@ -391,7 +395,6 @@ class Crate extends RsEntity implements HasFilePath {
   CrateType crateType;
   Module get rootModule => _rootModule;
   String get filePath => _filePath;
-  LoggerType loggerType;
 
   /// For app crates a command line argument processor
   Clap get clap => _clap;
@@ -444,17 +447,15 @@ class Crate extends RsEntity implements HasFilePath {
   }
 
   void _addInferredDependencies() {
-    _addLoggerInitToModule(rootModule, loggerType);
-    _addLogSupport(rootModule, loggerType);
     if (requiresClap) {
-      _crateToml._addIfMissing(new Dependency('clap', '^2.26.2'));
+      _crateToml.addIfMissing(new Dependency('clap', '^2.26.2'));
     }
     if (requiresSerde) {
-      _crateToml._addIfMissing(new Dependency('serde', '^1.0.11'));
+      _crateToml.addIfMissing(new Dependency('serde', '^1.0.11'));
     }
     if (modules.any((Module m) => m.useClippy)) {
       _crateToml
-          ._addIfMissing(new Dependency('clippy', '^0.0.150')..optional = true);
+          .addIfMissing(new Dependency('clippy', '^0.0.150')..optional = true);
     }
   }
 
@@ -496,7 +497,8 @@ class Crate extends RsEntity implements HasFilePath {
 
 /// An executable generated into the `src/bin/` path of the crate
 class Binary extends RsEntity implements HasFilePath {
-  LoggerType loggerType;
+  /// If set includes _clap_ _Arg_ to set log level
+  bool hasLogLevel = false;
 
   /// For command line options of the binary
   Clap get clap => _clap;
@@ -522,7 +524,6 @@ class Binary extends RsEntity implements HasFilePath {
 
   @override
   onChildrenOwnershipEstablished() {
-    _addLoggerInitToModule(module, loggerType);
     if (_clap != null) {
       _addClapToModule(module, _clap);
     }
@@ -546,37 +547,6 @@ Crate crate(dynamic id, [CrateType crateType = libCrate]) =>
 Arg arg(dynamic id) => new Arg(id);
 
 Binary binary(dynamic id) => new Binary(id);
-
-_addLogSupport(Module module, LoggerType loggerType) {
-  if (loggerType != null) {
-    module.crate.withCrateToml((toml) {
-      toml._addIfMissing(new Dependency('log', '^0.3.8'));
-      module.importWithMacros('log');
-      _logger.info('Adding logging for $loggerType');
-      switch (loggerType) {
-        case envLogger:
-          {
-            toml._addIfMissing(new Dependency('env_logger', '^0.4.3'));
-            module.import('env_logger');
-            break;
-          }
-        case flexiLogger:
-          {
-            toml._addIfMissing(new Dependency('flexi_logger', '^0.5.2'));
-            break;
-          }
-      }
-    });
-  }
-}
-
-_addLoggerInitToModule(Module module, LoggerType loggerType) => loggerType ==
-        envLogger
-    ? module.withMainCodeBlock(
-        mainOpen,
-        (CodeBlock cb) => cb.snippets
-            .add('env_logger::init().expect("Successful init of env_logger");'))
-    : null;
 
 _addClapToModule(Module module, Clap clap) => module
   ..import('clap')

@@ -169,8 +169,8 @@ class TypeImpl extends Impl {
   @override
   String get code => brCompact([
         !noComment
-            ? tripleSlashComment(
-                doc?.toString() ?? 'Implementation for type `$unqualifiedName`.')
+            ? tripleSlashComment(doc?.toString() ??
+                'Implementation for type `$unqualifiedName`.')
             : null,
         '$_implHeader {',
         indentBlock(
