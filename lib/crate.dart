@@ -453,10 +453,6 @@ class Crate extends RsEntity implements HasFilePath {
     if (requiresSerde) {
       _crateToml.addIfMissing(new Dependency('serde', '^1.0.11'));
     }
-    if (modules.any((Module m) => m.useClippy)) {
-      _crateToml
-          .addIfMissing(new Dependency('clippy', '^0.0.150')..optional = true);
-    }
   }
 
   bool get requiresClap =>
@@ -523,11 +519,20 @@ class Binary extends RsEntity implements HasFilePath {
   bool get requiresClap => _clap != null;
 
   @override
-  onChildrenOwnershipEstablished() {
+  onOwnershipEstablished() {
+    if (hasLogLevel) {
+      withClap((Clap clap) => clap.args.add(arg('log_level')
+        ..defaultValue = 'warn'
+        ..doc = 'Set level {none, error, warn, info, debug, trace}'));
+    }
+
     if (_clap != null) {
       _addClapToModule(module, _clap);
     }
   }
+
+  @override
+  onChildrenOwnershipEstablished() {}
 
   generate() => module.generate();
 

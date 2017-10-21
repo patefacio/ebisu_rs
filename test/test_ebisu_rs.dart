@@ -39,7 +39,6 @@ void main([List<String> args]) {
             ]
             ..buildDeps = [dependency('log', '0.3')])
           ..withRootModule((rootModule) => rootModule
-            ..useClippy = true
             ..attrs.add(idAttr(#bam))
             ..doc = 'The root module'
             ..structs = [
@@ -99,6 +98,7 @@ First struct in root module.
                 ..isMultiple = true,
             ])
           ..withRootModule((Module rootModule) => rootModule
+            ..loggerType = envLogger
             ..importWithMacros('serde_derive')
             ..import(['serde', 'serde_json'])
             ..modules = [

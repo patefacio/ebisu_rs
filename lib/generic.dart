@@ -32,6 +32,8 @@ class Lifetime extends RsEntity implements HasCode, Comparable<Lifetime> {
 
   int compareTo(Lifetime other) => id.compareTo(other.id);
 
+  toString() => code;
+
   // end <class Lifetime>
 
 }

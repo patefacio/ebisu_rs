@@ -709,9 +709,6 @@ All rust named items are *RsEntity* instances.'''
                 ..type = 'Map<MainCodeBlock, CodeBlock>'
                 ..init = {}
                 ..access = RO,
-              member('use_clippy')
-                ..doc = 'Include *clippy* support'
-                ..init = false,
               member('uses')
                 ..doc = 'List of use symbols for module'
                 ..type = 'List<Use>'

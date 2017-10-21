@@ -139,9 +139,19 @@ class Fn extends RsEntity
     _logger.info(
         'Ownership established for fn (isUnitTestable:$isUnitTestable) ${id}');
     if (lifetimes.isEmpty) {
+
+      // Try to infer lifetimes of a function if args have lifetimes
       lifetimes = new Set<Lifetime>.from(
           concat(parms.map((parm) => parm.type.lifetimes))).toList()
         ..sort();
+
+      // However, if owner is generic and owner has an inferred lifetime, remove
+      // from function since it would conflict
+      if(owner is Generic) {
+        for(final olt in (owner as Generic).lifetimes) {
+          lifetimes.removeWhere((lt) => lt == olt);
+        }
+      }
     }
 
     if (hasStatics) {
@@ -172,7 +182,7 @@ class Fn extends RsEntity
 
   String get signature => elideLifetimes ?? elisionRulesApply
       ? signatureNoLifetimes
-      : '${pubDecl}fn $unqualifiedName$genericDecl($_parmsText) -> ${_returnType.lifetimeDecl}$boundsDecl';
+      : '${pubDecl}fn $genericName($_parmsText) -> ${_returnType.lifetimeDecl}$boundsDecl';
 
   String get signatureNoLifetimes =>
       '${pubDecl}fn $unqualifiedName$genericDeclNoLifetimes($_parmsTextNoLifetimes) -> ${_returnType.typeName}$boundsDecl';

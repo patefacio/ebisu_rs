@@ -189,13 +189,19 @@ class FlexiLogProvider implements LogProvider {
 
   addModuleSupport(Module module) {
     if (module.moduleType == binaryModule) {
+      final Binary binary = module.owner;
+      final hasLogLevel = binary.hasLogLevel;
       module
         ..import('flexi_logger')
         ..withMainCodeBlock(mainOpen, (CodeBlock cb) => cb.snippets.add('''
-   flexi_logger::Logger::with_str("info")
-       .start()
-       .unwrap_or_else(|e| panic!("Logger initialization failed with {}", e));
+flexi_logger::Logger::with_str(${hasLogLevel? "options.log_level" : '"info"'})
+    .start()
+    .unwrap_or_else(|e| panic!("Logger initialization failed with {}", e));
+${hasLogLevel? 'info!("clap parsed options {:?}", options);': ""}
               '''));
+      if (hasLogLevel) {
+        module.importWithMacros('log');
+      }
     }
   }
 
@@ -260,9 +266,6 @@ class Module extends RsEntity
   List<Fn> functions = [];
   Map<ModuleCodeBlock, CodeBlock> get moduleCodeBlocks => _moduleCodeBlocks;
   Map<MainCodeBlock, CodeBlock> get mainCodeBlocks => _mainCodeBlocks;
-
-  /// Include *clippy* support
-  bool useClippy = false;
 
   /// List of use symbols for module
   List<Use> get uses => _uses;
@@ -334,32 +337,25 @@ class Module extends RsEntity
         ownerPath = join(ownerPath, 'src');
       }
 
-      if (loggerType != null) {
-        logProvider = loggerType == envLogger
-            ? new EnvLogProvider()
-            : loggerType == flexiLogger
-                ? new FlexiLogProvider()
-                : loggerType == slogLogger
-                    ? new SlogLogProvider()
-                    : throw 'Unrecognized default log provider $loggerType';
-
-        logProvider.addModuleSupport(this);
-        logProvider.addCrateRequirements(this.crate);
-      }
-
       _filePath = (isDirectoryModule || isInlineModule)
           ? join(ownerPath, id.snake)
           : ownerPath;
     }
 
-    if (useClippy) {
-      attrs.addAll([
-        strAttr('cfg_attr(feature="clippy", feature(plugin))'),
-        strAttr('cfg_attr(feature="clippy", plugin(clippy))')
-      ]);
-    }
+    // add unit tests
 
-    /// add unit tests
+    if (loggerType != null) {
+      logProvider = loggerType == envLogger
+          ? new EnvLogProvider()
+          : loggerType == flexiLogger
+              ? new FlexiLogProvider()
+              : loggerType == slogLogger
+                  ? new SlogLogProvider()
+                  : throw 'Unrecognized default log provider $loggerType';
+
+      logProvider.addModuleSupport(this);
+      logProvider.addCrateRequirements(this.crate);
+    }
 
     if (isUnitTestable) addUnitTest(new Id('module_${id.snake}'));
 
@@ -396,6 +392,16 @@ class Module extends RsEntity
 
   void importWithMacros(String crateName) =>
       _addImportIfNotPreset(new Import(crateName, true));
+
+  withStructImpl(dynamic id, augmentStruct(Struct struct),
+      augmentImpl(Struct s, TypeImpl typeImpl)) {
+    final _id = makeRsId(id);
+    final s = struct(_id);
+    structs.add(s);
+    augmentStruct(s);
+    impls.add(typeImpl(s.genericName));
+    augmentImpl(s, impls.last);
+}
 
   void generate() {
     _logger.info(

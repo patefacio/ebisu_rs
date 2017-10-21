@@ -22,7 +22,7 @@ void main([List<String> args]) {
   }
 // custom <main>
 
-  test('create module uses clippy', () {
+  test('create module', () {
     var r = repo('r')
       ..crates = [
         crate('c')
@@ -34,18 +34,13 @@ void main([List<String> args]) {
             ..addUses(['foo::goo'])
             ..addPubUses(['for_consumption::foo'])
             ..addUseForTest('useForTest')
-            ..addUsesForTest(['a', use('b')])
-            ..useClippy = true)
+            ..addUsesForTest(['a', use('b')]))
       ]
       ..setAsRoot();
 
     final subMod2 = r.crates.first.modules
         .firstWhere((Module m) => m.id.snake == 'sub_mod_2');
 
-    expect(
-        subMod2.code
-            .contains('#![cfg_attr(feature="clippy", feature(plugin))]'),
-        true);
     expect(subMod2.code.contains('\nuse someType;'), true);
     expect(subMod2.code.contains('\nuse foo::goo;'), true);
     expect(subMod2.code.contains('\npub use pubUseType;'), true);
@@ -62,10 +57,6 @@ void main([List<String> args]) {
     expect(
         subMod2.code
             .contains(new RegExp(r'mod tests {[^}]*use a;', multiLine: true)),
-        true);
-
-    expect(
-        subMod2.code.contains('#![cfg_attr(feature="clippy", plugin(clippy))]'),
         true);
 
     expect(darkMatter(subMod2.code).contains(darkMatter('''
