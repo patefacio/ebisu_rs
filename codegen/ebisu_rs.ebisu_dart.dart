@@ -665,6 +665,18 @@ All rust named items are *RsEntity* instances.'''
           class_('slog_log_provider')
             ..doc = 'Provides for slog logger'
             ..implement = ['LogProvider'],
+          class_('lazy_static')
+            ..doc = 'Model a lazy static variable'
+            ..extend = 'RsEntity'
+            ..implement = ['HasCode']
+            ..members = [
+              member('type')
+                ..doc = 'Type of global being initialized'
+                ..type = 'RsType',
+              member('code_block')
+                ..doc = 'Block for initialization'
+                ..type = 'CodeBlock'
+            ],
           class_('module')
             ..extend = 'RsEntity'
             ..implement = ['HasFilePath', 'HasCode']
@@ -719,6 +731,10 @@ All rust named items are *RsEntity* instances.'''
                     'Module `tests` for unit testing this containing modules functionality'
                 ..type = 'Module'
                 ..access = IA,
+              member('lazy_statics')
+                ..doc = 'Any globals initialized for the module'
+                ..type = 'List<LazyStatic>'
+                ..init = [],
               member('logger_type')..type = 'LoggerType',
               member('log_provider')
                 ..type = 'LogProvider'

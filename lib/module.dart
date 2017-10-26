@@ -246,6 +246,40 @@ set_stdlog_logger(logger).expect("Setting ${module.id} logger succeed");
 
 }
 
+/// Model a lazy static variable
+class LazyStatic extends RsEntity implements HasCode {
+  /// Type of global being initialized
+  RsType type;
+
+  /// Block for initialization
+  CodeBlock codeBlock;
+
+  // custom <class LazyStatic>
+
+  LazyStatic(globalId, type)
+      : type = rsType(type), super(globalId) {
+    codeBlock = new CodeBlock(id.snake);
+  }
+
+  set initializer(init) {
+    codeBlock.snippets.add(init);
+    codeBlock.tag = null;
+  }
+
+  get code => brCompact([
+        'lazy_static! {',
+        indentBlock(brCompact([
+          'static ref ${id.shout}: ${type.lifetimeDecl} = {',
+          codeBlock.toString(),
+          '};'
+        ])),
+        '}'
+      ]);
+
+  // end <class LazyStatic>
+
+}
+
 class Module extends RsEntity
     with
         IsPub,
@@ -269,6 +303,9 @@ class Module extends RsEntity
 
   /// List of use symbols for module
   List<Use> get uses => _uses;
+
+  /// Any globals initialized for the module
+  List<LazyStatic> lazyStatics = [];
   LoggerType loggerType;
 
   /// If not supplied, initialized from loggerType if set
@@ -310,10 +347,12 @@ class Module extends RsEntity
       f(mainCodeBlocks.putIfAbsent(
           mainCodeBlock, () => codeBlock('main $name ${mainCodeBlock}')));
 
+  CodeBlock moduleCodeBlock(moduleCodeBlock) => moduleCodeBlocks.putIfAbsent(
+      moduleCodeBlock, () => codeBlock('module $name ${moduleCodeBlock}'));
+
   void withModuleCodeBlock(
           ModuleCodeBlock moduleCodeBlock, void f(CodeBlock codeBlock)) =>
-      f(moduleCodeBlocks.putIfAbsent(
-          moduleCodeBlock, () => codeBlock('module $name ${moduleCodeBlock}')));
+      f(this.moduleCodeBlock(moduleCodeBlock));
 
   void withUnitTestModule(void f(Module module)) => f(unitTestModule);
 
@@ -401,7 +440,7 @@ class Module extends RsEntity
     augmentStruct(s);
     impls.add(typeImpl(s.genericName));
     augmentImpl(s, impls.last);
-}
+  }
 
   void generate() {
     _logger.info(
@@ -572,6 +611,11 @@ class Module extends RsEntity
       // inline code
       _inlineCode(modules),
 
+      // lazy statics
+      br([
+        lazyStatics.map((ls) => ls.code)
+      ]),
+
       moduleCodeBlocks[moduleBottom],
 
       _unitTestModule == null ? null : _inlineCode([_unitTestModule]),
@@ -640,6 +684,9 @@ Use use(dynamic used) => used is Use ? used : new Use(used);
 ///
 Use pubUse(dynamic used) =>
     ((used is Use ? use : new Use(used)) as Use)..isPub = true;
+
+/// Create a [LazyStatic] specified by [globalId] with type [type].
+LazyStatic lazyStatic(globalId, type) => new LazyStatic(globalId, type);
 
 get baseLogDependency => new Dependency('log', '^0.3.8');
 

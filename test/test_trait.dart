@@ -125,8 +125,8 @@ trait Worker<'b, T>: Add + Mul + Div + Sized where T : Copy + std::fmt::Debug {
 
     t1.functions.last.elideLifetimes = true;
     expect(
-        t1.functions.last.code.contains(
-            'fn do_work_self_ref_mutable(& mut self, unit : i32) -> ();'),
+        darkMatter(t1.functions.last.code).contains(
+            darkMatter('fn do_work_self_ref_mutable(& mut self, unit : i32) -> ();')),
         true);
   });
 

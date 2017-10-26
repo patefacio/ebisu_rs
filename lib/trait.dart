@@ -215,9 +215,9 @@ class Fn extends RsEntity
   @override
   String get unqualifiedName => id.snake;
 
-  String get _parmsText => br(parms.map((p) => p.lifetimeDecl), ',\n    ');
+  String get _parmsText => parms.map((p) => p.lifetimeDecl).join(',\n    ');
 
-  String get _parmsTextNoLifetimes => br(parms.map((p) => p.code), ',\n   ');
+  String get _parmsTextNoLifetimes => parms.map((p) => p.code).join(',\n   ');
 
   addParm(dynamic id, [dynamic type]) => _parms.add(new Parm(id, type));
 

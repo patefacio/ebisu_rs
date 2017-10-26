@@ -67,5 +67,30 @@ fn do_work(unit : i32) -> () {
     ''')), true);
   });
 
+  test('lazy static', () {
+    final m = module('m')
+      ..lazyStatics = [
+        lazyStatic('foo', 'HashMap<i32,i32>'),
+        lazyStatic('empty', 'HasmMap<i32,i32>')..initializer = 'HashMap::new()',
+      ];
+
+    expect(darkMatter(m.lazyStatics.first.code).contains(darkMatter('''
+    lazy_static! {
+static ref FOO: HashMap<i32,i32> = {
+// custom <foo>
+// end <foo>
+};
+}
+    ''')), true);
+
+    expect(darkMatter(m.lazyStatics.last.code).contains(darkMatter('''
+lazy_static! {
+    static ref EMPTY: HasmMap<i32,i32> = {
+    HashMap::new()
+};
+}
+    ''')), true);
+  });
+
 // end <main>
 }
