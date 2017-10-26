@@ -139,7 +139,6 @@ class Fn extends RsEntity
     _logger.info(
         'Ownership established for fn (isUnitTestable:$isUnitTestable) ${id}');
     if (lifetimes.isEmpty) {
-
       // Try to infer lifetimes of a function if args have lifetimes
       lifetimes = new Set<Lifetime>.from(
           concat(parms.map((parm) => parm.type.lifetimes))).toList()
@@ -147,8 +146,8 @@ class Fn extends RsEntity
 
       // However, if owner is generic and owner has an inferred lifetime, remove
       // from function since it would conflict
-      if(owner is Generic) {
-        for(final olt in (owner as Generic).lifetimes) {
+      if (owner is Generic) {
+        for (final olt in (owner as Generic).lifetimes) {
           lifetimes.removeWhere((lt) => lt == olt);
         }
       }
@@ -216,9 +215,9 @@ class Fn extends RsEntity
   @override
   String get unqualifiedName => id.snake;
 
-  String get _parmsText => parms.map((p) => p.lifetimeDecl).join(', ');
+  String get _parmsText => br(parms.map((p) => p.lifetimeDecl), ',\n    ');
 
-  String get _parmsTextNoLifetimes => parms.map((p) => p.code).join(', ');
+  String get _parmsTextNoLifetimes => br(parms.map((p) => p.code), ',\n   ');
 
   addParm(dynamic id, [dynamic type]) => _parms.add(new Parm(id, type));
 
