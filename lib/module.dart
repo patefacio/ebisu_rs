@@ -421,16 +421,16 @@ class Module extends RsEntity
 
   void import(dynamic import) => import is Iterable
       ? import.forEach((dynamic i) => this.import(i))
-      : _addImportIfNotPreset(
+      : _addImportIfNotPresent(
           import is Import ? import : new Import(import as String));
 
-  _addImportIfNotPreset(Import import) =>
+  _addImportIfNotPresent(Import import) =>
       imports.any((i) => i.import == import.import)
           ? null
           : imports.add(import);
 
   void importWithMacros(String crateName) =>
-      _addImportIfNotPreset(new Import(crateName, true));
+      _addImportIfNotPresent(new Import(crateName, true));
 
   withStructImpl(dynamic id, augmentStruct(Struct struct),
       augmentImpl(Struct s, TypeImpl typeImpl)) {

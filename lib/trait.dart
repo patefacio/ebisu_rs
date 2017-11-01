@@ -169,6 +169,11 @@ class Fn extends RsEntity
 
   set returnType(dynamic type) => _returnType = rsType(type);
 
+  // Set the body of function to [body] and set the tag to null so no protection block.
+  set body(String body) => codeBlock
+    ..snippets = [body]
+    ..tag = null;
+
   String get code => brCompact([
         !noComment ? _docComment : null,
         externalAttrs,
@@ -178,6 +183,9 @@ class Fn extends RsEntity
             : brCompact(
                 ['$signature {', indentBlock(_codeBlock.toString()), '}'])
       ]);
+
+  // Trait function definitions are already public
+  @override get pubDecl => owner is Trait? '' : super.pubDecl;
 
   String get signature => elideLifetimes ?? elisionRulesApply
       ? signatureNoLifetimes
