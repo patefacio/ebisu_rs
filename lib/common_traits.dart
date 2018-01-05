@@ -73,4 +73,16 @@ final Trait defaultTrait = trait('default')
       ..returnDoc = 'The default value for the type'
   ];
 
+final Trait debugTrait = trait('debug')
+  ..doc = 'Format trait for the ? character.'
+  ..functions = [
+    fn('fmt', [
+      selfRef,
+      parm('f', mref('Formatter'))..doc = '`Formatter` to format into'
+    ])
+      ..doc = 'Formats the value using the given formatter.'
+      ..returns = 'Result<(), Error>'
+      ..returnDoc = 'Unit or an error'
+  ];
+
 // end <library common_traits>
