@@ -158,7 +158,8 @@ String indent(String s) => indentBlock(s, '    ');
 
 ProcessResult formatRustFile(String filePath) {
   _logger.info('Formatting rust file ${filePath}');
-  final result = Process.runSync('rustfmt', ['--skip-children', filePath]);
+  final result = Process.runSync(
+      'rustup', ['run', 'nightly', 'rustfmt', '--skip-children', filePath]);
   var backup = new File('$filePath.bk');
   if (backup.existsSync()) {
     _logger.info('Deleting backup ${backup.path}');
@@ -170,7 +171,7 @@ ProcessResult formatRustFile(String filePath) {
     backup.deleteSync();
   }
   _logger.info('Formatting *complete* rust file ${filePath}');
-
+  //print('Formatting *complete* rust file ${filePath} -> ${result.exitCode}\n${result.stderr}');
   return result;
 }
 

@@ -333,6 +333,9 @@ class CrateToml {
   String readme;
   List<String> categories = [];
 
+  /// Block for additional crate toml declarations
+  set codeBlock(CodeBlock codeBlock) => _codeBlock = codeBlock;
+
   // custom <class CrateToml>
 
   CrateToml(this.crate);
@@ -352,6 +355,13 @@ class CrateToml {
 
   void addDep(String crateName, dynamic version) =>
       deps.add(dependency(crateName, version));
+
+  CodeBlock get codeBlock =>
+      _codeBlock ?? (_codeBlock = new ScriptCodeBlock('additional'));
+
+  withCodeBlock(f(CodeBlock codeBlock)) => f(codeBlock);
+
+  _nlText(s) => s == null ? null : '\n$s';
 
   String get contents => brCompact(<String>[
         '[package]',
@@ -379,6 +389,8 @@ class CrateToml {
         new ScriptCodeBlock('dependencies').toString(),
 
         _buildDeps,
+
+        _nlText(_codeBlock?.toString()),
       ]);
 
   String get _buildDeps => buildDeps.isEmpty
@@ -389,6 +401,7 @@ ${buildDeps.join("\n")}
 
   // end <class CrateToml>
 
+  CodeBlock _codeBlock;
 }
 
 class Crate extends RsEntity implements HasFilePath {
@@ -399,7 +412,7 @@ class Crate extends RsEntity implements HasFilePath {
   /// For app crates a command line argument processor
   Clap get clap => _clap;
 
-  /// Additinal binaries in the create - deposited in `.../src/bin`
+  /// Additional binaries in the create - deposited in `.../src/bin`
   List<Binary> binaries = [];
 
   // custom <class Crate>

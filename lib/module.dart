@@ -51,14 +51,17 @@ const MainCodeBlock mainOpen = MainCodeBlock.mainOpen;
 const MainCodeBlock mainClose = MainCodeBlock.mainClose;
 
 class ModuleCodeBlock implements Comparable<ModuleCodeBlock> {
+  /// Section corresponding to attributes, including features, plugins etc, above `moduleType`
+  static const ModuleCodeBlock moduleAttributes = const ModuleCodeBlock._(0);
+
   /// The custom block appearing just after imports, mod statements and usings
-  static const ModuleCodeBlock moduleTop = const ModuleCodeBlock._(0);
+  static const ModuleCodeBlock moduleTop = const ModuleCodeBlock._(1);
 
   /// The custom block appearing at end of module
-  static const ModuleCodeBlock moduleBottom = const ModuleCodeBlock._(1);
+  static const ModuleCodeBlock moduleBottom = const ModuleCodeBlock._(2);
 
   static List<ModuleCodeBlock> get values =>
-      const <ModuleCodeBlock>[moduleTop, moduleBottom];
+      const <ModuleCodeBlock>[moduleAttributes, moduleTop, moduleBottom];
 
   final int value;
 
@@ -72,6 +75,8 @@ class ModuleCodeBlock implements Comparable<ModuleCodeBlock> {
 
   String toString() {
     switch (this) {
+      case moduleAttributes:
+        return "ModuleAttributes";
       case moduleTop:
         return "ModuleTop";
       case moduleBottom:
@@ -83,6 +88,8 @@ class ModuleCodeBlock implements Comparable<ModuleCodeBlock> {
   static ModuleCodeBlock fromString(String s) {
     if (s == null) return null;
     switch (s) {
+      case "ModuleAttributes":
+        return moduleAttributes;
       case "ModuleTop":
         return moduleTop;
       case "ModuleBottom":
@@ -92,6 +99,12 @@ class ModuleCodeBlock implements Comparable<ModuleCodeBlock> {
     }
   }
 }
+
+/// Convenient access to ModuleCodeBlock.moduleAttributes with *moduleAttributes* see [ModuleCodeBlock].
+///
+/// Section corresponding to attributes, including features, plugins etc, above `moduleType`
+///
+const ModuleCodeBlock moduleAttributes = ModuleCodeBlock.moduleAttributes;
 
 /// Convenient access to ModuleCodeBlock.moduleTop with *moduleTop* see [ModuleCodeBlock].
 ///
@@ -134,7 +147,18 @@ class Use extends Object with HasAttributes, IsPub implements Comparable<Use> {
 
   // custom <class Use>
 
-  Use(this.used);
+  static final _namedItems = new RegExp(r'(.*){([^}]+)}');
+
+  Use(this.used) {
+    final terms = _namedItems.firstMatch(used);
+    if (terms != null) {
+      final prefix = terms.group(1);
+      final guts = terms.group(2);
+      final terms_ = guts.split(new RegExp(r'\s*,\s*'));
+      terms_.sort();
+      used = '${prefix}{${terms_.join(", ")}}';
+    }
+  }
 
   String get useStatement => brCompact([externalAttrs, '${pubDecl}use $used;']);
 
@@ -247,7 +271,7 @@ set_stdlog_logger(logger).expect("Setting ${module.id} logger succeed");
 }
 
 /// Model a lazy static variable
-class LazyStatic extends RsEntity implements HasCode {
+class LazyStatic extends RsEntity with IsPub implements HasCode {
   /// Type of global being initialized
   RsType type;
 
@@ -257,7 +281,8 @@ class LazyStatic extends RsEntity implements HasCode {
   // custom <class LazyStatic>
 
   LazyStatic(globalId, type)
-      : type = rsType(type), super(globalId) {
+      : type = rsType(type),
+        super(globalId) {
     codeBlock = new CodeBlock(id.snake);
   }
 
@@ -269,12 +294,17 @@ class LazyStatic extends RsEntity implements HasCode {
   get code => brCompact([
         'lazy_static! {',
         indentBlock(brCompact([
-          'static ref ${id.shout}: ${type.lifetimeDecl} = {',
+          '${isPub? "pub ": ""}static ref ${id.shout}: ${type.lifetimeDecl} = {',
           codeBlock.toString(),
           '};'
         ])),
         '}'
       ]);
+
+  @override
+  onOwnershipEstablished() {
+    this.crate.rootModule.importWithMacros('lazy_static');
+  }
 
   // end <class LazyStatic>
 
@@ -322,7 +352,8 @@ class Module extends RsEntity
         modules,
         traits,
         impls,
-        _unitTestModule != null ? [_unitTestModule] : new Iterable.empty()
+        _unitTestModule != null ? [_unitTestModule] : new Iterable.empty(),
+        lazyStatics
       ]) as Iterable<Entity>;
 
   String toString() => 'mod($name:$moduleType)';
@@ -347,8 +378,9 @@ class Module extends RsEntity
       f(mainCodeBlocks.putIfAbsent(
           mainCodeBlock, () => codeBlock('main $name ${mainCodeBlock}')));
 
-  CodeBlock moduleCodeBlock(moduleCodeBlock) => moduleCodeBlocks.putIfAbsent(
-      moduleCodeBlock, () => codeBlock('module $name ${moduleCodeBlock}'));
+  CodeBlock moduleCodeBlock(ModuleCodeBlock moduleCodeBlock) =>
+      moduleCodeBlocks.putIfAbsent(
+          moduleCodeBlock, () => codeBlock('module $name ${moduleCodeBlock}'));
 
   void withModuleCodeBlock(
           ModuleCodeBlock moduleCodeBlock, void f(CodeBlock codeBlock)) =>
@@ -527,6 +559,8 @@ class Module extends RsEntity
     final nonPubUses = _sortedNonPubUses;
 
     return br([
+      moduleCodeBlocks[moduleAttributes],
+
       !noComment && !isInlineModule
           ? innerDocComment(doc == null ? 'TODO: comment module $id' : doc)
           : null,
@@ -555,8 +589,10 @@ class Module extends RsEntity
       ]),
 
       // declared mods
-      brCompact(
-          declaredMods.map((module) => '${module.pubDecl}mod ${module.name};')),
+      brCompact(declaredMods
+          .map((module) => '${module.pubDecl}mod ${module.name};')
+          .toList()
+            ..sort()),
 
       // type aliases
       br([
@@ -584,7 +620,7 @@ class Module extends RsEntity
 
       // structs
       br([
-        _announce('struct definitinos', structs.isNotEmpty),
+        _announce('struct definitions', structs.isNotEmpty),
         isDeclaredModule ? _structDecls : indent(_structDecls),
       ]),
 
@@ -612,9 +648,7 @@ class Module extends RsEntity
       _inlineCode(modules),
 
       // lazy statics
-      br([
-        lazyStatics.map((ls) => ls.code)
-      ]),
+      br([lazyStatics.map((ls) => ls.code)]),
 
       moduleCodeBlocks[moduleBottom],
 
@@ -637,6 +671,11 @@ class Module extends RsEntity
           '}'
         ])
       : null;
+
+  StructType findStruct(id) {
+    final _id = makeRsId(id);
+    return structs.firstWhere((s) => s.id == _id);
+  }
 
   // end <class Module>
 

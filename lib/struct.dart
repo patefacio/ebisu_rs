@@ -105,6 +105,8 @@ class StructInst extends GenericInst {
 
 /// Tuple struct
 class TupleStruct extends StructType with Generic {
+  List<RsType> get fieldTypes => _fieldTypes;
+
   // custom <class TupleStruct>
 
   @override
@@ -114,8 +116,12 @@ class TupleStruct extends StructType with Generic {
   String get code => brCompact([
         tripleSlashComment(
             doc?.toString() ?? 'TODO: Comment TupleStruct(`$genericName`)'),
-        '${pubDecl}struct ${unqualifiedName}$boundsDecl {',
-        '}',
+        derives,
+        combine([
+          '${pubDecl}struct ${unqualifiedName}$boundsDecl(',
+          fieldTypes.map((ft) => ft.lifetimeDecl).join(', '),
+          ');'
+        ]),
       ]);
 
   @override
@@ -128,9 +134,13 @@ class TupleStruct extends StructType with Generic {
   @override
   String get unqualifiedName => id.capCamel;
 
+  set fieldTypes(Iterable it) => _fieldTypes = it.map(rsType).toList();
+
   // end <class TupleStruct>
 
   TupleStruct(dynamic id) : super(id);
+
+  List<RsType> _fieldTypes = [];
 }
 
 class TupleStructInst extends GenericInst {
@@ -216,5 +226,22 @@ TupleStruct tstruct(dynamic id) => new TupleStruct(id);
 /// Returns new [TupleStruct].
 ///
 TupleStruct pubTstruct(dynamic id) => new TupleStruct(id)..isPub = true;
+
+/// Creates a [TupleStruct] with one type, also called a _"NewType"_.
+///
+/// Creates a _"NewType"_ instance identified by [id], which may be a symbol or string.
+/// Returns new [TupleStruct].
+///
+TupleStruct newType(dynamic id, dynamic type) =>
+    new TupleStruct(id)..fieldTypes = [rsType(type)];
+
+/// Creates a _public_ [TupleStruct] with one type, also called a _"NewType"_.
+///
+/// Creates a _"NewType"_ instance identified by [id], which may be a symbol or string.
+/// Returns new [TupleStruct].
+///
+TupleStruct pubNewType(dynamic id, dynamic type) => new TupleStruct(id)
+  ..fieldTypes = [rsType(type)]
+  ..isPub = true;
 
 // end <library struct>

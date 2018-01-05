@@ -451,6 +451,10 @@ All rust named items are *RsEntity* instances.'''
               member('categories')
                 ..type = 'List<String>'
                 ..init = [],
+              member('code_block')
+                ..doc = 'Block for additional crate toml declarations'
+                ..type = 'CodeBlock'
+                ..access = WO,
             ],
           class_('crate')
             ..extend = 'RsEntity'
@@ -470,7 +474,7 @@ All rust named items are *RsEntity* instances.'''
                 ..access = RO,
               member('binaries')
                 ..doc =
-                    'Additinal binaries in the create - deposited in `.../src/bin`'
+                    'Additional binaries in the create - deposited in `.../src/bin`'
                 ..type = 'List<Binary>'
                 ..init = [],
             ],
@@ -629,6 +633,9 @@ All rust named items are *RsEntity* instances.'''
             ..requiresClass = true
             ..hasCamelNames = true
             ..values = [
+              enumValue(id('module_attributes'))
+                ..doc =
+                    'Section corresponding to attributes, including features, plugins etc, above `moduleType`',
               enumValue(id('module_top'))
                 ..doc =
                     'The custom block appearing just after imports, mod statements and usings',
@@ -669,13 +676,14 @@ All rust named items are *RsEntity* instances.'''
             ..doc = 'Model a lazy static variable'
             ..extend = 'RsEntity'
             ..implement = ['HasCode']
+            ..mixins = ['IsPub']
             ..members = [
               member('type')
                 ..doc = 'Type of global being initialized'
                 ..type = 'RsType',
               member('code_block')
                 ..doc = 'Block for initialization'
-                ..type = 'CodeBlock'
+                ..type = 'CodeBlock',
             ],
           class_('module')
             ..extend = 'RsEntity'
@@ -798,7 +806,7 @@ If true lifetimes are elided.
 If false lifetimes are not elided.
 If null, lifetime elision rules apply
 '''
-                ..type = 'bool'
+                ..type = 'bool',
             ]),
           class_('trait')
             ..doc = '''
@@ -1089,7 +1097,12 @@ Traits without generics are themselves [TraitInst].
             ..doc = 'Tuple struct'
             ..mixins = ['Generic']
             ..withClass((cls) => commonFeatures(cls, 'StructType'))
-            ..members.addAll([]),
+            ..members.addAll([
+              member('field_types')
+                ..type = 'List<RsType>'
+                ..access = RO
+                ..init = [],
+            ]),
           class_('tuple_struct_inst')
             ..extend = 'GenericInst'
             ..members = [

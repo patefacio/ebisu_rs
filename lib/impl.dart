@@ -10,6 +10,7 @@ export 'package:ebisu_rs/entity.dart';
 export 'package:ebisu_rs/trait.dart';
 
 // custom <additional imports>
+import 'package:ebisu_rs/common_traits.dart';
 // end <additional imports>
 
 final Logger _logger = new Logger('impl');
@@ -78,6 +79,8 @@ class TraitImpl extends Impl with HasTypeAliases {
 
     codeBlock = new CodeBlock('impl ${_trait.name} for $_type');
   }
+
+  removeFunction(String id) => functions.removeWhere((fn) => fn.id.snake == id);
 
   @override
   onChildrenOwnershipEstablished() {
@@ -202,5 +205,19 @@ final impl = traitImpl;
 ///
 /// *type* - The type this impl applies to
 TypeImpl typeImpl(dynamic type) => new TypeImpl(rsType(type));
+
+Impl addableImpl(Struct s) {
+  final t = "& 'a ${s.unqualifiedName}";
+  final result = traitImpl(addTrait.trait, new UnmodeledType(t))
+    ..typeAliases = [typeAlias('output', s.unqualifiedName)]
+    ..functions.first.codeBlock.snippets.add(brCompact([
+          '${s.unqualifiedName} {',
+          s.fields.map((f) =>
+              'self.${f.id.snake} = self.${f.id.snake} + rhs.${f.id.snake}'),
+          '}'
+        ]));
+
+  return result;
+}
 
 // end <library impl>

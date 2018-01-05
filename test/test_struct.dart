@@ -50,6 +50,23 @@ struct Bong;
 
     us = pubUstruct('bong')..doc = 'Bong struct';
     expect(us.code.contains('pub struct Bong'), true);
+
+    var ts = pubTstruct('bing')..fieldTypes = ['A'];
+    expect(darkMatter(ts.code).contains(darkMatter('''
+    pub struct Bing(A);
+    ''')), true);
+
+    ts = newType('bing', 'A');
+    expect(darkMatter(ts.code).contains(darkMatter('''
+    struct Bing(A);
+    ''')), true);
+    expect(ts.code.contains('pub'), false);
+
+    ts = pubNewType('bing', 'A')..derive = [Debug];
+    expect(darkMatter(ts.code).contains(darkMatter('''
+    #[derive(Debug)]
+    pub struct Bing(A);
+    ''')), true);
   });
 
 // end <main>

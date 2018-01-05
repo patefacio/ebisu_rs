@@ -185,7 +185,8 @@ class Fn extends RsEntity
       ]);
 
   // Trait function definitions are already public
-  @override get pubDecl => owner is Trait? '' : super.pubDecl;
+  @override
+  get pubDecl => owner is Trait ? '' : super.pubDecl;
 
   String get signature => elideLifetimes ?? elisionRulesApply
       ? signatureNoLifetimes
@@ -196,9 +197,9 @@ class Fn extends RsEntity
 
   String get _docComment {
     var fnDoc = [
-      descr == null
+      doc == null
           ? 'TODO: comment fn ${id.snake}:${_codeBlock!=null? _codeBlock.tag : "no-body-tag"}'
-          : descr
+          : doc
     ];
     return tripleSlashComment(chomp(br([
       fnDoc,
