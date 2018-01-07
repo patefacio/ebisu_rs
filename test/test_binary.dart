@@ -1,10 +1,15 @@
 library ebisu_rs.test_binary;
 
-import 'package:ebisu_rs/crate.dart';
+import 'package:ebisu_rs/binary.dart';
 import 'package:logging/logging.dart';
 import 'package:test/test.dart';
 
 // custom <additional imports>
+
+import 'package:ebisu_rs/crate.dart';
+import 'package:ebisu_rs/struct.dart';
+import 'package:ebisu_rs/module.dart';
+
 // end <additional imports>
 
 final Logger _logger = new Logger('test_binary');

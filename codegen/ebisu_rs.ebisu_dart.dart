@@ -38,7 +38,7 @@ main(List<String> args) {
     ..scripts = []
     ..testLibraries = [
       library('test_attribute')..imports = ['package:ebisu_rs/attribute.dart'],
-      library('test_binary')..imports = ['package:ebisu_rs/crate.dart'],
+      library('test_binary')..imports = ['package:ebisu_rs/binary.dart'],
       library('test_type')..imports = ['package:ebisu_rs/type.dart'],
       library('test_struct')..imports = ['package:ebisu_rs/struct.dart'],
       library('test_repo')..imports = ['package:ebisu_rs/repo.dart'],
@@ -335,23 +335,20 @@ All rust named items are *RsEntity* instances.'''
             ],
         ],
 
-      // crate library
-      library('crate')
+      library('binary')
         ..imports = commonIncludes()
         ..includesLogger = true
         ..imports.addAll([
           'package:id/id.dart',
           'package:quiver/iterables.dart',
-        ])
-        ..importAndExportAll([
+          'package:path/path.dart',
           'package:ebisu_rs/enumeration.dart',
+          'package:ebisu_rs/dependency.dart',
           'package:ebisu_rs/module.dart',
           'package:ebisu_rs/repo.dart',
           'package:ebisu_rs/struct.dart',
           'package:ebisu_rs/type.dart',
-          'package:path/path.dart',
         ])
-        ..importAndExportAll(['package:ebisu_rs/dependency.dart'])
         ..enums = [
           enum_('arg_type')
             ..hasLibraryScopedValues = true
@@ -426,6 +423,49 @@ All rust named items are *RsEntity* instances.'''
                 ..type = 'List<Command>'
                 ..init = [],
             ],
+          class_('binary')
+            ..extend = 'RsEntity'
+            ..implement = ['HasFilePath']
+            ..doc =
+                'An executable generated into the `src/bin/` path of the crate'
+            ..members = [
+              member('has_log_level')
+                ..doc = 'If set includes _clap_ _Arg_ to set log level'
+                ..init = false,
+              member('clap')
+                ..doc = 'For command line options of the binary'
+                ..type = 'Clap'
+                ..access = RO,
+              member('module')
+                ..doc = 'Module for the binary'
+                ..type = 'Module'
+                ..access = RO,
+              member('uses_error_chain')
+                ..doc =
+                    'If set binary uses error chain by invoking `run` method'
+                ..init = false
+            ]
+        ],
+
+      // crate library
+      library('crate')
+        ..imports = commonIncludes()
+        ..includesLogger = true
+        ..imports.addAll([
+          'package:id/id.dart',
+          'package:quiver/iterables.dart',
+          'package:path/path.dart',
+        ])
+        ..importAndExportAll([
+          'package:ebisu_rs/binary.dart',
+          'package:ebisu_rs/enumeration.dart',
+          'package:ebisu_rs/dependency.dart',
+          'package:ebisu_rs/module.dart',
+          'package:ebisu_rs/repo.dart',
+          'package:ebisu_rs/struct.dart',
+          'package:ebisu_rs/type.dart',
+        ])
+        ..classes = [
           class_('crate_toml')
             ..members = [
               member('crate')..type = 'Crate',
@@ -478,25 +518,9 @@ All rust named items are *RsEntity* instances.'''
                 ..type = 'List<Binary>'
                 ..init = [],
             ],
-          class_('binary')
-            ..extend = 'RsEntity'
-            ..implement = ['HasFilePath']
-            ..doc =
-                'An executable generated into the `src/bin/` path of the crate'
-            ..members = [
-              member('has_log_level')
-                ..doc = 'If set includes _clap_ _Arg_ to set log level'
-                ..init = false,
-              member('clap')
-                ..doc = 'For command line options of the binary'
-                ..type = 'Clap'
-                ..access = RO,
-              member('module')
-                ..doc = 'Module for the binary'
-                ..type = 'Module'
-                ..access = RO
-            ]
         ],
+
+      /// Support for attributes
       library('attribute')
         ..imports = ['package:id/id.dart', 'package:ebisu_rs/entity.dart']
         ..classes = [
