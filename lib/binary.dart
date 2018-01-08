@@ -220,15 +220,35 @@ class Clap {
 
   get optionsStructId => makeRsId('${id.snake}_options');
 
-  String get mainStub => '''
+  String mainStub([bool usesRunFunction = false]) => brCompact([
+        '''
     let app = make_clap_app();
     let matches = app.get_matches();
-    let options = ${optionsStructId.capCamel}::from_matches(&matches);''';
+    let options = ${optionsStructId.capCamel}::from_matches(&matches);'''
+      ]);
 
   String get preMain => brCompact([defineStructs, fnGetApp]);
 
+  String get invokeMainRun => '''
+    if let Err(ref err) = main_run(options) {
+        print!("Failed: {}", err);
+        println!("{:?}", err.backtrace());
+        let mut fail: &::failure::Fail = err.cause();
+
+        while let Some(cause) = fail.cause() {
+            println!("\t{}", cause);
+            if let Some(backtrace) = cause.backtrace() {
+                println!("BT{:?}", backtrace);
+            }
+            fail = cause;
+        }
+
+        ::std::process::exit(1);
+    }
+    ''';
+
   String get fnGetApp => brCompact([
-    """
+        """
 /// Creates a clap::App object based on modeled arguments.
 ///
 ///  * _return_ - `clap::App` created from modeled arguments
@@ -244,9 +264,8 @@ fn make_clap_app<'a, 'b>() -> clap::App<'a, 'b> {""",
         '}'
       ]);
 
-  String get defineStructs => pullArgs
-      ? _defineOptionsStruct(optionsStructId, args)
-      : null;
+  String get defineStructs =>
+      pullArgs ? _defineOptionsStruct(optionsStructId, args) : null;
 
   String _defineOptionsStruct(Id optionsId, List<Arg> args) {
     Struct structDecl = struct(optionsId)
@@ -343,8 +362,8 @@ class Binary extends RsEntity implements HasFilePath {
   /// Module for the binary
   Module get module => _module;
 
-  /// If set binary uses error chain by invoking `run` method
-  bool usesErrorChain = false;
+  /// If set binary uses *failure* crate and invokes `run` method
+  bool usesRunFunction = false;
 
   // custom <class Binary>
 
@@ -371,7 +390,7 @@ class Binary extends RsEntity implements HasFilePath {
     }
 
     if (_clap != null) {
-      addClapToModule(module, _clap);
+      addClapToModule(module, _clap, usesRunFunction);
     }
   }
 
@@ -394,21 +413,43 @@ Arg arg(dynamic id) => new Arg(id);
 
 Binary binary(dynamic id) => new Binary(id);
 
-addClapToModule(Module module, Clap clap) => module
-  ..import('clap')
-  ..uses.addAll([use('clap::{App, Arg}')])
-  ..withModuleCodeBlock(
-      moduleBottom,
-      (cb) => cb.snippets.addAll([
-            clap.preMain,
-          ]))
-  ..withMainCodeBlock(
-      mainOpen,
-      (CodeBlock cb) => cb
-        ..hasSnippetsFirst = true
-        ..snippets.add(brCompact([
-          indent(clap.mainStub),
-        ])));
+addClapToModule(Module module, Clap clap, [usesRunFunction = false]) {
+  final List<String> preMain = [clap.preMain];
+
+  if (usesRunFunction) {
+    preMain.add((fn('main_run', [
+      parm('options', clap.optionsStructId.capCamel)
+        ..doc = 'Options parsed/pulled from command line'
+    ])
+          ..doc =
+              'Bulk of main, placed in run function consistent error handling'
+          ..returns = '::std::result::Result<(), ::failure::Error>'
+          ..returnDoc = 'The Error'
+          ..codeBlock.tag = 'main run'
+          ..withCodeBlock((cb) => cb.snippets.add('Ok(())')))
+        .code);
+    module
+      ..importWithMacros('failure')
+      ..withMainCodeBlock(
+          mainClose,
+          (cb) => cb
+            ..snippets.add(clap.invokeMainRun)
+            ..tag = null);
+  }
+
+  return module
+    ..import('clap')
+    ..uses.addAll([use('clap::{App, Arg}')])
+    ..withModuleCodeBlock(
+        moduleBottom, (cb) => cb.snippets.add(brCompact(preMain)))
+    ..withMainCodeBlock(
+        mainOpen,
+        (CodeBlock cb) => cb
+          ..hasSnippetsFirst = true
+          ..snippets.add(brCompact([
+            indent(clap.mainStub(usesRunFunction)),
+          ])));
+}
 
 main() => print('done');
 

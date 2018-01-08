@@ -59,6 +59,7 @@ enum Color {
     expect(darkMatter(e.code), darkMatter('''
 /// A tuple variant enum
 enum TvE {
+    /// TODO: comment tv
     Tv(
       /// TODO: comment
       i32,

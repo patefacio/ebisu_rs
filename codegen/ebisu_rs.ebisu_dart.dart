@@ -215,6 +215,7 @@ All rust named items are *RsEntity* instances.'''
       library('enumeration')
         ..doc = 'Library for enums'
         ..imports = commonIncludes()
+        ..imports.add('package:ebisu_rs/attribute.dart')
         ..importAndExportAll([
           'package:ebisu_rs/field.dart',
           'package:ebisu_rs/macro.dart',
@@ -229,10 +230,12 @@ All rust named items are *RsEntity* instances.'''
             ..members = [],
           class_('unit_variant')
             ..extend = 'Variant'
+            ..mixins = ['HasAttributes']            
             ..members = [member('value')..type = 'dynamic'],
           class_('tuple_variant')
             ..extend = 'Variant'
             ..implement = ['HasCode']
+            ..mixins = ['HasAttributes']
             ..members = [
               member('fields')
                 ..type = 'List<TupleField>'
@@ -241,6 +244,7 @@ All rust named items are *RsEntity* instances.'''
             ],
           class_('struct_variant')
             ..extend = 'Variant'
+            ..mixins = ['HasAttributes']            
             ..members = [
               member('fields')
                 ..type = 'List<Field>'
@@ -251,7 +255,7 @@ All rust named items are *RsEntity* instances.'''
             ..implement = [
               'HasCode',
             ]
-            ..mixins = ['IsPub', 'Derives', 'Generic']
+            ..mixins = ['IsPub', 'Derives', 'Generic', 'HasAttributes']
             ..defaultMemberAccess = RO
             ..withClass(commonFeatures)
             ..members = [
@@ -440,10 +444,63 @@ All rust named items are *RsEntity* instances.'''
                 ..doc = 'Module for the binary'
                 ..type = 'Module'
                 ..access = RO,
-              member('uses_error_chain')
+              member('uses_run_function')
                 ..doc =
-                    'If set binary uses error chain by invoking `run` method'
+                    'If set binary uses *failure* crate and invokes `run` method'
                 ..init = false
+            ]
+        ],
+
+      library('errors_module')
+        ..doc =
+            'Models an errors module with customErrors for consistent error handling [See failure](https://boats.gitlab.io/failure/custom-fail.html)'
+        ..includesLogger = true
+        ..imports = [
+          'package:id/id.dart',
+          'package:ebisu/ebisu.dart',
+          'package:ebisu_rs/entity.dart',
+          'package:ebisu_rs/module.dart'
+        ]
+        ..classes = [
+          class_('fail_field')
+            ..doc =
+                'Models a single field in a [FailVariant] style _struct variant_'
+            ..extend = 'Field'
+            ..members = [
+              member('is_cause')
+                ..type = bool
+                ..doc =
+                    'If true, marks the field in the variant as the cause of the error'
+            ],
+          class_('fail_variant')
+            ..doc =
+                'Models a single _struct variant_ in an enum defined by [CustomError]'
+            ..extend = 'StructVariant'
+            ..members = [
+              member('display')..doc = 'Display string for the variant',
+              member('fail_fields')
+                ..doc = 'List of fields to capture for the failure'
+                ..init = []
+                ..type = 'List<FailField>',
+            ],
+          class_('custom_error_enum')
+            ..doc =
+                'Provides a custom error enumeration for use with *failure* crate'
+            ..extend = 'Enum'
+            ..members = [
+              member('fail_variants')
+                ..doc = 'List of fail variants comprising the error'
+                ..type = 'List<FailVariant>'
+                ..init = [],
+            ],
+          class_('errors_module')
+            ..doc = 'Models the module where custom errors are defined'
+            ..extend = 'Module'
+            ..members = [
+              member('custom_errors')
+                ..type = 'List<CustomErrorEnum>'
+                ..doc = 'List of modeled custom errors'
+                ..init = [],
             ]
         ],
 
@@ -458,8 +515,9 @@ All rust named items are *RsEntity* instances.'''
         ])
         ..importAndExportAll([
           'package:ebisu_rs/binary.dart',
-          'package:ebisu_rs/enumeration.dart',
           'package:ebisu_rs/dependency.dart',
+          'package:ebisu_rs/enumeration.dart',
+          'package:ebisu_rs/errors_module.dart',
           'package:ebisu_rs/module.dart',
           'package:ebisu_rs/repo.dart',
           'package:ebisu_rs/struct.dart',
@@ -517,6 +575,10 @@ All rust named items are *RsEntity* instances.'''
                     'Additional binaries in the create - deposited in `.../src/bin`'
                 ..type = 'List<Binary>'
                 ..init = [],
+              member('errors_module')
+                ..doc = 'A standard errors module for the crate'
+                ..type = 'ErrorsModule'
+                ..access = WO,
             ],
         ],
 
@@ -770,7 +832,7 @@ All rust named items are *RsEntity* instances.'''
               member('logger_type')..type = 'LoggerType',
               member('log_provider')
                 ..type = 'LogProvider'
-                ..doc = 'If not supplied, initialized from loggerType if set'
+                ..doc = 'If not supplied, initialized from loggerType if set',
             ]),
         ],
 
@@ -1068,7 +1130,10 @@ Traits without generics are themselves [TraitInst].
 
               // Serde,
               'serialize',
-              'deserialize'
+              'deserialize',
+
+              // failure
+              'Fail',
             ]
         ]
         ..classes = [

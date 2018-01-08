@@ -5,6 +5,7 @@ import 'package:ebisu_rs/binary.dart';
 import 'package:ebisu_rs/dependency.dart';
 import 'package:ebisu_rs/entity.dart';
 import 'package:ebisu_rs/enumeration.dart';
+import 'package:ebisu_rs/errors_module.dart';
 import 'package:ebisu_rs/module.dart';
 import 'package:ebisu_rs/repo.dart';
 import 'package:ebisu_rs/struct.dart';
@@ -17,6 +18,7 @@ import 'package:quiver/iterables.dart';
 export 'package:ebisu_rs/binary.dart';
 export 'package:ebisu_rs/dependency.dart';
 export 'package:ebisu_rs/enumeration.dart';
+export 'package:ebisu_rs/errors_module.dart';
 export 'package:ebisu_rs/module.dart';
 export 'package:ebisu_rs/repo.dart';
 export 'package:ebisu_rs/struct.dart';
@@ -124,6 +126,9 @@ class Crate extends RsEntity implements HasFilePath {
   /// Additional binaries in the create - deposited in `.../src/bin`
   List<Binary> binaries = [];
 
+  /// A standard errors module for the crate
+  set errorsModule(ErrorsModule errorsModule) => _errorsModule = errorsModule;
+
   // custom <class Crate>
 
   Crate(dynamic id, [CrateType crateType = libCrate])
@@ -137,8 +142,22 @@ class Crate extends RsEntity implements HasFilePath {
       _rootModule = rootModule..moduleType = ModuleType.rootModule;
 
   void withRootModule(void f(Module module)) => f(rootModule);
+
   void withCrateToml(void f(CrateToml crateToml)) => f(_crateToml);
+
   void withClap(void f(Clap clap)) => f(_clap ?? (_clap = new Clap(id)));
+
+  void withErrorsModule(void f(ErrorsModule)) {
+    if (_errorsModule == null) {
+      _errorsModule = new ErrorsModule();
+      withRootModule((Module rootModule) => rootModule
+        ..imports.add(import('serde'))
+        ..importWithMacros('failure')
+        ..importWithMacros('serde_derive')
+        ..modules.add(_errorsModule));
+    }
+    f(_errorsModule);
+  }
 
   get children => concat([
         [rootModule],
@@ -211,6 +230,7 @@ class Crate extends RsEntity implements HasFilePath {
   String _filePath;
   CrateToml _crateToml;
   Clap _clap;
+  ErrorsModule _errorsModule;
 }
 
 // custom <library crate>

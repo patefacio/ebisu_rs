@@ -31,6 +31,8 @@ class Derivable implements Comparable<Derivable> {
 
   static const Derivable DESERIALIZE = const Derivable._(11);
 
+  static const Derivable FAIL = const Derivable._(12);
+
   static List<Derivable> get values => const <Derivable>[
         EQ,
         PARTIAL_EQ,
@@ -43,7 +45,8 @@ class Derivable implements Comparable<Derivable> {
         ZERO,
         DEBUG,
         SERIALIZE,
-        DESERIALIZE
+        DESERIALIZE,
+        FAIL
       ];
 
   final int value;
@@ -82,6 +85,8 @@ class Derivable implements Comparable<Derivable> {
         return "Serialize";
       case DESERIALIZE:
         return "Deserialize";
+      case FAIL:
+        return "Fail";
     }
     return null;
   }
@@ -113,6 +118,8 @@ class Derivable implements Comparable<Derivable> {
         return SERIALIZE;
       case "Deserialize":
         return DESERIALIZE;
+      case "Fail":
+        return FAIL;
       default:
         return null;
     }
@@ -174,6 +181,10 @@ const Derivable Serialize = Derivable.SERIALIZE;
 /// Convenient access to Derivable.DESERIALIZE with *DESERIALIZE* see [Derivable].
 ///
 const Derivable Deserialize = Derivable.DESERIALIZE;
+
+/// Convenient access to Derivable.FAIL with *FAIL* see [Derivable].
+///
+const Derivable Fail = Derivable.FAIL;
 
 class Derives {
   List<Derivable> derive = [];

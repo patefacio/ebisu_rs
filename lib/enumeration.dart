@@ -2,6 +2,7 @@
 library ebisu_rs.enumeration;
 
 import 'package:ebisu/ebisu.dart';
+import 'package:ebisu_rs/attribute.dart';
 import 'package:ebisu_rs/entity.dart';
 import 'package:ebisu_rs/field.dart';
 import 'package:ebisu_rs/macro.dart';
@@ -27,7 +28,7 @@ abstract class Variant extends RsEntity implements HasCode {
   Variant(dynamic id) : super(id);
 }
 
-class UnitVariant extends Variant {
+class UnitVariant extends Variant with HasAttributes {
   dynamic value;
 
   // custom <class UnitVariant>
@@ -37,6 +38,7 @@ class UnitVariant extends Variant {
   @override
   String get code => brCompact([
         tripleSlashComment(doc == null ? 'TODO: comment $id' : doc),
+        externalAttrs,        
         value != null ? '${id.capCamel} = $value' : id.capCamel
       ]);
 
@@ -44,7 +46,7 @@ class UnitVariant extends Variant {
 
 }
 
-class TupleVariant extends Variant implements HasCode {
+class TupleVariant extends Variant with HasAttributes implements HasCode {
   List<TupleField> get fields => _fields;
 
   // custom <class TupleVariant>
@@ -57,6 +59,8 @@ class TupleVariant extends Variant implements HasCode {
 
   @override
   String get code => brCompact([
+        tripleSlashComment(doc == null ? 'TODO: comment $id' : doc),    
+        externalAttrs,    
         '${id.capCamel}(',
         indentBlock(br(fields.map((f) => f.code), ',\n')),
         ')',
@@ -75,13 +79,13 @@ class TupleVariant extends Variant implements HasCode {
   List<TupleField> _fields = [];
 }
 
-class StructVariant extends Variant {
+class StructVariant extends Variant with HasAttributes {
   List<Field> get fields => _fields;
 
   // custom <class StructVariant>
 
-  StructVariant(dynamic id, [Iterable fields]) : super(id) {
-    this.fields = fields;
+  StructVariant(dynamic id, [Iterable fields = const []]) : super(id) {
+    this.fields = new List.from(fields);
   }
 
   set fields(Iterable fields) =>
@@ -90,17 +94,23 @@ class StructVariant extends Variant {
   @override
   String get code => brCompact([
         tripleSlashComment(doc == null ? 'TODO: comment $id' : doc),
+        externalAttrs,
         '${id.capCamel}{',
         indentBlock(br(fields.map((f) => f.code), ',\n')),
         '}',
       ]);
+
+  @override
+  Iterable<RsEntity> get children => fields;
 
   // end <class StructVariant>
 
   List<Field> _fields = [];
 }
 
-class Enum extends RsEntity with IsPub, Derives, Generic implements HasCode {
+class Enum extends RsEntity
+    with IsPub, Derives, Generic, HasAttributes
+    implements HasCode {
   List<Variant> get variants => _variants;
 
   /// If self includes *use self::<name>::*;
@@ -117,6 +127,7 @@ class Enum extends RsEntity with IsPub, Derives, Generic implements HasCode {
   @override
   String get code => brCompact([
         tripleSlashComment(doc == null ? 'TODO: comment $id' : doc),
+        externalAttrs,
         derives,
         '${pubDecl}enum $unqualifiedName$genericDecl$boundsDecl {',
         indent(br(variants.map((v) => v.code), ',\n')),
