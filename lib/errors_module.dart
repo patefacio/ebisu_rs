@@ -23,9 +23,9 @@ class FailField extends Field {
       : isCause = isCause,
         super(id, rsType);
 
-@override
+  @override
   onOwnershipEstablished() {
-    if(isCause) {
+    if (isCause) {
       attrs.add(idAttr('cause'));
     }
     super.onOwnershipEstablished();
@@ -77,9 +77,10 @@ class CustomErrorEnum extends Enum {
 
   @override
   onOwnershipEstablished() {
-    if(failVariants.any((fv) => fv==null)) {
+    if (failVariants.any((fv) => fv == null)) {
       throw new Exception("Display must be set for all variants");
-    };
+    }
+    ;
     variants.addAll(failVariants);
     super.onOwnershipEstablished();
   }

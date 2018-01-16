@@ -230,7 +230,7 @@ All rust named items are *RsEntity* instances.'''
             ..members = [],
           class_('unit_variant')
             ..extend = 'Variant'
-            ..mixins = ['HasAttributes']            
+            ..mixins = ['HasAttributes']
             ..members = [member('value')..type = 'dynamic'],
           class_('tuple_variant')
             ..extend = 'Variant'
@@ -244,7 +244,7 @@ All rust named items are *RsEntity* instances.'''
             ],
           class_('struct_variant')
             ..extend = 'Variant'
-            ..mixins = ['HasAttributes']            
+            ..mixins = ['HasAttributes']
             ..members = [
               member('fields')
                 ..type = 'List<Field>'
@@ -883,7 +883,20 @@ All rust named items are *RsEntity* instances.'''
                 ..type = 'RsType'
                 ..init = 'UnitType',
               member('return_doc')..doc = 'Document return type',
+              member('open_code_block')
+                ..doc = '''
+First of two code blocks; this opens the function.
+
+[CodeBlock]s have support for surrounding text either above or below the protect
+block. By default injected text is below and can be hoisted above by setting
+[hasSnippetsFirst] to true on the [CodeBlock]. [Fn] has an [openCodeBlock] and
+its primary [codeBlock] so code can be injected above the primary block (ie in
+the [openCodeBlock]).'''
+                ..type = 'CodeBlock'
+                ..access = WO,
               member('code_block')
+                ..doc =
+                    'Primary code block for the function - identified by function id'
                 ..type = 'CodeBlock'
                 ..access = WO,
               member('elide_lifetimes')
@@ -1134,6 +1147,9 @@ Traits without generics are themselves [TraitInst].
 
               // failure
               'Fail',
+
+              // diesel
+              'Queryable'
             ]
         ]
         ..classes = [

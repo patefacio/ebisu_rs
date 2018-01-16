@@ -181,8 +181,10 @@ class TypeAlias extends RsEntity with IsPub, Generic, HasCode {
         super(id);
 
   @override
-  get code =>
-      '${pubDecl}type ${unqualifiedName}${genericDecl} = ${aliased.lifetimeDecl};';
+  get code => chomp(brCompact([
+        doc != null ? tripleSlashComment(doc) : null,
+        '${pubDecl}type ${unqualifiedName}${genericDecl} = ${aliased.lifetimeDecl};'
+      ]));
 
   // end <class TypeAlias>
 

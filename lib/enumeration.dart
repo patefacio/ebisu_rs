@@ -38,7 +38,7 @@ class UnitVariant extends Variant with HasAttributes {
   @override
   String get code => brCompact([
         tripleSlashComment(doc == null ? 'TODO: comment $id' : doc),
-        externalAttrs,        
+        externalAttrs,
         value != null ? '${id.capCamel} = $value' : id.capCamel
       ]);
 
@@ -59,8 +59,8 @@ class TupleVariant extends Variant with HasAttributes implements HasCode {
 
   @override
   String get code => brCompact([
-        tripleSlashComment(doc == null ? 'TODO: comment $id' : doc),    
-        externalAttrs,    
+        tripleSlashComment(doc == null ? 'TODO: comment $id' : doc),
+        externalAttrs,
         '${id.capCamel}(',
         indentBlock(br(fields.map((f) => f.code), ',\n')),
         ')',

@@ -122,7 +122,7 @@ class TraitImpl extends Impl with HasTypeAliases {
     return brCompact([
       !noComment
           ? tripleSlashComment(doc?.toString() ??
-              'Implementation of trait `${trait.name}` for type `${type.lifetimeDecl}`')
+              'Implementation of trait `${trait.name}` for type `${type.typeName}`')
           : null,
       '$_implHeader {',
       indentBlock(br([

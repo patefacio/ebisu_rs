@@ -98,6 +98,17 @@ class Fn extends RsEntity
 
   /// Document return type
   String returnDoc;
+
+  /// First of two code blocks; this opens the function.
+  ///
+  /// [CodeBlock]s have support for surrounding text either above or below the protect
+  /// block. By default injected text is below and can be hoisted above by setting
+  /// [hasSnippetsFirst] to true on the [CodeBlock]. [Fn] has an [openCodeBlock] and
+  /// its primary [codeBlock] so code can be injected above the primary block (ie in
+  /// the [openCodeBlock]).
+  set openCodeBlock(CodeBlock openCodeBlock) => _openCodeBlock = openCodeBlock;
+
+  /// Primary code block for the function - identified by function id
   set codeBlock(CodeBlock codeBlock) => _codeBlock = codeBlock;
 
   /// If true lifetimes are elided.
@@ -131,6 +142,10 @@ class Fn extends RsEntity
       parms.any((Parm p) => p.type.isRef && p.id.snake == 'self'));
 
   get codeBlock => _codeBlock ?? (_codeBlock = new CodeBlock('fn ${id.snake}'));
+
+  get openCodeBlock =>
+      _openCodeBlock ??
+      (_openCodeBlock = new CodeBlock(null));
 
   withCodeBlock(void codeBlock(CodeBlock)) => codeBlock(this.codeBlock);
 
@@ -177,11 +192,14 @@ class Fn extends RsEntity
   String get code => brCompact([
         !noComment ? _docComment : null,
         externalAttrs,
-        _codeBlock == null ||
-                (_codeBlock.tag == null && _codeBlock.snippets.isEmpty)
+        (_openCodeBlock == null && ((_codeBlock == null) ||
+                (_codeBlock.tag == null && _codeBlock.snippets.isEmpty)))
             ? '$signature;'
-            : brCompact(
-                ['$signature {', indentBlock(_codeBlock.toString()), '}'])
+            : brCompact([
+                '$signature {',
+                indentBlock(brCompact([_openCodeBlock, _codeBlock])),
+                '}'
+              ])
       ]);
 
   // Trait function definitions are already public
@@ -250,6 +268,7 @@ class Fn extends RsEntity
 
   List<Parm> _parms = [];
   RsType _returnType = UnitType;
+  CodeBlock _openCodeBlock;
   CodeBlock _codeBlock;
 }
 

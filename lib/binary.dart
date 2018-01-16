@@ -429,7 +429,7 @@ addClapToModule(Module module, Clap clap, [usesRunFunction = false]) {
           ..withCodeBlock((cb) => cb.snippets.add('Ok(())')))
         .code);
     module
-      ..importWithMacros('failure')
+      ..imports.add(import('failure'))
       ..withMainCodeBlock(
           mainClose,
           (cb) => cb

@@ -151,9 +151,7 @@ class Crate extends RsEntity implements HasFilePath {
     if (_errorsModule == null) {
       _errorsModule = new ErrorsModule();
       withRootModule((Module rootModule) => rootModule
-        ..imports.add(import('serde'))
         ..importWithMacros('failure')
-        ..importWithMacros('serde_derive')
         ..modules.add(_errorsModule));
     }
     f(_errorsModule);
