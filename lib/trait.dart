@@ -143,9 +143,7 @@ class Fn extends RsEntity
 
   get codeBlock => _codeBlock ?? (_codeBlock = new CodeBlock('fn ${id.snake}'));
 
-  get openCodeBlock =>
-      _openCodeBlock ??
-      (_openCodeBlock = new CodeBlock(null));
+  get openCodeBlock => _openCodeBlock ?? (_openCodeBlock = new CodeBlock(null));
 
   withCodeBlock(void codeBlock(CodeBlock)) => codeBlock(this.codeBlock);
 
@@ -187,13 +185,14 @@ class Fn extends RsEntity
   // Set the body of function to [body] and set the tag to null so no protection block.
   set body(String body) => codeBlock
     ..snippets = [body]
-    ..tag = null;
+    ..noProtect = true;
 
   String get code => brCompact([
         !noComment ? _docComment : null,
         externalAttrs,
-        (_openCodeBlock == null && ((_codeBlock == null) ||
-                (_codeBlock.tag == null && _codeBlock.snippets.isEmpty)))
+        (_openCodeBlock == null &&
+                ((_codeBlock == null) ||
+                    (_codeBlock.tag == null && _codeBlock.snippets.isEmpty)))
             ? '$signature;'
             : brCompact([
                 '$signature {',

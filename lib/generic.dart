@@ -49,7 +49,7 @@ class TypeParm extends RsEntity with HasBounds implements HasCode {
   @override
   get code => '${id.capCamel}$_withDefault';
 
-  get boundsDecl => '$code : ${super.boundsDecl}';
+  get boundsDecl => '${id.capCamel} : ${super.boundsDecl}';
 
   set defaultType(dynamic defaultType) => _defaultType = rsType(defaultType);
 

@@ -80,7 +80,23 @@ class TraitImpl extends Impl with HasTypeAliases {
     codeBlock = new CodeBlock('impl ${_trait.name} for $_type');
   }
 
-  removeFunction(String id) => functions.removeWhere((fn) => fn.id.snake == id);
+  withThis(f(TraitImpl t)) => f(this);
+
+  isMatchingFunction(fn, id) => fn.id.snake == id;
+
+  matchingFunction(String id) => functions
+      .firstWhere((fn) => isMatchingFunction(fn, id), orElse: () => null);
+
+  matchingFunctions(Iterable ids) => ids
+      .map((id) => matchingFunction(id))
+      .where((fn) => fn != null)
+      .map((fn) => fn.clone())
+      .toList();
+
+  removeFunctions(Iterable ids) => ids.forEach((id) => removeFunction(id));
+
+  removeFunction(String id) =>
+      functions.removeWhere((fn) => isMatchingFunction(fn, id));
 
   @override
   onChildrenOwnershipEstablished() {

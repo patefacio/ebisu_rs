@@ -205,7 +205,7 @@ class FlexiLogProvider implements LogProvider {
   // custom <class FlexiLogProvider>
 
   addCrateRequirements(Crate crate) => crate
-    ..rootModule.importWithMacros('log')
+    ..rootModule.importWithMacros('log', allowUnused: true)
     ..rootModule.import('flexi_logger')
     ..withCrateToml((toml) => toml
       ..addIfMissing(baseLogDependency)
@@ -341,6 +341,9 @@ class Module extends RsEntity
   /// If not supplied, initialized from loggerType if set
   LogProvider logProvider;
 
+  /// If set will add `#[cfg(test)]` attribute
+  bool isTestModule = false;
+
   // custom <class Module>
 
   Module(dynamic id, [this.moduleType]) : super(id);
@@ -461,8 +464,13 @@ class Module extends RsEntity
           ? null
           : imports.add(import);
 
-  void importWithMacros(String crateName) =>
-      _addImportIfNotPresent(new Import(crateName, true));
+  void importWithMacros(String crateName, {bool allowUnused = false}) {
+    final i = new Import(crateName, true);
+    if (allowUnused) {
+      i.attrs.add(strAttr('allow(unused_imports)'));
+    }
+    _addImportIfNotPresent(i);
+  }
 
   withStructImpl(dynamic id, augmentStruct(Struct struct),
       augmentImpl(Struct s, TypeImpl typeImpl)) {
@@ -554,6 +562,11 @@ class Module extends RsEntity
   _announce(section, [bool hasContents = true]) =>
       !isInlineModule && hasContents ? '// --- module $section ---\n\n' : null;
 
+  _modDeclaration(Module module) => brCompact([
+        module.isTestModule ? '#[cfg(test)]' : null,
+        '${module.pubDecl}mod ${module.name};',
+      ]);
+
   String get code {
     final pubUses = _sortedPubUses;
     final nonPubUses = _sortedNonPubUses;
@@ -589,10 +602,7 @@ class Module extends RsEntity
       ]),
 
       // declared mods
-      brCompact(declaredMods
-          .map((module) => '${module.pubDecl}mod ${module.name};')
-          .toList()
-            ..sort()),
+      brCompact(declaredMods.map(_modDeclaration).toList()..sort()),
 
       // type aliases
       br([

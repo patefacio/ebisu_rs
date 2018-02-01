@@ -81,7 +81,7 @@ final Trait debugTrait = trait('debug')
       parm('f', mref('Formatter'))..doc = '`Formatter` to format into'
     ])
       ..doc = 'Formats the value using the given formatter.'
-      ..returns = '::std::result::Result<(), Error>'
+      ..returns = '::std::fmt::Result'
       ..returnDoc = 'Unit or an error'
   ];
 

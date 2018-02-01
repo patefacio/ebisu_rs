@@ -833,6 +833,9 @@ All rust named items are *RsEntity* instances.'''
               member('log_provider')
                 ..type = 'LogProvider'
                 ..doc = 'If not supplied, initialized from loggerType if set',
+              member('is_test_module')
+              ..doc = 'If set will add `#[cfg(test)]` attribute'
+              ..init = false,                
             ]),
         ],
 
