@@ -689,6 +689,9 @@ All rust named items are *RsEntity* instances.'''
         ],
       library('module')
         ..imports = commonIncludes()
+        ..imports.addAll([
+          'package:ebisu_rs/common_traits.dart',
+        ])
         ..importAndExportAll([
           'package:path/path.dart',
           'package:ebisu_rs/constant.dart',
@@ -834,8 +837,8 @@ All rust named items are *RsEntity* instances.'''
                 ..type = 'LogProvider'
                 ..doc = 'If not supplied, initialized from loggerType if set',
               member('is_test_module')
-              ..doc = 'If set will add `#[cfg(test)]` attribute'
-              ..init = false,                
+                ..doc = 'If set will add `#[cfg(test)]` attribute'
+                ..init = false,
             ]),
         ],
 
@@ -852,6 +855,14 @@ All rust named items are *RsEntity* instances.'''
           'package:ebisu_rs/type.dart',
         ])
         ..classes = [
+          class_('has_functions')
+            ..isAbstract = true
+            ..members = [
+              member('functions')
+                ..access = RO
+                ..type = 'List<Function>'
+                ..init = [],
+            ],
           class_('parm')
             ..extend = 'RsEntity'
             ..implement = ['HasCode']

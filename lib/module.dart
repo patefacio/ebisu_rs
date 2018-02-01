@@ -3,6 +3,7 @@ library ebisu_rs.module;
 import 'dart:io';
 import 'package:ebisu/ebisu.dart';
 import 'package:ebisu_rs/attribute.dart';
+import 'package:ebisu_rs/common_traits.dart';
 import 'package:ebisu_rs/constant.dart';
 import 'package:ebisu_rs/crate.dart';
 import 'package:ebisu_rs/entity.dart';
@@ -510,6 +511,15 @@ class Module extends RsEntity
     } else {
       return join(filePath, name);
     }
+  }
+
+  addNewType(String type, {newTypeId: null}) {
+    final id = newTypeId ?? makeGenericId(type);
+    structs.add(new TupleStruct(id)
+      ..fieldTypes = [ref(rsType(type))]
+      ..doc = 'New type for $type');
+    impls.add(traitImpl(derefTrait, id.capCamel)
+      ..typeAliases = [typeAlias('Target', type)]);
   }
 
   String _inlineCode(Iterable<Module> modules) {

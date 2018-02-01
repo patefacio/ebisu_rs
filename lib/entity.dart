@@ -149,6 +149,7 @@ RegExp _replaceable = new RegExp("[<> ,]");
 makeGenericId(String s) => makeId(s
     .replaceAll(_replaceable, '')
     .replaceAll("'", '_')
+    .replaceAll("::", '_')    
     .replaceAll('&', 'ref_')
     .replaceAllMapped(new RegExp('([a-z])([A-Z])'),
         (Match m) => '${m[1]}_${m[2].toLowerCase()}')

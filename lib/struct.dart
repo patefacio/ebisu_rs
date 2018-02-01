@@ -110,6 +110,21 @@ class TupleStruct extends StructType with Generic {
   // custom <class TupleStruct>
 
   @override
+  onOwnershipEstablished() {
+    _logger.info("Ownership of struct ${id}:${runtimeType}");
+    if (lifetimes.isEmpty) {
+      _inferLifetimes();
+    }
+  }
+
+  _inferLifetimes() {
+    lifetimes =
+        new Set<Lifetime>.from(concat(fieldTypes.map((m) => m.lifetimes)).toList())
+            .toList()
+              ..sort();
+  }
+
+  @override
   Iterable<RsEntity> get children => genericChildren;
 
   @override
@@ -118,7 +133,7 @@ class TupleStruct extends StructType with Generic {
             doc?.toString() ?? 'TODO: Comment TupleStruct(`$genericName`)'),
         derives,
         combine([
-          '${pubDecl}struct ${unqualifiedName}$boundsDecl(',
+          '${pubDecl}struct ${unqualifiedName}${genericDecl}$boundsDecl(',
           fieldTypes.map((ft) => ft.lifetimeDecl).join(', '),
           ');'
         ]),
