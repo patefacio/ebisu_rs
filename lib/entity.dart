@@ -70,6 +70,8 @@ abstract class RsEntity extends Object with Entity {
   @override
   Iterable<RsEntity> get children => new Iterable.empty();
 
+  withThis(f(TraitImpl t)) => f(this);
+
   /// Get the [rootPath] of this repo
   String get rootPath {
     RsEntity current = this;
@@ -149,7 +151,7 @@ RegExp _replaceable = new RegExp("[<> ,]");
 makeGenericId(String s) => makeId(s
     .replaceAll(_replaceable, '')
     .replaceAll("'", '_')
-    .replaceAll("::", '_')    
+    .replaceAll("::", '_')
     .replaceAll('&', 'ref_')
     .replaceAllMapped(new RegExp('([a-z])([A-Z])'),
         (Match m) => '${m[1]}_${m[2].toLowerCase()}')

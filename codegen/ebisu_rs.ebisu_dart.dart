@@ -783,7 +783,8 @@ All rust named items are *RsEntity* instances.'''
               'HasStatics',
               'HasAttributes',
               'HasTypeAliases',
-              'IsUnitTestable'
+              'IsUnitTestable',
+              'HasFunctions',
             ]
             ..members.addAll([
               member('file_path')..access = RO,
@@ -806,9 +807,6 @@ All rust named items are *RsEntity* instances.'''
                 ..init = [],
               member('impls')
                 ..type = 'List<Impl>'
-                ..init = [],
-              member('functions')
-                ..type = 'List<Fn>'
                 ..init = [],
               member('module_code_blocks')
                 ..type = 'Map<ModuleCodeBlock, CodeBlock>'
@@ -859,8 +857,7 @@ All rust named items are *RsEntity* instances.'''
             ..isAbstract = true
             ..members = [
               member('functions')
-                ..access = RO
-                ..type = 'List<Function>'
+                ..type = 'List<Fn>'
                 ..init = [],
             ],
           class_('parm')
@@ -976,11 +973,8 @@ Traits without generics are themselves [TraitInst].
           class_('impl')
             ..isAbstract = true
             ..extend = 'RsEntity'
-            ..mixins = ['HasCode', 'Generic', 'HasCodeBlock']
+            ..mixins = ['HasCode', 'Generic', 'HasCodeBlock', 'HasFunctions']
             ..members = [
-              member('functions')
-                ..type = 'List<Fn>'
-                ..init = [],
               member('unit_test_module')
                 ..doc = 'Internal module for unit testing impl'
                 ..type = 'Module'

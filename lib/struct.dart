@@ -118,10 +118,10 @@ class TupleStruct extends StructType with Generic {
   }
 
   _inferLifetimes() {
-    lifetimes =
-        new Set<Lifetime>.from(concat(fieldTypes.map((m) => m.lifetimes)).toList())
-            .toList()
-              ..sort();
+    lifetimes = new Set<Lifetime>.from(
+            concat(fieldTypes.map((m) => m.lifetimes)).toList())
+        .toList()
+          ..sort();
   }
 
   @override

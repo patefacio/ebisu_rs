@@ -21,6 +21,31 @@ export 'package:ebisu_rs/type.dart';
 
 final Logger _logger = new Logger('trait');
 
+abstract class HasFunctions {
+  List<Fn> functions = [];
+
+  // custom <class HasFunctions>
+
+  isMatchingFunction(fn, id) => fn.id.snake == id;
+
+  matchingFunction(String id) => functions
+      .firstWhere((fn) => isMatchingFunction(fn, id), orElse: () => null);
+
+  matchingFunctions(Iterable ids) => ids
+      .map((id) => matchingFunction(id))
+      .where((fn) => fn != null)
+      .map((fn) => fn.clone())
+      .toList();
+
+  removeFunctions(Iterable ids) => ids.forEach((id) => removeFunction(id));
+
+  removeFunction(String id) =>
+      functions.removeWhere((fn) => isMatchingFunction(fn, id));
+ 
+  // end <class HasFunctions>
+
+}
+
 class Parm extends RsEntity implements HasCode {
   final RsType type;
   bool isMutable = false;

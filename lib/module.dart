@@ -318,7 +318,8 @@ class Module extends RsEntity
         HasStatics,
         HasAttributes,
         HasTypeAliases,
-        IsUnitTestable
+        IsUnitTestable,
+        HasFunctions
     implements HasFilePath, HasCode {
   String get filePath => _filePath;
   ModuleType moduleType;
@@ -328,7 +329,6 @@ class Module extends RsEntity
   List<StructType> structs = [];
   List<Trait> traits = [];
   List<Impl> impls = [];
-  List<Fn> functions = [];
   Map<ModuleCodeBlock, CodeBlock> get moduleCodeBlocks => _moduleCodeBlocks;
   Map<MainCodeBlock, CodeBlock> get mainCodeBlocks => _mainCodeBlocks;
 
@@ -513,13 +513,18 @@ class Module extends RsEntity
     }
   }
 
-  addNewType(String type, {newTypeId: null}) {
-    final id = newTypeId ?? makeGenericId(type);
-    structs.add(new TupleStruct(id)
-      ..fieldTypes = [ref(rsType(type))]
-      ..doc = 'New type for $type');
-    impls.add(traitImpl(derefTrait, id.capCamel)
-      ..typeAliases = [typeAlias('Target', type)]);
+  addNewType(String type, Id newTypeId) {
+    final newTypeStruct = new TupleStruct(newTypeId)
+      ..fieldTypes = [mref(rsType(type))]
+      ..doc = 'New type for $type';
+
+    structs.add(newTypeStruct);
+
+    impls.add(traitImpl(derefTrait, newTypeStruct.inst(lifetimes: ['a']))
+      ..lifetimes = ['a']
+      ..codeBlock.tag = null
+      ..typeAliases = [typeAlias('Target', type)]
+      ..withThis((impl) => impl.matchingFunction('deref')..body = '&self.0'));
   }
 
   String _inlineCode(Iterable<Module> modules) {
