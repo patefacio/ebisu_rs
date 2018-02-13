@@ -357,13 +357,14 @@ class Binary extends RsEntity implements HasFilePath {
   bool hasLogLevel = false;
 
   /// For command line options of the binary
-  Clap get clap => _clap;
+  set clap(Clap clap) => _clap = clap;
 
   /// Module for the binary
   Module get module => _module;
 
   /// If set binary uses *failure* crate and invokes `run` method
-  bool usesRunFunction = false;
+  set usesRunFunction(bool usesRunFunction) =>
+      _usesRunFunction = usesRunFunction;
 
   // custom <class Binary>
 
@@ -377,7 +378,38 @@ class Binary extends RsEntity implements HasFilePath {
 
   withModule(f(Module)) => f(module);
 
-  withClap(f(clap)) => f(_clap ?? (_clap = new Clap(id)));
+  get clap => _clap ?? (_clap = new Clap(id));
+
+  withClap(f(clap)) => f(clap);
+
+  get usesRunFunction => _usesRunFunction || _runFunction != null;
+
+  _initRunFunction() {
+    _runFunction = fn('main_run', [
+      parm('options', clap.optionsStructId.capCamel)
+        ..doc = 'Options parsed/pulled from command line'
+    ])
+      ..doc = 'Bulk of main, placed in run function consistent error handling'
+      ..returns = '::std::result::Result<(), ::failure::Error>'
+      ..returnDoc = 'The Error'
+      ..codeBlock.tag = 'main run';
+
+    module
+      ..imports.add(import('failure'))
+      ..withMainCodeBlock(
+          mainClose,
+          (cb) => cb
+            ..snippets.add(clap.invokeMainRun)
+            ..tag = null);
+
+    return _runFunction;
+  }
+
+  Fn get runFunction => _runFunction ?? _initRunFunction();
+
+  withRunFunction(f(Fn runFunction)) {
+    f(runFunction);
+  }
 
   bool get requiresClap => _clap != null;
 
@@ -390,6 +422,13 @@ class Binary extends RsEntity implements HasFilePath {
     }
 
     if (_clap != null) {
+      final List<String> preMain = [clap.preMain];
+      if (usesRunFunction) {
+        runFunction..withCodeBlock((cb) => cb.snippets.add('Ok(())'));
+        preMain.add(runFunction.code);
+      }
+      module.withModuleCodeBlock(
+          moduleBottom, (cb) => cb.snippets.add(brCompact(preMain)));
       addClapToModule(module, _clap, usesRunFunction);
     }
   }
@@ -405,6 +444,10 @@ class Binary extends RsEntity implements HasFilePath {
 
   Clap _clap;
   Module _module;
+
+  /// Run function - provided if [usesRunFunction] set
+  Fn _runFunction;
+  bool _usesRunFunction = false;
 }
 
 // custom <library binary>
@@ -414,34 +457,9 @@ Arg arg(dynamic id) => new Arg(id);
 Binary binary(dynamic id) => new Binary(id);
 
 addClapToModule(Module module, Clap clap, [usesRunFunction = false]) {
-  final List<String> preMain = [clap.preMain];
-
-  if (usesRunFunction) {
-    preMain.add((fn('main_run', [
-      parm('options', clap.optionsStructId.capCamel)
-        ..doc = 'Options parsed/pulled from command line'
-    ])
-          ..doc =
-              'Bulk of main, placed in run function consistent error handling'
-          ..returns = '::std::result::Result<(), ::failure::Error>'
-          ..returnDoc = 'The Error'
-          ..codeBlock.tag = 'main run'
-          ..withCodeBlock((cb) => cb.snippets.add('Ok(())')))
-        .code);
-    module
-      ..imports.add(import('failure'))
-      ..withMainCodeBlock(
-          mainClose,
-          (cb) => cb
-            ..snippets.add(clap.invokeMainRun)
-            ..tag = null);
-  }
-
   return module
     ..import('clap')
     ..uses.addAll([use('clap::{App, Arg}')])
-    ..withModuleCodeBlock(
-        moduleBottom, (cb) => cb.snippets.add(brCompact(preMain)))
     ..withMainCodeBlock(
         mainOpen,
         (CodeBlock cb) => cb

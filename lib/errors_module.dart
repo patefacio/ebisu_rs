@@ -80,7 +80,6 @@ class CustomErrorEnum extends Enum {
     if (failVariants.any((fv) => fv == null)) {
       throw new Exception("Display must be set for all variants");
     }
-    ;
     variants.addAll(failVariants);
     super.onOwnershipEstablished();
   }
@@ -98,7 +97,7 @@ class ErrorsModule extends Module {
 
   // custom <class ErrorsModule>
 
-  ErrorsModule([this.customErrors]) : super('errors', fileModule) {
+  ErrorsModule([this.customErrors = const []]) : super('errors', fileModule) {
     isPub = true;
     doc = 'Provide for consistent errors using failure';
     pubUse('errors::*');

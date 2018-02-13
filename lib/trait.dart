@@ -41,7 +41,7 @@ abstract class HasFunctions {
 
   removeFunction(String id) =>
       functions.removeWhere((fn) => isMatchingFunction(fn, id));
- 
+
   // end <class HasFunctions>
 
 }

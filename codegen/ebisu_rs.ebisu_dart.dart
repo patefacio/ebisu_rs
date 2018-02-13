@@ -439,15 +439,20 @@ All rust named items are *RsEntity* instances.'''
               member('clap')
                 ..doc = 'For command line options of the binary'
                 ..type = 'Clap'
-                ..access = RO,
+                ..access = WO,
               member('module')
                 ..doc = 'Module for the binary'
                 ..type = 'Module'
                 ..access = RO,
+              member('run_function')
+                ..doc = 'Run function - provided if [usesRunFunction] set'
+                ..type = 'Fn'
+                ..access = IA,
               member('uses_run_function')
                 ..doc =
                     'If set binary uses *failure* crate and invokes `run` method'
                 ..init = false
+                ..access = WO
             ]
         ],
 
@@ -1177,6 +1182,7 @@ Traits without generics are themselves [TraitInst].
           'package:ebisu_rs/type.dart',
           'package:ebisu_rs/field.dart',
           'package:ebisu_rs/generic.dart',
+          'package:ebisu_rs/attribute.dart',
           'package:quiver/iterables.dart',
         ])
         ..classes = [
@@ -1190,9 +1196,10 @@ Traits without generics are themselves [TraitInst].
             ..mixins = [
               'IsPub',
               'Derives',
+              'HasAttributes',
             ],
           class_('struct')
-            ..mixins = ['Generic']
+            ..mixins = ['Generic', ]
             ..withClass((cls) => commonFeatures(cls, 'StructType'))
             ..members.addAll([
               member('fields')

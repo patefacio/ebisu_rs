@@ -1,6 +1,7 @@
 library ebisu_rs.struct;
 
 import 'package:ebisu/ebisu.dart';
+import 'package:ebisu_rs/attribute.dart';
 import 'package:ebisu_rs/entity.dart';
 import 'package:ebisu_rs/field.dart';
 import 'package:ebisu_rs/generic.dart';
@@ -9,6 +10,7 @@ import 'package:ebisu_rs/type.dart';
 import 'package:logging/logging.dart';
 import 'package:quiver/iterables.dart';
 
+export 'package:ebisu_rs/attribute.dart';
 export 'package:ebisu_rs/field.dart';
 export 'package:ebisu_rs/generic.dart';
 export 'package:ebisu_rs/macro.dart';
@@ -25,7 +27,7 @@ final Logger _logger = new Logger('struct');
 
 /// Base class for various struct types (struct, tuple_struct, unit_struct)
 abstract class StructType extends RsEntity
-    with IsPub, Derives
+    with IsPub, Derives, HasAttributes
     implements HasCode {
   StructType(dynamic id) : super(id);
 }
@@ -69,6 +71,7 @@ class Struct extends StructType with Generic {
   String get code => brCompact([
         tripleSlashComment(
             doc?.toString() ?? 'TODO: comment struct `$genericName`'),
+        externalAttrs,
         derives,
         '${pubDecl}struct $unqualifiedName${genericDecl}$boundsDecl {',
         indentBlock(br(fields.map((field) => field.code), ',\n')),
