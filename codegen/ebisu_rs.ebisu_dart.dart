@@ -176,6 +176,11 @@ All rust named items are *RsEntity* instances.'''
               member('type_parms')
                 ..type = 'List<TypeParm>'
                 ..init = [],
+              member('fancy_bounds')
+                ..doc = 'For bounds that are atypical - higher typed'
+                ..type = 'List<Object>'
+                ..access = RW
+                ..init = [],
             ],
           class_('generic_inst')
             ..doc = 'An instantiation of a generic'
@@ -565,8 +570,15 @@ All rust named items are *RsEntity* instances.'''
             ..members = [
               member('crate_type')..type = 'CrateType',
               member('root_module')
+              ..doc = 'The root module for the crate, lib.rs for library crate and main.rs for binary crate'
                 ..type = 'Module'
                 ..access = RO,
+
+              member('tests_module')
+              ..doc = 'The standard `tests` module for integration testing'
+              ..type = 'Module'
+              ..access = IA,
+
               member('file_path')..access = RO,
               member('crate_toml')
                 ..type = 'CrateToml'
@@ -797,6 +809,20 @@ All rust named items are *RsEntity* instances.'''
               member('modules')
                 ..type = 'List<Module>'
                 ..init = [],
+              member('declared_modules')
+              ..doc = '''
+List of modules that this module declares - for testing only.
+
+In general module declarations are fully discovered by the recursive
+design pattern (ie modules contain modules and a lib crate will declare
+its modules). However, special consideration exists for _tests_ module
+which does not blanket import modules since each module that is just
+a _fileModule_ is treated as its own crate. So, if this is a `tests`
+module and module Ids are set, this will declare those modules.
+'''
+                ..type = 'List<Id>'
+                ..access = IA
+                ..init = [],
               member('imports')
                 ..type = 'List<Import>'
                 ..init = []
@@ -873,6 +899,9 @@ All rust named items are *RsEntity* instances.'''
                 ..type = 'RsType'
                 ..isFinal = true,
               member('is_mutable')..init = false,
+              member('is_unused')
+              ..doc = 'If set, parm is named with leading underscore to prevent warnings'
+              ..init = false,
             ]),
           class_('self_parm')..extend = 'Parm',
           class_('self_ref_parm')..extend = 'Parm',
@@ -887,7 +916,7 @@ All rust named items are *RsEntity* instances.'''
               'HasConstants',
               'HasAttributes',
               'HasCodeBlock',
-              'IsUnitTestable'
+              'IsUnitTestable',
             ]
             ..members.addAll([
               member('parms')
@@ -1199,7 +1228,9 @@ Traits without generics are themselves [TraitInst].
               'HasAttributes',
             ],
           class_('struct')
-            ..mixins = ['Generic', ]
+            ..mixins = [
+              'Generic',
+            ]
             ..withClass((cls) => commonFeatures(cls, 'StructType'))
             ..members.addAll([
               member('fields')

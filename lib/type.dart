@@ -258,14 +258,7 @@ abstract class HasBounds {
   get boundsDecl =>
       bounds.map((bound) => bound is String ? bound : bound.name).join(' + ');
 
-  set bounds(Iterable<dynamic> bounds) => _bounds = new List
-      .from(bounds.map((bound) => bound
-          is Id
-      ? bound.capCamel
-      : bound is String
-          ? bound
-          : throw new ArgumentError(
-              'Bounds must be Id, String or Trait not ${bound.runtimeType}')));
+  set bounds(Iterable<dynamic> bounds) => _bounds = makeBounds(bounds);
 
   bool get hasBounds => bounds.isNotEmpty;
 
@@ -343,6 +336,13 @@ TypeAlias pubTypeAlias(dynamic id, [dynamic aliased]) =>
 
 AssociatedType associatedType(dynamic id) =>
     id is AssociatedType ? id : new AssociatedType(id);
+
+makeBounds(Iterable bounds) => new List.from(bounds.map((bound) => bound is Id
+    ? bound.capCamel
+    : bound is String
+        ? bound
+        : throw new ArgumentError(
+            'Bounds must be Id, String or Trait not ${bound.runtimeType}')));
 
 // end <library type>
 

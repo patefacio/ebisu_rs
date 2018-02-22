@@ -117,6 +117,8 @@ ${buildDeps.join("\n")}
 
 class Crate extends RsEntity implements HasFilePath {
   CrateType crateType;
+
+  /// The root module for the crate, lib.rs for library crate and main.rs for binary crate
   Module get rootModule => _rootModule;
   String get filePath => _filePath;
 
@@ -143,6 +145,15 @@ class Crate extends RsEntity implements HasFilePath {
 
   void withRootModule(void f(Module module)) => f(rootModule);
 
+  set testsModule(Module testsModule) =>
+      _testsModule = testsModule..moduleType = ModuleType.directoryModule;
+
+  Module get testsModule =>
+      _testsModule ??
+      (_testsModule = new Module('tests', ModuleType.directoryModule));
+
+  void withTestsModule(void f(Module testsModule)) => f(testsModule);
+
   void withCrateToml(void f(CrateToml crateToml)) => f(_crateToml);
 
   void withClap(void f(Clap clap)) => f(_clap ?? (_clap = new Clap(id)));
@@ -159,6 +170,7 @@ class Crate extends RsEntity implements HasFilePath {
 
   get children => concat([
         [rootModule],
+        [_testsModule].where((tm) => tm != null),
         binaries
       ]);
 
@@ -187,10 +199,10 @@ class Crate extends RsEntity implements HasFilePath {
 
   void _addInferredDependencies() {
     if (requiresClap) {
-      _crateToml.addIfMissing(new Dependency('clap', '^2.26.2'));
+      _crateToml.addIfMissing(new Dependency('clap', '^2.30.0'));
     }
     if (requiresSerde) {
-      _crateToml.addIfMissing(new Dependency('serde', '^1.0.11'));
+      _crateToml.addIfMissing(new Dependency('serde', '^1.0.27'));
     }
   }
 
@@ -212,6 +224,7 @@ class Crate extends RsEntity implements HasFilePath {
   void generate() {
     _logger.info('Generating crate $id into $filePath');
     rootModule.generate();
+    _testsModule?.generate();
     _crateToml.generate();
     binaries.forEach((bin) => bin.generate());
   }
@@ -225,6 +238,9 @@ class Crate extends RsEntity implements HasFilePath {
   // end <class Crate>
 
   Module _rootModule;
+
+  /// The standard `tests` module for integration testing
+  Module _testsModule;
   String _filePath;
   CrateToml _crateToml;
   Clap _clap;

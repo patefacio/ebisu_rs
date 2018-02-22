@@ -70,12 +70,12 @@ First struct in root module.
         crate('crate_2', appCrate)
           ..doc = 'This is the second crate'
           ..withCrateToml((crateToml) => crateToml
-            ..addDep('clap', '^2.4.2')
+            ..addDep('clap', '^2.30.0')
             ..addDep('serde', '^1.0.8')
             ..deps.addAll([
               // sample dep
-              dependency('serde_derive', '^1.0.9'),
-              dependency('serde_json', '^1.0.2'),
+              dependency('serde_derive', '^1.0.27'),
+              dependency('serde_json', '^1.0.9'),
             ]))
           ..withClap((Clap clap) => clap
             ..args = [

@@ -57,7 +57,7 @@ void main([List<String> args]) {
 
     [
       'foo = "0.0.1"',
-      'serde = "^1.0.11"',
+      'serde = "^1.0.27"',
     ].forEach((required) {
       expect(toml.contains(darkMatter(required)), true);
     });

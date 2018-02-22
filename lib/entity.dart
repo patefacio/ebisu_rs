@@ -13,6 +13,7 @@ import 'package:id/id.dart';
 import 'package:logging/logging.dart';
 
 // custom <additional imports>
+import 'package:ebisu_rs/module.dart';
 // end <additional imports>
 
 final Logger _logger = new Logger('entity');
@@ -69,6 +70,18 @@ abstract class RsEntity extends Object with Entity {
 
   @override
   Iterable<RsEntity> get children => new Iterable.empty();
+
+  /// TODO: evaluate potential/need for this for better names of custom blocks
+  String get dottedPathToModule {
+    var current = this;
+    final parts = [];
+    do {
+      parts.insert(0, current.id.snake);
+      current = current.owner;
+    } while (current != null && current is! Module);
+    print('Finished current($current) => ${parts.join(".")}');
+    return parts.join('.');
+  }
 
   withThis(f(TraitImpl t)) => f(this);
 
@@ -147,6 +160,24 @@ class IsUnitTestable {
 makeRsId(dynamic id) => makeId(id is Symbol ? MirrorSystem.getName(id) : id);
 
 RegExp _replaceable = new RegExp("[<> ,]");
+RegExp _genericRe = new RegExp("<[^><]*>");
+
+makeNonGenericId(String s) {
+  var prior = s;
+
+  do {
+    prior = s;
+    s = s.replaceAll(_genericRe, '');
+  } while (s != prior);
+
+  return makeId(s
+      .replaceAll("'", '_')
+      .replaceAll("::", '_')
+      .replaceAll('&', 'ref_')
+      .replaceAllMapped(new RegExp('([a-z])([A-Z])'),
+          (Match m) => '${m[1]}_${m[2].toLowerCase()}')
+      .toLowerCase());
+}
 
 makeGenericId(String s) => makeId(s
     .replaceAll(_replaceable, '')

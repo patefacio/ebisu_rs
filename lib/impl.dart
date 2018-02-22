@@ -44,6 +44,17 @@ abstract class Impl extends RsEntity
             .add(makeUnitTestFunction(fn.id, 'test ${fn.codeBlock.tag}')));
   }
 
+/** TODO Remove/Cleanup
+  @override
+  onChildrenOwnershipEstablished() {
+    _logger.info('Ownership of Impl base ${id} established');
+    functions.where((fn) => unitTestFunctions || fn.isUnitTestable).forEach(
+        (fn) => unitTestModule.functions.add(
+            makeUnitTestFunction(fn.id, 'test ${fn.codeBlock.tag}')
+              ..codeBlock.snippets.add(customBlock(dottedPathToModule))));
+  }
+  */
+
   @override
   Iterable<RsEntity> get children =>
       concat([new List<Fn>.from(functions, growable: false), genericChildren]);
@@ -68,15 +79,18 @@ class TraitImpl extends Impl with HasTypeAliases {
 
   // custom <class TraitImpl>
 
-  TraitImpl(this._trait, this._type)
-      : super(makeRsId(
-            _trait.id.snake + '_' + makeGenericId(_type.typeName).snake)) {
+  TraitImpl(this._trait, this._type, [bool nameGenerically = false])
+      : super(makeRsId(_trait.id.snake +
+            '_' +
+            (nameGenerically
+                ? makeGenericId(_type.typeName).snake
+                : makeNonGenericId(_type.typeName).snake))) {
     functions = _trait.functions
         .map((fn) => fn.copy()
           ..codeBlock = new CodeBlock('fn ${id.snake}_${fn.id.snake}'))
         .toList();
 
-    codeBlock = new CodeBlock('impl ${_trait.name} for $_type');
+    codeBlock = new CodeBlock('impl ${id.snake}');
   }
 
   @override
@@ -146,7 +160,10 @@ class TypeImpl extends Impl {
 
   // custom <class TypeImpl>
 
-  TypeImpl(this._type) : super(makeGenericId(_type.typeName)) {
+  TypeImpl(this._type, [bool nameGenerically = false])
+      : super(nameGenerically
+            ? makeGenericId(_type.typeName)
+            : makeNonGenericId(_type.typeName)) {
     codeBlock = new CodeBlock('impl ${id.snake}');
   }
 
@@ -192,8 +209,10 @@ class TypeImpl extends Impl {
 /// *trait* - The trait being implemented
 ///
 /// *type* - The type this impl applies to
-TraitImpl traitImpl(dynamic trait, dynamic type) => new TraitImpl(
-    trait is TraitInst ? trait : new TraitInst(trait), rsType(type));
+TraitImpl traitImpl(dynamic trait, dynamic type,
+        [bool nameGenerically = false]) =>
+    new TraitImpl(trait is TraitInst ? trait : new TraitInst(trait),
+        rsType(type), nameGenerically);
 
 /// alias impl to traitImpl - most common type of impl if doing trait work
 final impl = traitImpl;
@@ -201,7 +220,8 @@ final impl = traitImpl;
 /// Creates a type impl
 ///
 /// *type* - The type this impl applies to
-TypeImpl typeImpl(dynamic type) => new TypeImpl(rsType(type));
+TypeImpl typeImpl(dynamic type, [bool nameGenerically = false]) =>
+    new TypeImpl(rsType(type), nameGenerically);
 
 Impl addableImpl(Struct s) {
   final t = "& 'a ${s.unqualifiedName}";

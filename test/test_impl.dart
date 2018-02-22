@@ -51,11 +51,11 @@ impl<T> Worker<T> for Vec<Vec<T>> {
   ///  * `t` - TODO: comment parm
   ///
   fn do_work<'a>(unit : & 'a mut i32, t : T) -> () {
-    // custom <fn worker_vec_vec_t_do_work>
-    // end <fn worker_vec_vec_t_do_work>
+    // custom <fn worker_vec_do_work>
+    // end <fn worker_vec_do_work>
   }
-  // custom <impl Worker for Vec<Vec<T>>>
-  // end <impl Worker for Vec<Vec<T>>>
+  // custom <impl worker_vec>
+  // end <impl worker_vec>
 }
     '''));
 

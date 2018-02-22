@@ -50,6 +50,9 @@ class Parm extends RsEntity implements HasCode {
   final RsType type;
   bool isMutable = false;
 
+  /// If set, parm is named with leading underscore to prevent warnings
+  bool isUnused = false;
+
   // custom <class Parm>
 
   Parm(dynamic id, dynamic type, [bool this.isMutable = false])
@@ -60,11 +63,13 @@ class Parm extends RsEntity implements HasCode {
 
   get lifetimeDecl => isMutable ? 'mut $_lifetimeDecl' : _lifetimeDecl;
 
-  get _lifetimeDecl => '${id.snake} : ${type.lifetimeDecl}';
+  get _varName => isUnused ? '_${id.snake}' : id.snake;
+
+  get _lifetimeDecl => '$_varName: ${type.lifetimeDecl}';
 
   get code => isMutable ? 'mut $_decl' : _decl;
 
-  get _decl => '${id.snake} : ${type.typeName}';
+  get _decl => '$_varName : ${type.typeName}';
 
   // end <class Parm>
 

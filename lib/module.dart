@@ -206,7 +206,7 @@ class FlexiLogProvider implements LogProvider {
   // custom <class FlexiLogProvider>
 
   addCrateRequirements(Crate crate) => crate
-    ..rootModule.importWithMacros('log', allowUnused: true)
+    ..rootModule.importWithMacros('log')
     ..rootModule.import('flexi_logger')
     ..withCrateToml((toml) => toml
       ..addIfMissing(baseLogDependency)
@@ -304,7 +304,10 @@ class LazyStatic extends RsEntity with IsPub implements HasCode {
 
   @override
   onOwnershipEstablished() {
-    this.crate.rootModule.importWithMacros('lazy_static');
+    final module = owner as Module;
+    if (module == null || !module.isTestModule) {
+      this.crate.rootModule.importWithMacros('lazy_static');
+    }
   }
 
   // end <class LazyStatic>
@@ -397,10 +400,19 @@ class Module extends RsEntity
       (_unitTestModule = makeUnitTestModule()
         ..doc = 'Test module for $name module');
 
-  get unitTestableFunctions => functions.where((fn) => fn.isUnitTestable);
+  get unitTestableFunctions => concat([
+        functions.where((fn) => fn.isUnitTestable),
+        concat(impls.map((i) {
+          return i.functions.where((f) {
+            return f.isUnitTestable;
+          });
+        }))
+      ]);
 
   addUnitTest(Id id, [codeBlockTag]) =>
       unitTestModule.functions.add(makeUnitTestFunction(id, codeBlockTag));
+
+  get isTestsModule => id.snake == 'tests' && owner is Crate;
 
   @override
   onOwnershipEstablished() {
@@ -409,7 +421,9 @@ class Module extends RsEntity
       var ownerPath = (owner as HasFilePath).filePath;
 
       if (owner is Crate) {
-        ownerPath = join(ownerPath, 'src');
+        if (id.snake != 'tests') {
+          ownerPath = join(ownerPath, 'src');
+        }
       }
 
       _filePath = (isDirectoryModule || isInlineModule)
@@ -561,8 +575,12 @@ class Module extends RsEntity
   Iterable<Module> get inlineMods =>
       modules.where((module) => module.isInlineModule);
 
-  Iterable<Module> get declaredMods =>
-      modules.where((module) => module.isDeclaredModule);
+  set declaredModules(Iterable<Object> declaredModules) => _declaredModules =
+      declaredModules.map((dm) => dm is Id ? dm : makeId(dm));
+
+  Iterable<Object> get declaredMods => _declaredModules.isNotEmpty
+      ? _declaredModules
+      : modules.where((module) => module.isDeclaredModule);
 
   String get name => id.snake;
   String get _enumDecls => br(enums.map((e) => e.code));
@@ -577,10 +595,12 @@ class Module extends RsEntity
   _announce(section, [bool hasContents = true]) =>
       !isInlineModule && hasContents ? '// --- module $section ---\n\n' : null;
 
-  _modDeclaration(Module module) => brCompact([
-        module.isTestModule ? '#[cfg(test)]' : null,
-        '${module.pubDecl}mod ${module.name};',
-      ]);
+  _modDeclaration(Object module) => module is Module
+      ? brCompact([
+          module.isTestModule ? '#[cfg(test)]' : null,
+          '${module.pubDecl}mod ${module.name};',
+        ])
+      : 'mod ${(module as Id).snake};';
 
   String get code {
     final pubUses = _sortedPubUses;
@@ -617,7 +637,9 @@ class Module extends RsEntity
       ]),
 
       // declared mods
-      brCompact(declaredMods.map(_modDeclaration).toList()..sort()),
+      !isTestsModule
+          ? brCompact(declaredMods.map(_modDeclaration).toList()..sort())
+          : null,
 
       // type aliases
       br([
@@ -705,6 +727,16 @@ class Module extends RsEntity
   // end <class Module>
 
   String _filePath;
+
+  /// List of modules that this module declares - for testing only.
+  ///
+  /// In general module declarations are fully discovered by the recursive
+  /// design pattern (ie modules contain modules and a lib crate will declare
+  /// its modules). However, special consideration exists for _tests_ module
+  /// which does not blanket import modules since each module that is just
+  /// a _fileModule_ is treated as its own crate. So, if this is a `tests`
+  /// module and module Ids are set, this will declare those modules.
+  List<Id> _declaredModules = [];
   List<Import> _imports = [];
   Map<ModuleCodeBlock, CodeBlock> _moduleCodeBlocks = {};
   Map<MainCodeBlock, CodeBlock> _mainCodeBlocks = {};

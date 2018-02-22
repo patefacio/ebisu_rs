@@ -230,7 +230,7 @@ class Clap {
   String get preMain => brCompact([defineStructs, fnGetApp]);
 
   String get invokeMainRun => '''
-    if let Err(ref err) = main_run(options) {
+    if let Err(ref err) = main_run(&options) {
         print!("Failed: {}", err);
         println!("{:?}", err.backtrace());
         let mut fail: &::failure::Fail = err.cause();
@@ -249,7 +249,7 @@ class Clap {
 
   String get fnGetApp => brCompact([
         """
-/// Creates a clap::App object based on modeled arguments.
+/// Creates a `clap::App` object based on modeled arguments.
 ///
 ///  * _return_ - `clap::App` created from modeled arguments
 ///
@@ -386,7 +386,7 @@ class Binary extends RsEntity implements HasFilePath {
 
   _initRunFunction() {
     _runFunction = fn('main_run', [
-      parm('options', clap.optionsStructId.capCamel)
+      parm('options', ref(clap.optionsStructId.capCamel))
         ..doc = 'Options parsed/pulled from command line'
     ])
       ..doc = 'Bulk of main, placed in run function consistent error handling'

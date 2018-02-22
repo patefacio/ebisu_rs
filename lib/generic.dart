@@ -70,6 +70,9 @@ abstract class Generic {
   List<Lifetime> get lifetimes => _lifetimes;
   List<TypeParm> get typeParms => _typeParms;
 
+  /// For bounds that are atypical - higher typed
+  List<Object> fancyBounds = [];
+
   // custom <class Generic>
 
   /// The name of the [Generic] without the [genericDecl]
@@ -95,16 +98,18 @@ abstract class Generic {
   get genericChildren =>
       new List<RsEntity>.from(concat([lifetimes, typeParms]), growable: false);
 
-  get hasBounds => _typeParms.any((tp) => tp.hasBounds);
+  get hasBounds =>
+      fancyBounds.isNotEmpty || _typeParms.any((tp) => tp.hasBounds);
 
   get boundsDecl => hasBounds
-      ? [
+      ? brCompact([
           ' where ',
           typeParms
               .where((tp) => tp.hasBounds)
               .map((tp) => tp.boundsDecl)
               .join(', '),
-        ].join('')
+          fancyBounds.isNotEmpty ? makeBounds(fancyBounds) : null,
+        ])
       : '';
 
   get genericDecl => lifetimes.isEmpty && typeParms.isEmpty
