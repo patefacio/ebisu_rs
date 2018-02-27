@@ -1,5 +1,6 @@
 name: ebisu_rs
 version: 0.0.0
+author: Daniel Davidson <dbdavidson@yahoo.com>
 homepage: https://github.com/patefacio/ebisu_rs
 description: >
   Support for generating rust code

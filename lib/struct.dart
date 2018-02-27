@@ -20,6 +20,7 @@ export 'package:quiver/iterables.dart';
 // custom <additional imports>
 
 export 'package:ebisu_rs/field.dart';
+import 'package:ebisu_rs/trait.dart';
 
 // end <additional imports>
 
@@ -42,6 +43,14 @@ class Struct extends StructType with Generic {
 
   String toString() => 'struct($unqualifiedName)';
 
+  withField(Object id, f(Field)) {
+    id = makeId(id);
+    f(fields.firstWhere((f) => f.id == id));
+  }
+
+  withFields(Iterable<Object> ids, f(Field)) =>
+      ids.forEach((id) => withField(id, f));
+
   @override
   String get unqualifiedName => id.capCamel;
 
@@ -51,6 +60,31 @@ class Struct extends StructType with Generic {
     if (lifetimes.isEmpty) {
       inferLifetimes();
     }
+  }
+
+  bool get hasAccessors => fields.any((f) => f.access != null);
+
+  List<Fn> get accessors {
+    List<Fn> results = [];
+    fields.where((f) => f.access != null).forEach((Field field) {
+      if (field.access == ro || field.access == rw) {
+        print('FOUND accessor on ${field.id} of ${field.access}');
+        results.add((pubFn(field.id, [selfRef])
+              ..doc = 'Read accessor for `${field.id.snake}`'
+              ..body = 'self.${field.id.snake}'
+              ..returns = field.type
+              ..returnDoc = 'Current state for `${field.id.snake}`'));
+      }
+      if (field.access == wo || field.access == rw) {
+        results.add((pubFn('set_${field.id}', [
+          selfRefMutable,
+          parm(field.id, field.type)..doc = 'New value for `${field.id}`'
+        ])
+              ..doc = 'Write accessor for `{field.id.snake}`'
+              ..body = 'self.${field.id.snake}'));
+      }
+    });
+    return results;
   }
 
   inferLifetimes() {

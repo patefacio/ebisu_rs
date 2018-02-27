@@ -152,7 +152,7 @@ abstract class HasCodeBlock {
 }
 
 class IsUnitTestable {
-  bool isUnitTestable = false;
+  bool isUnitTestable;
 }
 
 // custom <library entity>

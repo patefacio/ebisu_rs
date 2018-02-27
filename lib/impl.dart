@@ -37,11 +37,16 @@ abstract class Impl extends RsEntity
   withUnitTestModule(void f(Module unitTestModule)) => f(unitTestModule);
 
   @override
-  onOwnershipEstablished() {
+  onChildrenOwnershipEstablished() {
     _logger.info('Ownership of Impl base ${id} established');
-    functions.where((fn) => unitTestFunctions || fn.isUnitTestable).forEach(
-        (fn) => unitTestModule.functions
-            .add(makeUnitTestFunction(fn.id, 'test ${fn.codeBlock.tag}')));
+    functions
+        .where((fn) =>
+            (unitTestFunctions && fn.isUnitTestable != false) ||
+            fn.isUnitTestable)
+        .forEach((fn) {
+      unitTestModule.functions
+          .add(makeUnitTestFunction(fn.id, 'test ${fn.codeBlock.tag}'));
+    });
   }
 
 /** TODO Remove/Cleanup

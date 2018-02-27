@@ -134,7 +134,7 @@ All rust named items are *RsEntity* instances.'''
           class_('is_unit_testable')
             ..includesProtectBlock = false
             ..members = [
-              member('is_unit_testable')..init = false,
+              member('is_unit_testable')..type = 'bool',
             ],
         ],
 
@@ -478,7 +478,7 @@ All rust named items are *RsEntity* instances.'''
             ..extend = 'Field'
             ..members = [
               member('is_cause')
-                ..type = bool
+                ..type = 'bool'
                 ..doc =
                     'If true, marks the field in the variant as the cause of the error'
             ],
@@ -1141,6 +1141,17 @@ Traits without generics are themselves [TraitInst].
           'package:ebisu_rs/attribute.dart',
           'package:ebisu_rs/type.dart',
         ])
+        ..enums = [
+          enum_('access')
+          ..hasLibraryScopedValues = true
+          ..values = [
+            enumValue('ro')..doc = 'Field is private with a getter',
+            enumValue('rw')..doc = 'Field is public',
+            enumValue('ia')..doc = 'Field is private with no accessor',
+            enumValue('wo')..doc = 'Field is private with a setter',
+          ]
+          ..doc = 'Defines accessors and visibility'
+        ]
         ..classes = [
           class_('field')
             ..extend = 'RsEntity'
@@ -1152,6 +1163,10 @@ Traits without generics are themselves [TraitInst].
                 ..type = 'RsType'
                 ..init = 'string'
                 ..access = RO,
+              member('access')
+              ..doc = 'Access for the field, only has impact if not-null'
+              ..type = 'Access'
+              ..access = RO,
             ],
           class_('tuple_field')
             ..doc = 'A field with type but no name, whose access is indexed'

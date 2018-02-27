@@ -400,19 +400,42 @@ class Module extends RsEntity
       (_unitTestModule = makeUnitTestModule()
         ..doc = 'Test module for $name module');
 
-  get unitTestableFunctions => concat([
-        functions.where((fn) => fn.isUnitTestable),
-        concat(impls.map((i) {
-          return i.functions.where((f) {
-            return f.isUnitTestable;
-          });
-        }))
-      ]);
+  get unitTestableFunctions => functions.where((fn) => fn.isUnitTestable);
 
   addUnitTest(Id id, [codeBlockTag]) =>
       unitTestModule.functions.add(makeUnitTestFunction(id, codeBlockTag));
 
   get isTestsModule => id.snake == 'tests' && owner is Crate;
+
+  Impl matchingImpl(Object id) {
+    id = makeId(id);
+    return impls.firstWhere((Impl impl) => impl.id == id);
+  }
+
+  withMatchingImpl(Object id, f(Impl impl)) => f(matchingImpl(id));
+
+  withMatchingImpls(Iterable<Object> id, f(Impl impl)) =>
+      id.forEach((id) => withMatchingImpl(id, f));
+
+  Struct matchingStruct(Object id) {
+    id = makeId(id);
+    return structs.firstWhere((StructType struct) => struct.id == id);
+  }
+
+  withMatchingStruct(Object id, f(StructType s)) => f(matchingStruct(id));
+
+  withMatchingStructs(Iterable<Object> id, f(Struct struct)) =>
+      id.forEach((id) => withMatchingStruct(id, f));
+
+  withMatchingStructImpl(Object id, f(StructType struct, Impl impl)) {
+    StructType struct = matchingStruct(id);
+    Impl impl = matchingImpl(id);
+    if (impl == null) {
+      impl = new Impl(id);
+      impls.add(impl);
+    }
+    f(struct, impl);
+  }
 
   @override
   onOwnershipEstablished() {
@@ -460,6 +483,13 @@ class Module extends RsEntity
         .where((impl) => impl.hasUnitTestModule)
         .forEach((impl) => unitTestModule.modules.add(impl.unitTestModule));
 
+    structs.where((s) => s is Struct && s.hasAccessors).forEach((StructType s) {
+      withMatchingStructImpl(s.id, (StructType s, Impl i) {
+        var struct = s as Struct;
+        i.functions.addAll(struct.accessors);
+      });
+    });
+
     if (isBinaryModule) {
       // ensure main code block provided for binaries
       withMainCodeBlock(mainOpen, (m) => null);
@@ -485,16 +515,6 @@ class Module extends RsEntity
       i.attrs.add(strAttr('allow(unused_imports)'));
     }
     _addImportIfNotPresent(i);
-  }
-
-  withStructImpl(dynamic id, augmentStruct(Struct struct),
-      augmentImpl(Struct s, TypeImpl typeImpl)) {
-    final _id = makeRsId(id);
-    final s = struct(_id);
-    structs.add(s);
-    augmentStruct(s);
-    impls.add(typeImpl(s.genericName));
-    augmentImpl(s, impls.last);
   }
 
   void generate() {
