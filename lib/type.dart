@@ -306,7 +306,7 @@ Mref mref(dynamic type, [dynamic lifetime]) => new Mref(type, lifetime);
 
 /// Create a new rust type [RsType].
 ///
-/// [type] identifies the new type and is convertable from String, Id or Symbol.
+/// [type] identifies the new type and is convertible from String, Id or Symbol.
 /// If an existing RsType is provided it is returned. Types based on string-like
 /// [type] are created as [UnmodeledType]
 ///
@@ -316,7 +316,9 @@ RsType rsType(dynamic type) => type is Symbol
         ? type
         : type is String
             ? new UnmodeledType(type)
-            : throw 'Unsupported rstype ${type.runtimeType}';
+            : type is Id
+                ? new UnmodeledType(type.capCamel)
+                : throw 'Unsupported rstype ${type.runtimeType}';
 
 /// Create a TypeAlias.
 ///

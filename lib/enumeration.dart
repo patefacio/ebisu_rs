@@ -3,8 +3,10 @@ library ebisu_rs.enumeration;
 
 import 'package:ebisu/ebisu.dart';
 import 'package:ebisu_rs/attribute.dart';
+import 'package:ebisu_rs/common_traits.dart';
 import 'package:ebisu_rs/entity.dart';
 import 'package:ebisu_rs/field.dart';
+import 'package:ebisu_rs/impl.dart';
 import 'package:ebisu_rs/macro.dart';
 import 'package:ebisu_rs/type.dart';
 
@@ -113,8 +115,11 @@ class Enum extends RsEntity
     implements HasCode {
   List<Variant> get variants => _variants;
 
-  /// If self includes *use self::<name>::*;
+  /// If set includes *use self::<name>::*;
   bool useSelf = false;
+
+  /// If set indicates first variant should be default default
+  bool hasDefault = false;
 
   // custom <class Enum>
 
@@ -140,6 +145,14 @@ class Enum extends RsEntity
 
   @override
   Iterable<RsEntity> get children => variants;
+
+  Impl get defaultImpl {
+    final imp = traitImpl(defaultTrait, unqualifiedName)..codeBlock.tag = null;
+    imp.functions.first.codeBlock
+      ..tag = null
+      ..snippets.add('${unqualifiedName}::${variants.first.name}');
+    return imp;
+  }
 
   GenericInst inst(
           {Iterable typeArgs = const [], Iterable lifetimes = const []}) =>

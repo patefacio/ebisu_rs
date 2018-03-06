@@ -126,6 +126,9 @@ All rust named items are *RsEntity* instances.'''
               member('is_pub')
                 ..doc = 'True indicates entity is public'
                 ..init = false,
+              member('is_pub_crate')
+                ..doc = 'True indicates entity has pub(crate) visibility'
+                ..init = false,
             ],
           class_('has_code_block')
             ..isAbstract = true
@@ -220,7 +223,11 @@ All rust named items are *RsEntity* instances.'''
       library('enumeration')
         ..doc = 'Library for enums'
         ..imports = commonIncludes()
-        ..imports.add('package:ebisu_rs/attribute.dart')
+        ..imports.addAll([
+          'package:ebisu_rs/attribute.dart',
+          'package:ebisu_rs/impl.dart',
+          'package:ebisu_rs/common_traits.dart',
+        ])
         ..importAndExportAll([
           'package:ebisu_rs/field.dart',
           'package:ebisu_rs/macro.dart',
@@ -270,7 +277,12 @@ All rust named items are *RsEntity* instances.'''
               member('use_self')
                 ..init = false
                 ..access = RW
-                ..doc = 'If self includes *use self::<name>::*;'
+                ..doc = 'If set includes *use self::<name>::*;',
+              member('has_default')
+                ..init = false
+                ..access = RW
+                ..doc =
+                    'If set indicates first variant should be default default'
             ],
           class_('enum_inst')
             ..extend = 'GenericInst'
@@ -570,15 +582,14 @@ All rust named items are *RsEntity* instances.'''
             ..members = [
               member('crate_type')..type = 'CrateType',
               member('root_module')
-              ..doc = 'The root module for the crate, lib.rs for library crate and main.rs for binary crate'
+                ..doc =
+                    'The root module for the crate, lib.rs for library crate and main.rs for binary crate'
                 ..type = 'Module'
                 ..access = RO,
-
               member('tests_module')
-              ..doc = 'The standard `tests` module for integration testing'
-              ..type = 'Module'
-              ..access = IA,
-
+                ..doc = 'The standard `tests` module for integration testing'
+                ..type = 'Module'
+                ..access = IA,
               member('file_path')..access = RO,
               member('crate_toml')
                 ..type = 'CrateToml'
@@ -810,7 +821,7 @@ All rust named items are *RsEntity* instances.'''
                 ..type = 'List<Module>'
                 ..init = [],
               member('declared_modules')
-              ..doc = '''
+                ..doc = '''
 List of modules that this module declares - for testing only.
 
 In general module declarations are fully discovered by the recursive
@@ -900,8 +911,9 @@ module and module Ids are set, this will declare those modules.
                 ..isFinal = true,
               member('is_mutable')..init = false,
               member('is_unused')
-              ..doc = 'If set, parm is named with leading underscore to prevent warnings'
-              ..init = false,
+                ..doc =
+                    'If set, parm is named with leading underscore to prevent warnings'
+                ..init = false,
             ]),
           class_('self_parm')..extend = 'Parm',
           class_('self_ref_parm')..extend = 'Parm',
@@ -1143,14 +1155,14 @@ Traits without generics are themselves [TraitInst].
         ])
         ..enums = [
           enum_('access')
-          ..hasLibraryScopedValues = true
-          ..values = [
-            enumValue('ro')..doc = 'Field is private with a getter',
-            enumValue('rw')..doc = 'Field is public',
-            enumValue('ia')..doc = 'Field is private with no accessor',
-            enumValue('wo')..doc = 'Field is private with a setter',
-          ]
-          ..doc = 'Defines accessors and visibility'
+            ..hasLibraryScopedValues = true
+            ..values = [
+              enumValue('ro')..doc = 'Field is private with a getter',
+              enumValue('rw')..doc = 'Field is public',
+              enumValue('ia')..doc = 'Field is private with no accessor',
+              enumValue('wo')..doc = 'Field is private with a setter',
+            ]
+            ..doc = 'Defines accessors and visibility'
         ]
         ..classes = [
           class_('field')
@@ -1164,9 +1176,9 @@ Traits without generics are themselves [TraitInst].
                 ..init = 'string'
                 ..access = RO,
               member('access')
-              ..doc = 'Access for the field, only has impact if not-null'
-              ..type = 'Access'
-              ..access = RO,
+                ..doc = 'Access for the field, only has impact if not-null'
+                ..type = 'Access'
+                ..access = RO,
             ],
           class_('tuple_field')
             ..doc = 'A field with type but no name, whose access is indexed'

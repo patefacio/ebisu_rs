@@ -68,20 +68,19 @@ class Struct extends StructType with Generic {
     List<Fn> results = [];
     fields.where((f) => f.access != null).forEach((Field field) {
       if (field.access == ro || field.access == rw) {
-        print('FOUND accessor on ${field.id} of ${field.access}');
         results.add((pubFn(field.id, [selfRef])
-              ..doc = 'Read accessor for `${field.id.snake}`'
-              ..body = 'self.${field.id.snake}'
-              ..returns = field.type
-              ..returnDoc = 'Current state for `${field.id.snake}`'));
+          ..doc = 'Read accessor for `${field.id.snake}`'
+          ..body = 'self.${field.id.snake}'
+          ..returns = field.type
+          ..returnDoc = 'Current state for `${field.id.snake}`'));
       }
       if (field.access == wo || field.access == rw) {
         results.add((pubFn('set_${field.id}', [
           selfRefMutable,
           parm(field.id, field.type)..doc = 'New value for `${field.id}`'
         ])
-              ..doc = 'Write accessor for `{field.id.snake}`'
-              ..body = 'self.${field.id.snake}'));
+          ..doc = 'Write accessor for `{field.id.snake}`'
+          ..body = 'self.${field.id.snake}'));
       }
     });
     return results;

@@ -419,7 +419,9 @@ class Module extends RsEntity
 
   Struct matchingStruct(Object id) {
     id = makeId(id);
-    return structs.firstWhere((StructType struct) => struct.id == id);
+    return structs.firstWhere((StructType struct) => struct.id == id,
+        orElse: () =>
+            throw 'Could not find matching struct $id in ${structs.map((s) => s.id).join(", ")}');
   }
 
   withMatchingStruct(Object id, f(StructType s)) => f(matchingStruct(id));
@@ -428,14 +430,42 @@ class Module extends RsEntity
       id.forEach((id) => withMatchingStruct(id, f));
 
   withMatchingStructImpl(Object id, f(StructType struct, Impl impl)) {
+    id = makeId(id);
     StructType struct = matchingStruct(id);
-    Impl impl = matchingImpl(id);
+    Impl impl =
+        impls.firstWhere((Impl impl) => impl.id == id, orElse: () => null);
     if (impl == null) {
-      impl = new Impl(id);
+      impl = new TypeImpl(rsType(id));
       impls.add(impl);
     }
     f(struct, impl);
   }
+
+  ////////////////////
+  Enum matchingEnum(Object id) {
+    id = makeId(id);
+    return enums.firstWhere((Enum enum_) => enum_.id == id,
+        orElse: () =>
+            throw 'Could not find matching enum $id in ${enums.map((s) => s.id).join(", ")}');
+  }
+
+  withMatchingEnum(Object id, f(Enum s)) => f(matchingEnum(id));
+
+  withMatchingEnums(Iterable<Object> id, f(Enum enum_)) =>
+      id.forEach((id) => withMatchingEnum(id, f));
+
+  withMatchingEnumImpl(Object id, f(Enum enum_, Impl impl)) {
+    id = makeId(id);
+    Enum enum_ = matchingEnum(id);
+    Impl impl =
+        impls.firstWhere((Impl impl) => impl.id == id, orElse: () => null);
+    if (impl == null) {
+      impl = new TypeImpl(rsType(id));
+      impls.add(impl);
+    }
+    f(enum_, impl);
+  }
+  ////////////////////
 
   @override
   onOwnershipEstablished() {
@@ -488,6 +518,10 @@ class Module extends RsEntity
         var struct = s as Struct;
         i.functions.addAll(struct.accessors);
       });
+    });
+
+    enums.where((e) => e.hasDefault).forEach((e) {
+      impls.add(e.defaultImpl);
     });
 
     if (isBinaryModule) {

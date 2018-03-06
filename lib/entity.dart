@@ -139,9 +139,12 @@ abstract class IsPub {
   /// True indicates entity is public
   bool isPub = false;
 
+  /// True indicates entity has pub(crate) visibility
+  bool isPubCrate = false;
+
   // custom <class IsPub>
 
-  String get pubDecl => isPub ? 'pub ' : '';
+  String get pubDecl => isPub ? 'pub ' : isPubCrate ? 'pub(crate)' : '';
 
   // end <class IsPub>
 
