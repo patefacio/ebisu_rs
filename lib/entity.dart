@@ -83,7 +83,7 @@ abstract class RsEntity extends Object with Entity {
     return parts.join('.');
   }
 
-  withThis(f(TraitImpl t)) => f(this);
+  withThis(f(RsEntity t)) => f(this);
 
   /// Get the [rootPath] of this repo
   String get rootPath {

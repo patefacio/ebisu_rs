@@ -129,7 +129,28 @@ Field field(dynamic id, [dynamic type]) => new Field(id, type);
 ///
 /// id - Id of field
 ///
-/// type - RsType-convertable type of field
+/// type - RsType-convertible type of field
 Field pubField(dynamic id, [dynamic type]) => new Field(id, type)..isPub = true;
+
+
+/// Create a *Field* whose type is a reference to corresponding type name
+///
+/// id - Id of field
+///
+/// type - RsType-convertible type of field
+Field refField(dynamic id) {
+  Id id_ = makeId(id);
+  return field(id_, ref(id_));
+}
+
+/// Create a public *Field* whose type is a reference to corresponding type name
+///
+/// id - Id of field
+///
+/// type - RsType-convertible type of field
+Field pubRefField(dynamic id) {
+  Id id_ = makeId(id);
+  return refField(id_)..isPub = true;
+}
 
 // end <library field>

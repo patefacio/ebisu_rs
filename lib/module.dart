@@ -524,6 +524,19 @@ class Module extends RsEntity
       impls.add(e.defaultImpl);
     });
 
+    enums.where((e) => e.hasSnakeConversions).forEach((e) =>
+        withMatchingEnumImpl(
+            e.id,
+            (Enum e, Impl i) =>
+                i.functions.addAll(e.snakeConversionFunctions)));
+
+
+    enums.where((e) => e.hasShoutConversions).forEach((e) =>
+        withMatchingEnumImpl(
+            e.id,
+            (Enum e, Impl i) =>
+                i.functions.addAll(e.shoutConversionFunctions)));
+
     if (isBinaryModule) {
       // ensure main code block provided for binaries
       withMainCodeBlock(mainOpen, (m) => null);

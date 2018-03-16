@@ -104,11 +104,10 @@ abstract class Generic {
   get boundsDecl => hasBounds
       ? brCompact([
           ' where ',
-          typeParms
-              .where((tp) => tp.hasBounds)
-              .map((tp) => tp.boundsDecl)
-              .join(', '),
-          fancyBounds.isNotEmpty ? makeBounds(fancyBounds) : null,
+          concat([
+            typeParms.where((tp) => tp.hasBounds).map((tp) => tp.boundsDecl),
+            makeBounds(fancyBounds)
+          ]).join(', ')
         ])
       : '';
 

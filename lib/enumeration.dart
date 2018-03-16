@@ -121,6 +121,12 @@ class Enum extends RsEntity
   /// If set indicates first variant should be default default
   bool hasDefault = false;
 
+  /// If set will provide to_snake and from_snake conversions
+  bool hasSnakeConversions = false;
+
+  /// If set will provide to_shout and from_shout conversions
+  bool hasShoutConversions = false;
+
   // custom <class Enum>
 
   @override
@@ -153,6 +159,53 @@ class Enum extends RsEntity
       ..snippets.add('${unqualifiedName}::${variants.first.name}');
     return imp;
   }
+
+  List<Fn> get snakeConversionFunctions => [
+        pubFn('to_snake', [selfRef])
+          ..doc = 'Convert the enum into snake case string'
+          ..returns = ref(str, 'static')
+          ..returnDoc = 'Snake case string identifying variant'
+          ..body = '''
+match self {
+${indentBlock(brCompact(variants.map((v) => '&${unqualifiedName}::${v.name} => "${v.id.snake}",')))}
+}
+      ''',
+        pubFn('from_snake',
+            [parm('snake_str', ref(str))..doc = 'Snake case of variant'])
+          ..doc = 'Convert variant identified by `snake_str` into enum'
+          ..returns = unqualifiedName
+          ..returnDoc = 'Converted enum'
+          ..body = '''
+match snake_str {
+${indentBlock(brCompact(variants.map((v) => '"${v.id.snake}" => ${unqualifiedName}::${v.name},')))}
+  _ => panic!("Invalid snake conversion on {} into `${unqualifiedName}", snake_str),
+}
+          '''
+      ];
+
+
+  List<Fn> get shoutConversionFunctions => [
+        pubFn('to_shout', [selfRef])
+          ..doc = 'Convert the enum into shout case string'
+          ..returns = ref(str, 'static')
+          ..returnDoc = 'Shout case string identifying variant'
+          ..body = '''
+match self {
+${indentBlock(brCompact(variants.map((v) => '&${unqualifiedName}::${v.name} => "${v.id.shout}",')))}
+}
+      ''',
+        pubFn('from_shout',
+            [parm('shout_str', ref(str))..doc = 'Shout case of variant'])
+          ..doc = 'Convert variant identified by `shout_str` into enum'
+          ..returns = unqualifiedName
+          ..returnDoc = 'Converted enum'
+          ..body = '''
+match shout_str {
+${indentBlock(brCompact(variants.map((v) => '"${v.id.shout}" => ${unqualifiedName}::${v.name},')))}
+  _ => panic!("Invalid shout conversion on {} into `${unqualifiedName}", shout_str),
+}
+          '''
+      ];
 
   GenericInst inst(
           {Iterable typeArgs = const [], Iterable lifetimes = const []}) =>

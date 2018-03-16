@@ -418,6 +418,18 @@ Fn pubFn(dynamic id, [Iterable<dynamic> parms, dynamic returnType]) =>
 Parm parm(dynamic id, dynamic type, [bool isMutable = false]) =>
     new Parm(id, type, isMutable);
 
+/// Returns [Parm] following pattern if `parm(id, ref(id))`
+Parm refParm(Object id) {
+  Id id_ = makeId(id);
+  return parm(id, ref(id_.capCamel));
+}
+
+/// Returns [Parm] following pattern if `parm(id, mref(id))`
+Parm mrefParm(Object id) {
+  Id id_ = makeId(id);
+  return parm(id, mref(id_.capCamel));
+}
+
 /// Create a [Trait] identified by [id], which may be Symbol, String or Id.
 /// Returns the new [Trait].
 Trait trait(dynamic id) => new Trait(id);

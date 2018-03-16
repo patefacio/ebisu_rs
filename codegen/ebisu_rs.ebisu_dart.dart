@@ -282,7 +282,17 @@ All rust named items are *RsEntity* instances.'''
                 ..init = false
                 ..access = RW
                 ..doc =
-                    'If set indicates first variant should be default default'
+                    'If set indicates first variant should be default default',
+              member('has_snake_conversions')
+                ..init = false
+                ..access = RW
+                ..doc =
+                    'If set will provide to_snake and from_snake conversions',
+              member('has_shout_conversions')
+                ..init = false
+                ..access = RW
+                ..doc =
+                    'If set will provide to_shout and from_shout conversions',
             ],
           class_('enum_inst')
             ..extend = 'GenericInst'
