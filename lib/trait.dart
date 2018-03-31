@@ -28,10 +28,10 @@ abstract class HasFunctions {
 
   isMatchingFunction(fn, id) => fn.id.snake == id;
 
-  matchingFunction(String id) => functions
+  Fn matchingFunction(String id) => functions
       .firstWhere((fn) => isMatchingFunction(fn, id), orElse: () => null);
 
-  matchingFunctions(Iterable ids) => ids
+  List<Fn> matchingFunctions(Iterable ids) => ids
       .map((id) => matchingFunction(id))
       .where((fn) => fn != null)
       .map((fn) => fn.clone())
@@ -417,6 +417,12 @@ Fn pubFn(dynamic id, [Iterable<dynamic> parms, dynamic returnType]) =>
 
 Parm parm(dynamic id, dynamic type, [bool isMutable = false]) =>
     new Parm(id, type, isMutable);
+
+/// Returns [Parm] following pattern if `parm(id, id.capCamel)`
+Parm idParm(Object id) {
+  Id id_ = makeId(id);
+  return parm(id, id_.capCamel);
+}
 
 /// Returns [Parm] following pattern if `parm(id, ref(id))`
 Parm refParm(Object id) {

@@ -183,7 +183,6 @@ ${indentBlock(brCompact(variants.map((v) => '"${v.id.snake}" => ${unqualifiedNam
           '''
       ];
 
-
   List<Fn> get shoutConversionFunctions => [
         pubFn('to_shout', [selfRef])
           ..doc = 'Convert the enum into shout case string'

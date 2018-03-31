@@ -530,7 +530,6 @@ class Module extends RsEntity
             (Enum e, Impl i) =>
                 i.functions.addAll(e.snakeConversionFunctions)));
 
-
     enums.where((e) => e.hasShoutConversions).forEach((e) =>
         withMatchingEnumImpl(
             e.id,

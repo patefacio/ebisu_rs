@@ -28,11 +28,18 @@ class Repo extends RsEntity {
   String toString() =>
       brCompact(['Repo($id:$rootPath)', indentBlock(brCompact(crates))]);
 
-  void generate() {
+  void generate({reportNonGeneratedFiles: false}) {
     owner = null;
     new Directory(_rootPath)..createSync(recursive: true);
     _logger.info('Generating repo $id:$_rootPath');
     crates.forEach((crate) => crate.generate());
+
+    if (reportNonGeneratedFiles) {
+      print('''
+**** NON GENERATED FILES ****
+${indentBlock(brCompact(nonGeneratedFiles))}
+''');
+    }
   }
 
   @override

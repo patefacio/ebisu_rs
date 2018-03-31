@@ -1273,6 +1273,9 @@ Traits without generics are themselves [TraitInst].
               member('fields')
                 ..type = 'List<Field>'
                 ..init = [],
+              member('is_encapsulated')
+                ..init = false
+                ..doc = 'If set, all fields are read-only',
             ]),
           class_('struct_inst')
             ..extend = 'GenericInst'

@@ -74,7 +74,7 @@ class Field extends RsEntity with IsPub, HasAttributes implements HasCode {
 
   set access(Access access) {
     _access = access;
-    if (access == ro || access == wo || access == ia) {
+    if (access != null) {
       isPub = false;
     } else {
       isPub = true;
@@ -131,6 +131,27 @@ Field field(dynamic id, [dynamic type]) => new Field(id, type);
 ///
 /// type - RsType-convertible type of field
 Field pubField(dynamic id, [dynamic type]) => new Field(id, type)..isPub = true;
+
+/// Create a *Field* whose type is corresponding type name
+///
+/// id - Id of field
+///
+/// type - RsType-convertible type of field
+Field idField(dynamic id) {
+  Id id_ = makeId(id);
+  return field(id_, id_.capCamel);
+}
+
+
+/// Create a public *Field* whose type is corresponding type name
+///
+/// id - Id of field
+///
+/// type - RsType-convertible type of field
+Field pubIdField(dynamic id) {
+  Id id_ = makeId(id);
+  return field(id_, id_.capCamel)..isPub = true;
+}
 
 
 /// Create a *Field* whose type is a reference to corresponding type name

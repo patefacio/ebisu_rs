@@ -36,6 +36,9 @@ abstract class StructType extends RsEntity
 class Struct extends StructType with Generic {
   List<Field> fields = [];
 
+  /// If set, all fields are read-only
+  bool isEncapsulated = false;
+
   // custom <class Struct>
 
   @override
@@ -57,6 +60,13 @@ class Struct extends StructType with Generic {
   @override
   onOwnershipEstablished() {
     _logger.info("Ownership of struct ${id}:${runtimeType}");
+    if (isEncapsulated) {
+      fields.forEach((Field field) {
+        if(field.access == null || field.access != rw) {
+          field.access = ro;
+        }
+      });
+    }
     if (lifetimes.isEmpty) {
       inferLifetimes();
     }
@@ -75,12 +85,12 @@ class Struct extends StructType with Generic {
           ..returnDoc = 'Current state for `${field.id.snake}`'));
       }
       if (field.access == wo || field.access == rw) {
-        results.add((pubFn('set_${field.id}', [
+        results.add((pubFn('set_${field.id.snake}', [
           selfRefMutable,
-          parm(field.id, field.type)..doc = 'New value for `${field.id}`'
+          parm(field.id, field.type)..doc = 'New value for `${field.id.snake}`'
         ])
-          ..doc = 'Write accessor for `{field.id.snake}`'
-          ..body = 'self.${field.id.snake}'));
+          ..doc = 'Write accessor for `${field.id.snake}`'
+          ..body = 'self.${field.id.snake} = ${field.id.snake};'));
       }
     });
     return results;
