@@ -202,9 +202,17 @@ class Derives {
 
   // custom <class Derives>
 
-  String get derives => derive.isEmpty
-      ? null
-      : '#[derive(${derive.map((d) => idFromString(d.toString()).capCamel).join(", ")})]';
+  String get derives {
+    if (derive.isEmpty) {
+      return null;
+    } else {
+      final derives = derive
+          .map((d) => idFromString(d.toString()).capCamel)
+          .toList()
+            ..sort();
+      return '#[derive(${derives.join(", ")})]';
+    }
+  }
 
   // end <class Derives>
 

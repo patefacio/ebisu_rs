@@ -653,7 +653,9 @@ class Module extends RsEntity
   String get _structDecls => br(structs.map((s) => s.code));
   String get _traitDecls => br(traits.map((t) => t.code));
   String get _implDecls => br(impls.map((i) => i.code));
-  String get _importsDecls => brCompact(imports.map((i) => i.code));
+  String get _importsDecls => brCompact((new List.from(imports)
+        ..sort((Import a, Import b) => a.import.compareTo(b.import)))
+      .map((i) => i.code));
 
   get _sortedNonPubUses => uses.where((u) => !u.isPub).toList()..sort();
   get _sortedPubUses => uses.where((u) => u.isPub).toList()..sort();
