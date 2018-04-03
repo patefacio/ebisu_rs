@@ -142,7 +142,6 @@ Field idField(dynamic id) {
   return field(id_, id_.capCamel);
 }
 
-
 /// Create a public *Field* whose type is corresponding type name
 ///
 /// id - Id of field
@@ -152,7 +151,6 @@ Field pubIdField(dynamic id) {
   Id id_ = makeId(id);
   return field(id_, id_.capCamel)..isPub = true;
 }
-
 
 /// Create a *Field* whose type is a reference to corresponding type name
 ///

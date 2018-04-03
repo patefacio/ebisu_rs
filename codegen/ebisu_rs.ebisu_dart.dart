@@ -973,6 +973,11 @@ If false lifetimes are not elided.
 If null, lifetime elision rules apply
 '''
                 ..type = 'bool',
+              member('is_inline')
+                ..doc = '''
+If true annotates with #[inline]
+'''
+                ..type = 'bool',
             ]),
           class_('trait')
             ..doc = '''

@@ -146,6 +146,9 @@ class Fn extends RsEntity
   /// If null, lifetime elision rules apply
   bool elideLifetimes;
 
+  /// If true annotates with #[inline]
+  bool isInline;
+
   // custom <class Fn>
 
   /// Construct a Fn.
@@ -202,6 +205,10 @@ class Fn extends RsEntity
 
     if (hasConstants) {
       codeBlock.snippets.insert(0, brCompact(constantDecls));
+    }
+
+    if (isInline) {
+      attrs.add(idAttr('inline'));      
     }
   }
 
@@ -291,6 +298,8 @@ class Fn extends RsEntity
     _codeBlock = other._codeBlock?.copy();
     noComment = other.noComment;
     isUnitTestable = other.isUnitTestable;
+    isInline = other.isInline;
+    attrs = new List.from(other.attrs);
   }
 
   // end <class Fn>

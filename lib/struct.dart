@@ -57,16 +57,20 @@ class Struct extends StructType with Generic {
   @override
   String get unqualifiedName => id.capCamel;
 
-  @override
-  onOwnershipEstablished() {
-    _logger.info("Ownership of struct ${id}:${runtimeType}");
+  setAccessors() {
     if (isEncapsulated) {
       fields.forEach((Field field) {
-        if(field.access == null || field.access != rw) {
+        if (field.access == null || field.access != rw) {
           field.access = ro;
         }
       });
     }
+  }
+
+  @override
+  onOwnershipEstablished() {
+    _logger.info("Ownership of struct ${id}:${runtimeType}");
+
     if (lifetimes.isEmpty) {
       inferLifetimes();
     }
@@ -82,7 +86,9 @@ class Struct extends StructType with Generic {
           ..doc = 'Read accessor for `${field.id.snake}`'
           ..body = 'self.${field.id.snake}'
           ..returns = field.type
-          ..returnDoc = 'Current state for `${field.id.snake}`'));
+          ..returnDoc = 'Current state for `${field.id.snake}`'
+          ..isUnitTestable = false
+          ..isInline = true));
       }
       if (field.access == wo || field.access == rw) {
         results.add((pubFn('set_${field.id.snake}', [
@@ -90,7 +96,9 @@ class Struct extends StructType with Generic {
           parm(field.id, field.type)..doc = 'New value for `${field.id.snake}`'
         ])
           ..doc = 'Write accessor for `${field.id.snake}`'
-          ..body = 'self.${field.id.snake} = ${field.id.snake};'));
+          ..body = 'self.${field.id.snake} = ${field.id.snake};'
+          ..isUnitTestable = false
+          ..isInline = true));
       }
     });
     return results;

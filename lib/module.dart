@@ -484,6 +484,10 @@ class Module extends RsEntity
           : ownerPath;
     }
 
+    structs
+        .where((StructType s) => s is Struct)
+        .forEach((StructType struct) => (struct as Struct).setAccessors());
+
     // add unit tests
 
     if (loggerType != null) {
@@ -503,6 +507,13 @@ class Module extends RsEntity
 
     unitTestableFunctions.forEach((fn) => addUnitTest(fn.id));
 
+    structs.where((s) => s is Struct && s.hasAccessors).forEach((StructType s) {
+      withMatchingStructImpl(s.id, (StructType s, Impl impl) {
+        var struct = s as Struct;
+        impl..functions.addAll(struct.accessors);
+      });
+    });
+
     _logger.info("Ownership of module($id) established in   $filePath");
   }
 
@@ -512,13 +523,6 @@ class Module extends RsEntity
     impls
         .where((impl) => impl.hasUnitTestModule)
         .forEach((impl) => unitTestModule.modules.add(impl.unitTestModule));
-
-    structs.where((s) => s is Struct && s.hasAccessors).forEach((StructType s) {
-      withMatchingStructImpl(s.id, (StructType s, Impl i) {
-        var struct = s as Struct;
-        i.functions.addAll(struct.accessors);
-      });
-    });
 
     enums.where((e) => e.hasDefault).forEach((e) {
       impls.add(e.defaultImpl);
@@ -604,7 +608,8 @@ class Module extends RsEntity
       ..lifetimes = ['a']
       ..codeBlock.tag = null
       ..typeAliases = [typeAlias('Target', type)]
-      ..withThis((impl) => impl.matchingFunction('deref')..body = '&self.0'));
+      ..withThis((RsEntity impl) =>
+          (impl as TraitImpl).matchingFunction('deref')..body = '&self.0'));
   }
 
   String _inlineCode(Iterable<Module> modules) {
