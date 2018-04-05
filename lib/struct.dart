@@ -5,7 +5,9 @@ import 'package:ebisu_rs/attribute.dart';
 import 'package:ebisu_rs/entity.dart';
 import 'package:ebisu_rs/field.dart';
 import 'package:ebisu_rs/generic.dart';
+import 'package:ebisu_rs/impl.dart';
 import 'package:ebisu_rs/macro.dart';
+import 'package:ebisu_rs/trait.dart';
 import 'package:ebisu_rs/type.dart';
 import 'package:logging/logging.dart';
 import 'package:quiver/iterables.dart';
@@ -13,14 +15,15 @@ import 'package:quiver/iterables.dart';
 export 'package:ebisu_rs/attribute.dart';
 export 'package:ebisu_rs/field.dart';
 export 'package:ebisu_rs/generic.dart';
+export 'package:ebisu_rs/impl.dart';
 export 'package:ebisu_rs/macro.dart';
+export 'package:ebisu_rs/trait.dart';
 export 'package:ebisu_rs/type.dart';
 export 'package:quiver/iterables.dart';
 
 // custom <additional imports>
 
 export 'package:ebisu_rs/field.dart';
-import 'package:ebisu_rs/trait.dart';
 
 // end <additional imports>
 
@@ -30,7 +33,26 @@ final Logger _logger = new Logger('struct');
 abstract class StructType extends RsEntity
     with IsPub, Derives, HasAttributes
     implements HasCode {
+  /// The implementation for the struct
+  set impl(TypeImpl impl) => _impl = impl;
+
+  /// Implementations of traits for the struct
+  set traitImpls(List<TraitImpl> traitImpls) => _traitImpls = traitImpls;
+
+  // custom <class StructType>
+
+  bool get hasImpl => _impl != null;
+
+  TypeImpl get impl {
+    return _impl ?? (_impl = new TypeImpl(rsType(id)));
+  }
+
+  // end <class StructType>
+
   StructType(dynamic id) : super(id);
+
+  TypeImpl _impl;
+  List<TraitImpl> _traitImpls = [];
 }
 
 class Struct extends StructType with Generic {

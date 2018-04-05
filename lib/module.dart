@@ -432,13 +432,7 @@ class Module extends RsEntity
   withMatchingStructImpl(Object id, f(StructType struct, Impl impl)) {
     id = makeId(id);
     StructType struct = matchingStruct(id);
-    Impl impl =
-        impls.firstWhere((Impl impl) => impl.id == id, orElse: () => null);
-    if (impl == null) {
-      impl = new TypeImpl(rsType(id));
-      impls.add(impl);
-    }
-    f(struct, impl);
+    f(struct, struct.impl);
   }
 
   ////////////////////
@@ -514,7 +508,20 @@ class Module extends RsEntity
       });
     });
 
-    _logger.info("Ownership of module($id) established in   $filePath");
+    List<Impl> sortedImpls = [];
+    structs.forEach((StructType struct) {
+      if (struct.hasImpl) {
+        if (impls.where((Impl impl) => impl.id == struct.id && impl is TypeImpl).isEmpty) {
+          sortedImpls.add(struct.impl);
+        } else {
+          print('Conflicting impls for ${struct.id.snake} in ${impls.map((i) => i.id.snake).join(", ")}');
+        }
+      }
+    });
+    sortedImpls.sort((a, b) => a.id.compareTo(b.id));
+    impls.addAll(sortedImpls);
+
+    _logger.info("Ownership of module($id) established in $filePath");
   }
 
   @override

@@ -1257,6 +1257,8 @@ Traits without generics are themselves [TraitInst].
           'package:ebisu_rs/field.dart',
           'package:ebisu_rs/generic.dart',
           'package:ebisu_rs/attribute.dart',
+          'package:ebisu_rs/trait.dart',
+          'package:ebisu_rs/impl.dart',
           'package:quiver/iterables.dart',
         ])
         ..classes = [
@@ -1266,11 +1268,21 @@ Traits without generics are themselves [TraitInst].
             ..withClass(commonFeatures)
             ..implement = ['HasCode']
             ..isAbstract = true
-            ..customCodeBlock.tag = null
             ..mixins = [
               'IsPub',
               'Derives',
               'HasAttributes',
+            ]
+            ..members = [
+              member('impl')
+                ..type = 'TypeImpl'
+                ..doc = 'The implementation for the struct'
+                ..access = WO,
+              member('trait_impls')
+                ..type = 'List<TraitImpl>'
+                ..doc = 'Implementations of traits for the struct'
+                ..init = []
+                ..access = WO,
             ],
           class_('struct')
             ..mixins = [
