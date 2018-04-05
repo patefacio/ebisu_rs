@@ -57,6 +57,9 @@ class Field extends RsEntity with IsPub, HasAttributes implements HasCode {
   /// Access for the field, only has impact if not-null
   Access get access => _access;
 
+  /// If set to true accessors return/accept by ref
+  bool byRef = false;
+
   // custom <class Field>
 
   Field(dynamic id, [dynamic type])

@@ -983,7 +983,7 @@ If true annotates with #[inline]
             ..doc = '''
 A rust trait.
 
-This models a trait by defining the set of subtraits, associated types and functions.
+This models a trait by defining the set of sub-traits, associated types and functions.
 The trait can be generic.
 '''
             ..extend = 'RsEntity'
@@ -1000,7 +1000,7 @@ The trait can be generic.
                 ..type = 'List<Fn>'
                 ..init = [],
               member('sub_traits')
-                ..doc = 'List of subtraits - either as String or modeled Trait'
+                ..doc = 'List of sub-traits - either as String or modeled Trait'
                 ..type = 'List<dynamic>'
                 ..init = [],
             ]),
@@ -1194,6 +1194,9 @@ Traits without generics are themselves [TraitInst].
                 ..doc = 'Access for the field, only has impact if not-null'
                 ..type = 'Access'
                 ..access = RO,
+              member('by_ref')
+                ..doc = 'If set to true accessors return/accept by ref'
+                ..init = false,
             ],
           class_('tuple_field')
             ..doc = 'A field with type but no name, whose access is indexed'

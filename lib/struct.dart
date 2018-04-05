@@ -84,18 +84,22 @@ class Struct extends StructType with Generic {
       if (field.access == ro || field.access == rw) {
         results.add((pubFn(field.id, [selfRef])
           ..doc = 'Read accessor for `${field.id.snake}`'
-          ..body = 'self.${field.id.snake}'
-          ..returns = field.type
+          ..body = (field.byRef ? '&' : '') + 'self.${field.id.snake}'
+          ..returns = field.byRef ? ref(field.type) : field.type
           ..returnDoc = 'Current state for `${field.id.snake}`'
           ..isUnitTestable = false
           ..isInline = true));
       }
+
       if (field.access == wo || field.access == rw) {
         results.add((pubFn('set_${field.id.snake}', [
           selfRefMutable,
-          parm(field.id, field.type)..doc = 'New value for `${field.id.snake}`'
+          parm(field.id, field.byRef ? ref(field.type) : field.type)
+            ..doc = 'New value for `${field.id.snake}`'
         ])
           ..doc = 'Write accessor for `${field.id.snake}`'
+
+          /// TODO: determine if this should be copy/clone to work
           ..body = 'self.${field.id.snake} = ${field.id.snake};'
           ..isUnitTestable = false
           ..isInline = true));
@@ -275,7 +279,7 @@ Struct pubStruct(dynamic id) => new Struct(id)..isPub = true;
 ///
 UnitStruct ustruct(dynamic id) => new UnitStruct(id);
 
-/// Creates a _publid_ [UnitStruct].
+/// Creates a _public_ [UnitStruct].
 ///
 /// Creates a _public_ [UnitStruct] instance identified by [id], which may be a symbol or string.
 /// Returns new [UnitStruct].

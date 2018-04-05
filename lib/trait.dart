@@ -31,12 +31,6 @@ abstract class HasFunctions {
   Fn matchingFunction(String id) => functions
       .firstWhere((fn) => isMatchingFunction(fn, id), orElse: () => null);
 
-  List<Fn> matchingFunctions(Iterable ids) => ids
-      .map((id) => matchingFunction(id))
-      .where((fn) => fn != null)
-      .map((fn) => fn.clone())
-      .toList();
-
   removeFunctions(Iterable ids) => ids.forEach((id) => removeFunction(id));
 
   removeFunction(String id) =>
@@ -208,7 +202,7 @@ class Fn extends RsEntity
     }
 
     if (isInline) {
-      attrs.add(idAttr('inline'));      
+      attrs.add(idAttr('inline'));
     }
   }
 
@@ -312,14 +306,14 @@ class Fn extends RsEntity
 
 /// A rust trait.
 ///
-/// This models a trait by defining the set of subtraits, associated types and functions.
+/// This models a trait by defining the set of sub-traits, associated types and functions.
 /// The trait can be generic.
 class Trait extends RsEntity
     with IsPub, Generic, HasAttributes, HasAssociatedTypes, HasCodeBlock
     implements HasCode {
   List<Fn> functions = [];
 
-  /// List of subtraits - either as String or modeled Trait
+  /// List of sub-traits - either as String or modeled Trait
   List<dynamic> subTraits = [];
 
   // custom <class Trait>

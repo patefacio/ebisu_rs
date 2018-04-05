@@ -22,6 +22,8 @@
         "yml"
     ],
     "cSpell.words": [
-        "Isize"
+        "Isize",
+        "Tstruct",
+        "ustruct"
     ]
 }
