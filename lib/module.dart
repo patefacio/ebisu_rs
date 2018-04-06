@@ -363,6 +363,10 @@ class Module extends RsEntity
         lazyStatics
       ]) as Iterable<Entity>;
 
+  List<StructType> get allStructs => concat(
+          [structs, concat(modules.map((Module module) => module.allStructs))])
+      .toList();
+
   String toString() => 'mod($name:$moduleType)';
 
   set uses(Iterable<dynamic> uses) {
@@ -419,7 +423,7 @@ class Module extends RsEntity
 
   Struct matchingStruct(Object id) {
     id = makeId(id);
-    return structs.firstWhere((StructType struct) => struct.id == id,
+    return allStructs.firstWhere((StructType struct) => struct.id == id,
         orElse: () =>
             throw 'Could not find matching struct $id in ${structs.map((s) => s.id).join(", ")}');
   }
