@@ -47,6 +47,10 @@ abstract class StructType extends RsEntity
     return _impl ?? (_impl = new TypeImpl(rsType(id)));
   }
 
+  @override
+  Iterable<RsEntity> get children =>
+      _impl == null ? new Iterable.empty() : [impl];
+
   // end <class StructType>
 
   StructType(dynamic id) : super(id);
@@ -64,7 +68,8 @@ class Struct extends StructType with Generic {
   // custom <class Struct>
 
   @override
-  get children => concat([lifetimes, typeParms, fields, genericChildren]);
+  get children =>
+      concat([lifetimes, typeParms, fields, genericChildren, super.children]);
 
   String toString() => 'struct($unqualifiedName)';
 
@@ -152,7 +157,8 @@ class Struct extends StructType with Generic {
         derives,
         '${pubDecl}struct $unqualifiedName${genericDecl}$boundsDecl {',
         indentBlock(br(fields.map((field) => field.code), ',\n')),
-        '}'
+        '}',
+        _impl?.code
       ]);
 
   // end <class Struct>
@@ -205,7 +211,7 @@ class TupleStruct extends StructType with Generic {
   }
 
   @override
-  Iterable<RsEntity> get children => genericChildren;
+  Iterable<RsEntity> get children => concat([genericChildren, super.children]);
 
   @override
   String get code => brCompact([
@@ -261,8 +267,6 @@ class TupleStructInst extends GenericInst {
 /// Unit struct
 class UnitStruct extends StructType {
   // custom <class UnitStruct>
-
-  Iterable<RsEntity> get children => new Iterable.empty();
 
   @override
   String get code => brCompact([

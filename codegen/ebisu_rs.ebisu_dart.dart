@@ -114,7 +114,7 @@ All rust named items are *RsEntity* instances.'''
                 ..doc = 'Id for the [RsEntity]'
                 ..type = 'Id',
               member('no_comment')
-                ..doc = 'Indicates that general docComment should be suppresed'
+                ..doc = 'Indicates that general docComment should be suppressed'
                 ..init = false,
             ],
           class_('has_file_path')..isAbstract = true,

@@ -61,7 +61,7 @@ abstract class RsEntity extends Object with Entity {
   /// Id for the [RsEntity]
   Id id;
 
-  /// Indicates that general docComment should be suppresed
+  /// Indicates that general docComment should be suppressed
   bool noComment = false;
 
   // custom <class RsEntity>

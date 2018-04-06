@@ -508,19 +508,6 @@ class Module extends RsEntity
       });
     });
 
-    List<Impl> sortedImpls = [];
-    structs.forEach((StructType struct) {
-      if (struct.hasImpl) {
-        if (impls.where((Impl impl) => impl.id == struct.id && impl is TypeImpl).isEmpty) {
-          sortedImpls.add(struct.impl);
-        } else {
-          print('Conflicting impls for ${struct.id.snake} in ${impls.map((i) => i.id.snake).join(", ")}');
-        }
-      }
-    });
-    sortedImpls.sort((a, b) => a.id.compareTo(b.id));
-    impls.addAll(sortedImpls);
-
     _logger.info("Ownership of module($id) established in $filePath");
   }
 
@@ -530,6 +517,11 @@ class Module extends RsEntity
     impls
         .where((impl) => impl.hasUnitTestModule)
         .forEach((impl) => unitTestModule.modules.add(impl.unitTestModule));
+
+    structs
+        .where((struct) => struct.hasImpl && struct.impl.hasUnitTestModule)
+        .forEach(
+            (struct) => unitTestModule.modules.add(struct.impl.unitTestModule));
 
     enums.where((e) => e.hasDefault).forEach((e) {
       impls.add(e.defaultImpl);
