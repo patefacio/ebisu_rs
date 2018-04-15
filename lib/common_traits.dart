@@ -85,4 +85,11 @@ final Trait debugTrait = trait('debug')
       ..returnDoc = 'Unit or an error'
   ];
 
+final Trait dropTrait = trait('drop')
+  ..doc =
+      'Used to run some code when a value goes out of scope. This is sometimes called a _destructor_'
+  ..functions = [
+    fn('drop', [selfRefMutable])..doc = 'Executes the destructor for this type'
+  ];
+
 // end <library common_traits>
