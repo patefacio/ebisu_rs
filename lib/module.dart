@@ -367,6 +367,10 @@ class Module extends RsEntity
           [structs, concat(modules.map((Module module) => module.allStructs))])
       .toList();
 
+  List<Enum> get allEnums =>
+      concat([enums, concat(modules.map((Module module) => module.allEnums))])
+          .toList();
+
   String toString() => 'mod($name:$moduleType)';
 
   set uses(Iterable<dynamic> uses) {
@@ -442,7 +446,7 @@ class Module extends RsEntity
   ////////////////////
   Enum matchingEnum(Object id) {
     id = makeId(id);
-    return enums.firstWhere((Enum enum_) => enum_.id == id,
+    return allEnums.firstWhere((Enum enum_) => enum_.id == id,
         orElse: () =>
             throw 'Could not find matching enum $id in ${enums.map((s) => s.id).join(", ")}');
   }
