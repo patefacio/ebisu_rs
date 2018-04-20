@@ -178,6 +178,8 @@ class TypeImpl extends Impl {
 
   @override
   onOwnershipEstablished() {
+    _logger.info("Ownership of impl ${id}:${runtimeType}");
+
     /// Go through functions and tag custom block with type
     /// This helps prevent custom block tag duplicates
     functions.forEach((fn) {

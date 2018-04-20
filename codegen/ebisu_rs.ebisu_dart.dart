@@ -1272,6 +1272,7 @@ Traits without generics are themselves [TraitInst].
               'IsPub',
               'Derives',
               'HasAttributes',
+              'Generic'
             ]
             ..members = [
               member('impl')
@@ -1286,7 +1287,6 @@ Traits without generics are themselves [TraitInst].
             ],
           class_('struct')
             ..mixins = [
-              'Generic',
             ]
             ..withClass((cls) => commonFeatures(cls, 'StructType'))
             ..members.addAll([
@@ -1306,7 +1306,7 @@ Traits without generics are themselves [TraitInst].
             ],
           class_('tuple_struct')
             ..doc = 'Tuple struct'
-            ..mixins = ['Generic']
+            ..mixins = []
             ..withClass((cls) => commonFeatures(cls, 'StructType'))
             ..members.addAll([
               member('field_types')

@@ -371,6 +371,10 @@ class Module extends RsEntity
       concat([enums, concat(modules.map((Module module) => module.allEnums))])
           .toList();
 
+  List<Module> get allModules => concat(
+          [modules, concat(modules.map((Module module) => module.allModules))])
+      .toList();
+
   String toString() => 'mod($name:$moduleType)';
 
   set uses(Iterable<dynamic> uses) {
@@ -444,11 +448,21 @@ class Module extends RsEntity
   }
 
   ////////////////////
+  Module matchingModule(Object id) {
+    id = makeId(id);
+    return allModules.firstWhere((Module module) => module.id == id,
+        orElse: () =>
+            throw 'Could not find matching Module $id in ${allEnums.map((s) => s.id).join(", ")}');
+  }
+
+  withMatchingModule(Object id, f(Module m)) => f(matchingModule(id));
+
+  ////////////////////
   Enum matchingEnum(Object id) {
     id = makeId(id);
     return allEnums.firstWhere((Enum enum_) => enum_.id == id,
         orElse: () =>
-            throw 'Could not find matching enum $id in ${enums.map((s) => s.id).join(", ")}');
+            throw 'Could not find matching enum $id in ${allEnums.map((s) => s.id).join(", ")}');
   }
 
   withMatchingEnum(Object id, f(Enum s)) => f(matchingEnum(id));

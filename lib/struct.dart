@@ -31,7 +31,7 @@ final Logger _logger = new Logger('struct');
 
 /// Base class for various struct types (struct, tuple_struct, unit_struct)
 abstract class StructType extends RsEntity
-    with IsPub, Derives, HasAttributes
+    with IsPub, Derives, HasAttributes, Generic
     implements HasCode {
   /// The implementation for the struct
   set impl(TypeImpl impl) => _impl = impl;
@@ -41,15 +41,25 @@ abstract class StructType extends RsEntity
 
   // custom <class StructType>
 
-  bool get hasImpl => _impl != null;
-
-  TypeImpl get impl {
-    return _impl ?? (_impl = new TypeImpl(rsType(id)));
+  _makeImpl() {
+    inferLifetimes();
+    return new TypeImpl(rsType(genericName))
+      ..lifetimes = new List.from(lifetimes);
   }
 
+  inferLifetimes();
+
+  bool get hasImpl => _impl != null;
+
+  TypeImpl get impl => _impl ?? (_impl = _makeImpl());
+
   @override
-  Iterable<RsEntity> get children =>
-      _impl == null ? new Iterable.empty() : [impl];
+  Iterable<RsEntity> get children => _impl == null
+      ? new Iterable.empty()
+      : concat([
+          [impl],
+          _traitImpls
+        ]);
 
   // end <class StructType>
 
@@ -59,7 +69,7 @@ abstract class StructType extends RsEntity
   List<TraitImpl> _traitImpls = [];
 }
 
-class Struct extends StructType with Generic {
+class Struct extends StructType {
   List<Field> fields = [];
 
   /// If set, all fields are read-only
@@ -95,13 +105,7 @@ class Struct extends StructType with Generic {
   }
 
   @override
-  onOwnershipEstablished() {
-    _logger.info("Ownership of struct ${id}:${runtimeType}");
-
-    if (lifetimes.isEmpty) {
-      inferLifetimes();
-    }
-  }
+  onOwnershipEstablished() => inferLifetimes();
 
   bool get hasAccessors => fields.any((f) => f.access != null);
 
@@ -135,11 +139,14 @@ class Struct extends StructType with Generic {
     return results;
   }
 
+  @override
   inferLifetimes() {
-    lifetimes =
-        new Set<Lifetime>.from(concat(fields.map((m) => m.lifetimes)).toList())
-            .toList()
-              ..sort();
+    if (lifetimes.isEmpty) {
+      lifetimes = new Set<Lifetime>.from(
+              concat(fields.map((m) => m.lifetimes)).toList())
+          .toList()
+            ..sort();
+    }
   }
 
   @override
@@ -190,7 +197,7 @@ class StructInst extends GenericInst {
 }
 
 /// Tuple struct
-class TupleStruct extends StructType with Generic {
+class TupleStruct extends StructType {
   List<RsType> get fieldTypes => _fieldTypes;
 
   // custom <class TupleStruct>
@@ -199,15 +206,18 @@ class TupleStruct extends StructType with Generic {
   onOwnershipEstablished() {
     _logger.info("Ownership of struct ${id}:${runtimeType}");
     if (lifetimes.isEmpty) {
-      _inferLifetimes();
+      inferLifetimes();
     }
   }
 
-  _inferLifetimes() {
-    lifetimes = new Set<Lifetime>.from(
-            concat(fieldTypes.map((m) => m.lifetimes)).toList())
-        .toList()
-          ..sort();
+  @override
+  inferLifetimes() {
+    if (lifetimes.isEmpty) {
+      lifetimes = new Set<Lifetime>.from(
+              concat(fieldTypes.map((m) => m.lifetimes)).toList())
+          .toList()
+            ..sort();
+    }
   }
 
   @override
