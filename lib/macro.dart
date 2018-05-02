@@ -208,6 +208,7 @@ class Derives {
     } else {
       final derives = derive
           .map((d) => idFromString(d.toString()).capCamel)
+          .toSet()
           .toList()
             ..sort();
       return '#[derive(${derives.join(", ")})]';
