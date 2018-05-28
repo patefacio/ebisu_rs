@@ -123,15 +123,15 @@ class Struct extends StructType {
       }
 
       if (field.access == wo || field.access == rw) {
-        results.add((pubFn('set_${field.id.snake}', [
+        results.add((pubFn('${field.id.snake}_mut', [
           selfRefMutable,
-          parm(field.id, field.byRef ? ref(field.type) : field.type)
-            ..doc = 'New value for `${field.id.snake}`'
         ])
           ..doc = 'Write accessor for `${field.id.snake}`'
+          ..returns = mref(field.type)
+          ..returnDoc = 'The `${field.id.snake}` field'
 
           /// TODO: determine if this should be copy/clone to work
-          ..body = 'self.${field.id.snake} = ${field.id.snake};'
+          ..body = '& mut self.${field.id.snake}'
           ..isUnitTestable = false
           ..isInline = true));
       }
