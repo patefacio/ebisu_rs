@@ -360,7 +360,8 @@ class Module extends RsEntity
         traits,
         impls,
         _unitTestModule != null ? [_unitTestModule] : new Iterable.empty(),
-        lazyStatics
+        lazyStatics,
+        functions
       ]) as Iterable<Entity>;
 
   List<StructType> get allStructs => concat(
@@ -594,6 +595,7 @@ class Module extends RsEntity
 
     if (isDeclaredModule) {
       final tempFile = new File('${codePath}.ebisu_rs.rs');
+      _logger.info('Creating path ${tempFile.parent.path}');
       new Directory(tempFile.parent.path).createSync(recursive: true);
       tempFile.writeAsStringSync(code);
       formatRustFile(tempFile.path);
@@ -817,6 +819,8 @@ class Module extends RsEntity
     final _id = makeRsId(id);
     return structs.firstWhere((s) => s.id == _id);
   }
+
+  set filePath(String filePath) => _filePath = filePath;
 
   // end <class Module>
 
