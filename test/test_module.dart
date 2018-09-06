@@ -39,7 +39,7 @@ void main([List<String> args]) {
       ..setAsRoot();
 
     final subMod2 = r.crates.first.modules
-        .firstWhere((Module m) => m.id.snake == 'sub_mod_2');
+        .firstWhere((m) => m.id.snake == 'sub_mod_2');
 
     expect(subMod2.code.contains('\nuse someType;'), true);
     expect(subMod2.code.contains('\nuse foo::goo;'), true);

@@ -219,10 +219,10 @@ class FlexiLogProvider implements LogProvider {
       module
         ..import('flexi_logger')
         ..withMainCodeBlock(mainOpen, (CodeBlock cb) => cb.snippets.add('''
-flexi_logger::Logger::with_str(${hasLogLevel? "options.log_level" : '"info"'})
+flexi_logger::Logger::with_str(${hasLogLevel ? "options.log_level" : '"info"'})
     .start()
     .unwrap_or_else(|e| panic!("Logger initialization failed with {}", e));
-${hasLogLevel? 'info!("clap parsed options {:?}", options);': ""}
+${hasLogLevel ? 'info!("clap parsed options {:?}", options);' : ""}
               '''));
       if (hasLogLevel) {
         module.importWithMacros('log');
@@ -295,7 +295,7 @@ class LazyStatic extends RsEntity with IsPub implements HasCode {
   get code => brCompact([
         'lazy_static! {',
         indentBlock(brCompact([
-          '${isPub? "pub ": ""}static ref ${id.shout}: ${type.lifetimeDecl} = {',
+          '${isPub ? "pub " : ""}static ref ${id.shout}: ${type.lifetimeDecl} = {',
           codeBlock.toString(),
           '};'
         ])),
@@ -353,16 +353,16 @@ class Module extends RsEntity
   Module(dynamic id, [this.moduleType]) : super(id);
 
   @override
-  Iterable<RsEntity> get children => concat(<Iterable<Entity>>[
+  Iterable<RsEntity> get children => concat(<Iterable<RsEntity>> [
         enums,
         structs,
         modules,
         traits,
         impls,
-        _unitTestModule != null ? [_unitTestModule] : new Iterable.empty(),
+        ((_unitTestModule != null) ? ([ _unitTestModule ]) : new Iterable<Module>.empty()),
         lazyStatics,
         functions
-      ]) as Iterable<Entity>;
+      ]) as Iterable<RsEntity>;
 
   List<StructType> get allStructs => concat(
           [structs, concat(modules.map((Module module) => module.allStructs))])
@@ -594,14 +594,11 @@ class Module extends RsEntity
         'Generating module $pubDecl$id:$filePath:${chomp(detailedPath.toString())}');
 
     if (isDeclaredModule) {
-      final tempFile = new File('${codePath}.ebisu_rs.rs');
-      _logger.info('Creating path ${tempFile.parent.path}');
-      new Directory(tempFile.parent.path).createSync(recursive: true);
-      tempFile.writeAsStringSync(code);
-      formatRustFile(tempFile.path);
-      final formattedCode = tempFile.readAsStringSync();
-      mergeWithFile(formattedCode, codePath);
-      tempFile.delete();
+      mergeWithFile(code, codePath);
+
+      if (formatRustFile(codePath) != 0) {
+        _logger.warning("Rust format failed on `$codePath`! (see ${codePath})");
+      }
     }
 
     modules.forEach((module) => module.generate());
@@ -681,7 +678,7 @@ class Module extends RsEntity
   String get _structDecls => br(structs.map((s) => s.code));
   String get _traitDecls => br(traits.map((t) => t.code));
   String get _implDecls => br(impls.map((i) => i.code));
-  String get _importsDecls => brCompact((new List.from(imports)
+  String get _importsDecls => brCompact((new List<Import>.from(imports)
         ..sort((Import a, Import b) => a.import.compareTo(b.import)))
       .map((i) => i.code));
 

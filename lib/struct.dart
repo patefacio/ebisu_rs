@@ -116,7 +116,7 @@ class Struct extends StructType {
         results.add((pubFn(field.id, [selfRef])
           ..doc = 'Read accessor for `${field.id.snake}`'
           ..body = (field.byRef ? '&' : '') + 'self.${field.id.snake}'
-          ..returns = field.byRef ? ref(field.type) : field.type
+          ..returns = field.byRef ? ref(field.type) : field.type.lifetimeDecl
           ..returnDoc = 'Current state for `${field.id.snake}`'
           ..isUnitTestable = false
           ..isInline = true));
@@ -285,7 +285,24 @@ class UnitStruct extends StructType {
         '${pubDecl}struct $name;'
       ]);
 
+
+  @override
+    inferLifetimes() {
+  }
+
+  @override
+  String get unqualifiedName => id.capCamel;
+
+  @override
+  GenericInst inst(
+          {Iterable typeArgs = const [], Iterable lifetimes = const []}) =>
+    throw "Can not instantiate generic UnitStruct";
+  
+  
+
   String get name => id.capCamel;
+
+  
 
   // end <class UnitStruct>
 

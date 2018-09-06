@@ -104,7 +104,7 @@ abstract class Generic {
   get boundsDecl => hasBounds
       ? brCompact([
           ' where ',
-          concat([
+          concat(<Iterable<dynamic>>[
             typeParms.where((tp) => tp.hasBounds).map((tp) => tp.boundsDecl),
             makeBounds(fancyBounds)
           ]).join(', ')

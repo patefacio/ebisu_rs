@@ -5,19 +5,21 @@ homepage: https://github.com/patefacio/ebisu_rs
 description: >
   Support for generating rust code
 environment:
-  sdk: '>=1.8.2 <=2.0.0-dev.20.0'
+  sdk: '>=2.0.0-dev.61 <3.0.0'
 
 dependencies:
 
 # custom <ebisu_rs dependencies>
 
-  ebisu: ">=0.7.9"
-#  ebisu:
-#    path: "../ebisu"
+  ebisu:
+    path: "../ebisu"
 
-#  id: "^1.0.16"
+  id:
+    path: "../id"
 
-  quiver: ">=0.21.0 <0.25.0"
+  quiver: "2.0.0+1"
+  logging: "0.11.3+2"
+
   glob: "^1.1.3"
 
 # end <ebisu_rs dependencies>
@@ -26,19 +28,13 @@ dev_dependencies:
 
 # custom <ebisu_rs dev dependencies>
 
-  test: "^0.12.20"
+  test: "^1.3.0"
   
 # end <ebisu_rs dev dependencies>
 
 dependency_overrides:
 # custom <ebisu_rs dependency overrides>
 
-  ebisu:
-    path: "../ebisu"
-      
-  id:
-    path: "../id"
-    #git: "git://github.com/patefacio/id"
 
 # end <ebisu_rs dependency overrides>
 

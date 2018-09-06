@@ -91,7 +91,7 @@ class TraitImpl extends Impl with HasTypeAliases {
                 ? makeGenericId(_type.typeName).snake
                 : makeNonGenericId(_type.typeName).snake))) {
     functions = _trait.functions
-        .map((fn) => fn.copy()
+        .map<Fn>((Fn fn) => fn.copy()
           ..codeBlock = new CodeBlock('fn ${id.snake}_${fn.id.snake}'))
         .toList();
 

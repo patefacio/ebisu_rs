@@ -83,7 +83,7 @@ class CrateToml {
         // authors
         'authors = [${authors.join(",")}]',
         // description
-        'description = ${tripleDoubleQuote(documentation?? "TBD")}',
+        'description = ${tripleDoubleQuote(documentation ?? "TBD")}',
         // repository
         repository != null ? 'repositoryX   = "$repository"' : null,
         // homepage
@@ -209,7 +209,7 @@ class Crate extends RsEntity implements HasFilePath {
   bool get requiresClap =>
       _clap != null || binaries.any((bin) => bin.requiresClap);
 
-  bool get requiresSerde => concat([
+  bool get requiresSerde => concat(<Iterable<dynamic>>[
         enums,
         structs,
         concat([
@@ -218,7 +218,7 @@ class Crate extends RsEntity implements HasFilePath {
         ])
       ]).any((item) =>
           (item is Derives) &&
-          item.derive.any((derivable) =>
+          (item as Derives).derive.any((derivable) =>
               derivable == Serialize || derivable == Deserialize));
 
   void generate() {

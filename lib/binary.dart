@@ -380,7 +380,7 @@ class Binary extends RsEntity implements HasFilePath {
 
   get clap => _clap ?? (_clap = new Clap(id));
 
-  withClap(f(clap)) => f(clap);
+  withClap(f(Clap clap)) => f(clap);
 
   get usesRunFunction => _usesRunFunction || _runFunction != null;
 

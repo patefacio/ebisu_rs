@@ -141,7 +141,7 @@ class Fn extends RsEntity
   bool elideLifetimes;
 
   /// If true annotates with #[inline]
-  bool isInline;
+  bool isInline = false;
 
   // custom <class Fn>
 
@@ -246,14 +246,14 @@ class Fn extends RsEntity
   String get _docComment {
     var fnDoc = [
       doc == null
-          ? 'TODO: comment fn ${id.snake}:${_codeBlock!=null? _codeBlock.tag : "no-body-tag"}'
+          ? 'TODO: comment fn ${id.snake}:${_codeBlock != null ? _codeBlock.tag : "no-body-tag"}'
           : doc
     ];
     return tripleSlashComment(chomp(br([
       fnDoc,
       brCompact(concat([
         parms.where((p) => p.id.snake != 'self').map((p) =>
-            ' * `${p.id.snake}` - ${p.doc == null? "TODO: comment parm" : p.doc}'),
+            ' * `${p.id.snake}` - ${p.doc == null ? "TODO: comment parm" : p.doc}'),
         [
           _returnType == null || _returnType.typeName == '()'
               ? null
@@ -278,7 +278,7 @@ class Fn extends RsEntity
 
   addParm(dynamic id, [dynamic type]) => _parms.add(new Parm(id, type));
 
-  copy() => new Fn._copy(this);
+  Fn copy() => new Fn._copy(this);
 
   Fn._copy(Fn other)
       : _parms = other._parms == null ? null : (new List.from(other._parms)),
@@ -410,7 +410,7 @@ class TraitInst extends GenericInst {
 
 /// Create a [Fn] identified by [id], which may be Symbol, String or Id
 /// with function parameters [parms]. Returns the new [Fn].
-Fn fn(dynamic id, [Iterable<dynamic> parms, dynamic returnType]) =>
+Fn fn(dynamic id, [Iterable<Parm> parms, dynamic returnType]) =>
     new Fn(id, parms, returnType ?? UnitType);
 
 /// Create a _public_ [Fn] identified by [id], which may be Symbol, String or Id

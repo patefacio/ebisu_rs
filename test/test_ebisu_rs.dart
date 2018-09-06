@@ -128,7 +128,7 @@ First struct in root module.
         crate('crate_3')
           ..withRootModule((rootModule) => rootModule
             ..modules = [
-              module('module_1')..modules = [module('module_1_1')],
+              module('module_1', directoryModule)..modules = [module('module_1_1')],
               module('module_2')
             ]),
       ];

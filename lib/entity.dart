@@ -13,7 +13,10 @@ import 'package:id/id.dart';
 import 'package:logging/logging.dart';
 
 // custom <additional imports>
+
 import 'package:ebisu_rs/module.dart';
+import 'package:path/path.dart';
+
 // end <additional imports>
 
 final Logger _logger = new Logger('entity');
@@ -155,7 +158,7 @@ abstract class HasCodeBlock {
 }
 
 class IsUnitTestable {
-  bool isUnitTestable;
+  bool isUnitTestable = false;
 }
 
 // custom <library entity>
@@ -193,23 +196,16 @@ makeGenericId(String s) => makeId(s
 
 String indent(String s) => indentBlock(s, '    ');
 
-ProcessResult formatRustFile(String filePath) {
-  _logger.info('Formatting rust file ${filePath}');
-  final result = Process.runSync(
-      'rustup', ['run', 'nightly', 'rustfmt', '--skip-children', filePath]);
-  var backup = new File('$filePath.bk');
-  if (backup.existsSync()) {
-    _logger.info('Deleting backup ${backup.path}');
-    backup.deleteSync();
+int formatRustFile(String filePath) {
+  _logger.info("Running `rustfmt on $filePath");
+  final fmtResult = Process.runSync('rustfmt', [filePath]);
+
+  if (fmtResult.exitCode != 0) {
+    print("WARNING: Format failed for: $filePath");
+    print(fmtResult.stderr);
   }
-  var backups = new Glob('${filePath}.*~');
-  for (var backup in backups.listSync()) {
-    _logger.info('Deleting backup ${backup.path}');
-    backup.deleteSync();
-  }
-  _logger.info('Formatting *complete* rust file ${filePath}');
-  //print('Formatting *complete* rust file ${filePath} -> ${result.exitCode}\n${result.stderr}');
-  return result;
+
+  return fmtResult.exitCode;
 }
 
 /// Return a new string with [text] wrapped in `//!` doc comment block
