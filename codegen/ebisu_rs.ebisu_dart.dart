@@ -37,28 +37,28 @@ main(List<String> args) {
     ..doc = purpose
     ..scripts = []
     ..testLibraries = [
-      library('test_attribute')..imports = ['package:ebisu_rs/attribute.dart'],
-      library('test_binary')..imports = ['package:ebisu_rs/binary.dart'],
-      library('test_type')..imports = ['package:ebisu_rs/type.dart'],
-      library('test_struct')..imports = ['package:ebisu_rs/struct.dart'],
-      library('test_repo')..imports = ['package:ebisu_rs/repo.dart'],
-      library('test_crate')..imports = ['package:ebisu_rs/crate.dart'],
-      library('test_module')..imports = ['package:ebisu_rs/module.dart'],
-      library('test_trait')..imports = ['package:ebisu_rs/trait.dart'],
-      library('test_impl')..imports = ['package:ebisu_rs/impl.dart'],
-      library('test_generic')..imports = ['package:ebisu_rs/generic.dart'],
-      library('test_enumeration')
+      library_('test_attribute')..imports = ['package:ebisu_rs/attribute.dart'],
+      library_('test_binary')..imports = ['package:ebisu_rs/binary.dart'],
+      library_('test_type')..imports = ['package:ebisu_rs/type.dart'],
+      library_('test_struct')..imports = ['package:ebisu_rs/struct.dart'],
+      library_('test_repo')..imports = ['package:ebisu_rs/repo.dart'],
+      library_('test_crate')..imports = ['package:ebisu_rs/crate.dart'],
+      library_('test_module')..imports = ['package:ebisu_rs/module.dart'],
+      library_('test_trait')..imports = ['package:ebisu_rs/trait.dart'],
+      library_('test_impl')..imports = ['package:ebisu_rs/impl.dart'],
+      library_('test_generic')..imports = ['package:ebisu_rs/generic.dart'],
+      library_('test_enumeration')
         ..imports = ['package:ebisu_rs/enumeration.dart'],
-      library('test_ebisu_rs')..imports = ['package:ebisu_rs/ebisu_rs.dart'],
-      library('test_dependency')
+      library_('test_ebisu_rs')..imports = ['package:ebisu_rs/ebisu_rs.dart'],
+      library_('test_dependency')
         ..imports = ['package:ebisu_rs/dependency.dart'],
-      library('test_lifetime_elision')
+      library_('test_lifetime_elision')
         ..imports = ['package:ebisu_rs/trait.dart'],
-      library('test_constant')..imports = ['package:ebisu_rs/constant.dart'],
-      library('test_static')..imports = ['package:ebisu_rs/static.dart'],
+      library_('test_constant')..imports = ['package:ebisu_rs/constant.dart'],
+      library_('test_static')..imports = ['package:ebisu_rs/static.dart'],
     ]
     ..libraries = [
-      library('ebisu_rs')
+      library_('ebisu_rs')
         ..exports.addAll([
           'package:ebisu_rs/attribute.dart',
           'package:ebisu_rs/dependency.dart',
@@ -75,7 +75,7 @@ main(List<String> args) {
           'package:ebisu_rs/trait.dart',
           'package:ebisu_rs/impl.dart',
         ]),
-      library('entity')
+      library_('entity')
         ..doc = '''
 Support for rust entity *recursive entity graph*.
 
@@ -141,7 +141,7 @@ All rust named items are *RsEntity* instances.'''
             ],
         ],
 
-      library('generic')
+      library_('generic')
         ..imports = [
           'package:ebisu_rs/trait.dart',
           'package:ebisu/ebisu.dart',
@@ -220,7 +220,7 @@ All rust named items are *RsEntity* instances.'''
             */
         ],
 
-      library('enumeration')
+      library_('enumeration')
         ..doc = 'Library for enums'
         ..imports = commonIncludes()
         ..imports.addAll([
@@ -301,7 +301,7 @@ All rust named items are *RsEntity* instances.'''
             ],
         ],
 
-      library('repo')
+      library_('repo')
         ..doc = 'Library supporting generation of a rust repo'
         ..imports = commonIncludes()
         ..imports.addAll([
@@ -323,7 +323,7 @@ All rust named items are *RsEntity* instances.'''
         ],
 
       // dependency library
-      library('dependency')
+      library_('dependency')
         ..imports = ['package:ebisu/ebisu.dart']
         ..includesLogger = true
         ..enums = [
@@ -366,7 +366,7 @@ All rust named items are *RsEntity* instances.'''
             ],
         ],
 
-      library('binary')
+      library_('binary')
         ..imports = commonIncludes()
         ..includesLogger = true
         ..imports.addAll([
@@ -483,7 +483,7 @@ All rust named items are *RsEntity* instances.'''
             ]
         ],
 
-      library('errors_module')
+      library_('errors_module')
         ..doc =
             'Models an errors module with customErrors for consistent error handling [See failure](https://boats.gitlab.io/failure/custom-fail.html)'
         ..includesLogger = true
@@ -537,7 +537,7 @@ All rust named items are *RsEntity* instances.'''
         ],
 
       // crate library
-      library('crate')
+      library_('crate')
         ..imports = commonIncludes()
         ..includesLogger = true
         ..imports.addAll([
@@ -621,7 +621,7 @@ All rust named items are *RsEntity* instances.'''
         ],
 
       /// Support for attributes
-      library('attribute')
+      library_('attribute')
         ..imports = ['package:id/id.dart', 'package:ebisu_rs/entity.dart']
         ..classes = [
           class_('attr')
@@ -665,7 +665,7 @@ All rust named items are *RsEntity* instances.'''
             ],
         ],
 
-      library('constant')
+      library_('constant')
         ..doc = 'Support for *const* definitions'
         ..imports = [
           'package:ebisu_rs/type.dart',
@@ -695,7 +695,7 @@ All rust named items are *RsEntity* instances.'''
                 ..init = []
             ],
         ],
-      library('static')
+      library_('static')
         ..doc = 'Support for *const* definitions'
         ..imports = [
           'package:ebisu_rs/type.dart',
@@ -725,7 +725,7 @@ All rust named items are *RsEntity* instances.'''
                 ..init = []
             ],
         ],
-      library('module')
+      library_('module')
         ..imports = commonIncludes()
         ..imports.addAll([
           'package:ebisu_rs/common_traits.dart',
@@ -893,7 +893,7 @@ module and module Ids are set, this will declare those modules.
         ],
 
       // trait library
-      library('trait')
+      library_('trait')
         ..includesLogger = true
         ..imports.add('"package:ebisu/ebisu.dart" hide codeBlock')
         ..importAndExportAll([
@@ -1020,7 +1020,7 @@ Traits without generics are themselves [TraitInst].
             ],
         ],
 
-      library('impl')
+      library_('impl')
         ..includesLogger = true
         ..imports.addAll([
           '"package:ebisu/ebisu.dart" hide codeBlock',
@@ -1066,7 +1066,7 @@ Traits without generics are themselves [TraitInst].
             ],
         ],
 
-      library('common_traits')
+      library_('common_traits')
         ..imports = [
           'package:ebisu_rs/trait.dart',
           'package:id/id.dart',
@@ -1080,7 +1080,7 @@ Traits without generics are themselves [TraitInst].
             ]
         ],
 
-      library('type')
+      library_('type')
         ..includesMain = true
         ..imports = ['dart:mirrors', 'package:ebisu/ebisu.dart']
         ..importAndExportAll([
@@ -1161,7 +1161,7 @@ Traits without generics are themselves [TraitInst].
             ]
         ],
 
-      library('field')
+      library_('field')
         ..imports = commonIncludes()
         ..includesLogger = true
         ..imports.addAll([
@@ -1207,7 +1207,7 @@ Traits without generics are themselves [TraitInst].
             ],
         ],
 
-      library('macro')
+      library_('macro')
         ..doc = 'Support for macro related code'
         ..imports = [
           'package:id/id.dart',
@@ -1248,7 +1248,7 @@ Traits without generics are themselves [TraitInst].
             ],
         ],
 
-      library('struct')
+      library_('struct')
         ..imports = commonIncludes()
         ..includesLogger = true
         ..importAndExportAll([
