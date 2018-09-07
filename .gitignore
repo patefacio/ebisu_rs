@@ -17,6 +17,7 @@ build/
 pubspec.lock
 launch.json
 sample_repo/
+.dart_tool/**
 
 # end <additional>
 
