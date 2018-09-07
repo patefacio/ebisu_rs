@@ -285,10 +285,8 @@ class UnitStruct extends StructType {
         '${pubDecl}struct $name;'
       ]);
 
-
   @override
-    inferLifetimes() {
-  }
+  inferLifetimes() {}
 
   @override
   String get unqualifiedName => id.capCamel;
@@ -296,13 +294,9 @@ class UnitStruct extends StructType {
   @override
   GenericInst inst(
           {Iterable typeArgs = const [], Iterable lifetimes = const []}) =>
-    throw "Can not instantiate generic UnitStruct";
-  
-  
+      throw "Can not instantiate generic UnitStruct";
 
   String get name => id.capCamel;
-
-  
 
   // end <class UnitStruct>
 

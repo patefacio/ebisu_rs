@@ -137,7 +137,7 @@ All rust named items are *RsEntity* instances.'''
           class_('is_unit_testable')
             ..includesProtectBlock = false
             ..members = [
-              member('is_unit_testable')..type = 'bool',
+              member('is_unit_testable')..type = 'bool'..init = false,
             ],
         ],
 
@@ -1328,7 +1328,7 @@ Traits without generics are themselves [TraitInst].
         ],
     ];
 
-  ebisuRs.generate(generateDrudge: true);
+  ebisuRs.generate();
 
   print('''
 **** NON GENERATED FILES ****

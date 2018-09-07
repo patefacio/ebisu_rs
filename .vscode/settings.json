@@ -25,5 +25,7 @@
         "Isize",
         "Tstruct",
         "ustruct"
-    ]
+    ],
+  "workbench.colorTheme": "Gruvbox Light (Soft)"
+
 }

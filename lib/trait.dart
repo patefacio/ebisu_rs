@@ -141,7 +141,7 @@ class Fn extends RsEntity
   bool elideLifetimes;
 
   /// If true annotates with #[inline]
-  bool isInline = false;
+  bool isInline;
 
   // custom <class Fn>
 
@@ -201,7 +201,7 @@ class Fn extends RsEntity
       codeBlock.snippets.insert(0, brCompact(constantDecls));
     }
 
-    if (isInline) {
+    if (isInline ?? false) {
       attrs.add(idAttr('inline'));
     }
   }

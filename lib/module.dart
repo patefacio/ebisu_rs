@@ -353,13 +353,15 @@ class Module extends RsEntity
   Module(dynamic id, [this.moduleType]) : super(id);
 
   @override
-  Iterable<RsEntity> get children => concat(<Iterable<RsEntity>> [
+  Iterable<RsEntity> get children => concat(<Iterable<RsEntity>>[
         enums,
         structs,
         modules,
         traits,
         impls,
-        ((_unitTestModule != null) ? ([ _unitTestModule ]) : new Iterable<Module>.empty()),
+        ((_unitTestModule != null)
+            ? ([_unitTestModule])
+            : new Iterable<Module>.empty()),
         lazyStatics,
         functions
       ]) as Iterable<RsEntity>;
@@ -520,7 +522,7 @@ class Module extends RsEntity
       logProvider.addCrateRequirements(this.crate);
     }
 
-    if (isUnitTestable) addUnitTest(new Id('module_${id.snake}'));
+    if (isUnitTestable ?? false) addUnitTest(new Id('module_${id.snake}'));
 
     unitTestableFunctions.forEach((fn) => addUnitTest(fn.id));
 
