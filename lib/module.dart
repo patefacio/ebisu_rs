@@ -596,10 +596,26 @@ class Module extends RsEntity
         'Generating module $pubDecl$id:$filePath:${chomp(detailedPath.toString())}');
 
     if (isDeclaredModule) {
-      mergeWithFile(code, codePath);
+      final codeFile = new File(codePath);
+      final fileExists = codeFile.existsSync();
+      final originalText = fileExists ? codeFile.readAsStringSync() : '';
+      final fileStats = fileExists ? codeFile.statSync() : null;
+      mergeWithFileExt(code, codePath, noAnnounce: true);
 
       if (formatRustFile(codePath) != 0) {
         _logger.warning("Rust format failed on `$codePath`! (see ${codePath})");
+      }
+
+      final newText = codeFile.readAsStringSync();
+      if (!fileExists) {
+        print('Wrote: $codePath');
+      } else if(newText != originalText) {
+        print('Updated: $codePath');
+      } else {
+        print('No change: $codePath');
+        if (fileStats != null) {
+          codeFile.setLastModifiedSync(fileStats.modified);
+        }
       }
     }
 
