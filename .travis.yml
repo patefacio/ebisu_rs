@@ -1,5 +1,11 @@
-language: dart
-sudo: false
-dart:
-  - stable
-script: ./tool/travis.sh
+matrix:
+  include:
+    - language: dart
+      sudo: false
+      dart:
+        - stable
+      script: ./tool/travis.sh
+
+    - language: rust
+      rust:
+        - stable
