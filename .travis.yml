@@ -1,11 +1,7 @@
-matrix:
-  include:
-    - language: dart
-      sudo: false
-      dart:
-        - stable
-      script: ./tool/travis.sh
-
-    - language: rust
-      rust:
-        - stable
+language: dart
+before_install:
+  - curl -sf -L https://static.rust-lang.org/rustup.sh | sh
+sudo: false
+dart:
+  - "1.24.3"
+script: ./tool/travis.sh
