@@ -469,6 +469,4 @@ addClapToModule(Module module, Clap clap, [usesRunFunction = false]) {
           ])));
 }
 
-main() => print('done');
-
 // end <library binary>

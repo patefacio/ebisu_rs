@@ -1081,7 +1081,6 @@ Traits without generics are themselves [TraitInst].
         ],
 
       library_('type')
-        ..includesMain = true
         ..imports = ['dart:mirrors', 'package:ebisu/ebisu.dart']
         ..importAndExportAll([
           'package:id/id.dart',

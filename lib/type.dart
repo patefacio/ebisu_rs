@@ -347,12 +347,3 @@ makeBounds(Iterable bounds) => new List.from(bounds.map((bound) => bound is Id
             'Bounds must be Id, String or Trait not ${bound.runtimeType}')));
 
 // end <library type>
-
-void main([List<String> args]) {
-// custom <main>
-
-  print("DONE");
-  print(ref(mref(ref(i8))));
-
-// end <main>
-}
