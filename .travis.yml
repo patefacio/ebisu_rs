@@ -3,5 +3,5 @@ sudo: required
 before_install:
   - curl -sf -L https://static.rust-lang.org/rustup.sh | sh
 dart:
-  - "1.24.3"
+  - stable
 script: ./tool/travis.sh
