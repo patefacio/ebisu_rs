@@ -609,7 +609,7 @@ class Module extends RsEntity
       final newText = codeFile.readAsStringSync();
       if (!fileExists) {
         print('Wrote: $codePath');
-      } else if(newText != originalText) {
+      } else if (newText != originalText) {
         print('Updated: $codePath');
       } else {
         print('No change: $codePath');

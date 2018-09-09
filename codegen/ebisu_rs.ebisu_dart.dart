@@ -137,7 +137,7 @@ All rust named items are *RsEntity* instances.'''
           class_('is_unit_testable')
             ..includesProtectBlock = false
             ..members = [
-              member('is_unit_testable')..type = 'bool'..init = false,
+              member('is_unit_testable')..type = 'bool',
             ],
         ],
 
