@@ -415,7 +415,8 @@ class Module extends RsEntity
       (_unitTestModule = makeUnitTestModule()
         ..doc = 'Test module for $name module');
 
-  get unitTestableFunctions => functions.where((fn) => fn.isUnitTestable);
+  Iterable<Fn> get unitTestableFunctions =>
+      functions.where((fn) => fn?.isUnitTestable ?? false);
 
   addUnitTest(Id id, [codeBlockTag]) =>
       unitTestModule.functions.add(makeUnitTestFunction(id, codeBlockTag));
@@ -596,7 +597,11 @@ class Module extends RsEntity
         'Generating module $pubDecl$id:$filePath:${chomp(detailedPath.toString())}');
 
     if (isDeclaredModule) {
-      mergeWithFile(code, codePath);
+      final codeFile = new File(codePath);
+      final fileExists = codeFile.existsSync();
+      final originalText = fileExists ? codeFile.readAsStringSync() : '';
+      final fileStats = fileExists ? codeFile.statSync() : null;
+      mergeWithFileExt(code, codePath, noAnnounce: true);
 
       if (formatRustFile(codePath) != 0) {
         _logger.warning("Rust format failed on `$codePath`! (see ${codePath})");
