@@ -415,7 +415,8 @@ class Module extends RsEntity
       (_unitTestModule = makeUnitTestModule()
         ..doc = 'Test module for $name module');
 
-  get unitTestableFunctions => functions.where((fn) => fn.isUnitTestable);
+  Iterable<Fn> get unitTestableFunctions =>
+      functions.where((fn) => fn?.isUnitTestable ?? false);
 
   addUnitTest(Id id, [codeBlockTag]) =>
       unitTestModule.functions.add(makeUnitTestFunction(id, codeBlockTag));
