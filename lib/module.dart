@@ -601,6 +601,18 @@ class Module extends RsEntity
       if (formatRustFile(codePath) != 0) {
         _logger.warning("Rust format failed on `$codePath`! (see ${codePath})");
       }
+
+      final newText = codeFile.readAsStringSync();
+      if (!fileExists) {
+        print('Wrote: $codePath');
+      } else if (newText != originalText) {
+        print('Updated: $codePath');
+      } else {
+        print('No change: $codePath');
+        if (fileStats != null) {
+          codeFile.setLastModifiedSync(fileStats.modified);
+        }
+      }
     }
 
     modules.forEach((module) => module.generate());

@@ -42,7 +42,7 @@ abstract class Impl extends RsEntity
     functions
         .where((fn) =>
             (unitTestFunctions && fn.isUnitTestable != false) ||
-            fn.isUnitTestable)
+            fn.isUnitTestable == true)
         .forEach((fn) {
       unitTestModule.functions
           .add(makeUnitTestFunction(fn.id, 'test ${fn.codeBlock.tag}'));
