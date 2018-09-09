@@ -16,7 +16,7 @@ dependencies:
       url: git://github.com/patefacio/ebisu.git
 
   id:
-    git: 
+    git:
       url: git://github.com/patefacio/id.git
 
   glob: "^1.1.3"
